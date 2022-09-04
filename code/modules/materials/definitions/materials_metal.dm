@@ -175,7 +175,7 @@
 	icon_base = "solid"
 	icon_reinf = "reinf_over"
 	icon_colour = "#a8a9b2"
-	explosion_resistance = 25
+	explosion_resistance = 7.5
 	brute_armor = 8
 	burn_armor = 10
 	hardness = MATERIAL_VERY_HARD
@@ -375,7 +375,7 @@
 	melting_point = rand(400,10000)
 	..()
 
-/material/aliumium/place_dismantled_girder(var/turf/target, var/material/reinf_material)
+/material/aliumium/place_dismantled_girder(turf/target, material/reinf_material)
 	return
 
 /material/hematite

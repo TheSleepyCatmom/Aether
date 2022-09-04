@@ -800,6 +800,10 @@
 	desc = "A farwa plush doll. It's soft and comforting!"
 	icon_state = "farwaplushie"
 
+/obj/item/toy/plushie/thoom
+	name = "th'oom plush"
+	desc = "A plush Th'oom with big, button eyes. It smells like mushrooms."
+	icon_state = "thoomplushie"
 
 //Toy cult sword
 /obj/item/toy/cultsword
@@ -956,7 +960,7 @@
 /obj/item/toy/eightball/attack_self(mob/user)
 	user.visible_message("<span class='notice'>\The [user] shakes \the [src] for a moment, and it says, \"[pick(possible_answers) ].\"</span>")
 
-/obj/item/toy/eightball/afterattack(obj/O, mob/user, var/proximity)
+/obj/item/toy/eightball/afterattack(obj/O, mob/user, proximity)
 	. = ..()
 	if (proximity)
 		visible_message("<span class='warning'>\The [src] says, \"[pick(possible_answers) ]\" as it hits \the [O]!</span>")

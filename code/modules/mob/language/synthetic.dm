@@ -10,7 +10,7 @@
 	shorthand = "N/A"
 	var/drone_only
 
-/datum/language/binary/broadcast(var/mob/living/speaker,var/message,var/speaker_mask)
+/datum/language/binary/broadcast(mob/living/speaker,message,speaker_mask)
 
 	if(!speaker.binarycheck())
 		return
@@ -21,14 +21,14 @@
 	var/message_start = "<i><span class='game say'>[name], <span class='name'>[speaker.name]</span>"
 	var/message_body = "<span class='message'>[speaker.say_quote(message)], \"[message]\"</span></span></i>"
 
-	for (var/mob/observer/ghost/O in GLOB.ghost_mob_list)
+	for (var/mob/observer/ghost/O in GLOB.ghost_mobs)
 		O.show_message("[message_start] ([ghost_follow_link(speaker, O)]) [message_body]", 2)
 
-	for (var/mob/M in GLOB.dead_mob_list_)
+	for (var/mob/M in GLOB.dead_mobs)
 		if(!istype(M,/mob/new_player) && !istype(M,/mob/living/carbon/brain)) //No meta-evesdropping
 			M.show_message("[message_start] ([ghost_follow_link(speaker, M)]) [message_body]", 2)
 
-	for (var/mob/living/S in GLOB.living_mob_list_)
+	for (var/mob/living/S in GLOB.alive_mobs)
 		if(drone_only && !istype(S,/mob/living/silicon/robot/drone))
 			continue
 		else if(istype(S , /mob/living/silicon/ai))
@@ -77,11 +77,10 @@
 	space_chance = 10
 	shorthand = "EAL"
 
-/datum/language/machine/can_speak_special(var/mob/living/speaker)
+/datum/language/machine/can_speak_special(mob/living/speaker)
 	return speaker.isSynthetic()
 
 /datum/language/machine/get_random_name()
 	if(prob(70))
 		return "[pick(list("PBU","HIU","SINA","ARMA","OSI"))]-[rand(100, 999)]"
 	return pick(GLOB.ai_names)
-

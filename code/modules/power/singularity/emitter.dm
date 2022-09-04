@@ -137,7 +137,7 @@
 	var/skill_modifier = 0.8 * (SKILL_MAX - operator_skill)/(SKILL_MAX - SKILL_MIN) //How much randomness is added
 	efficiency *= 1 + (rand() - 1) * skill_modifier //subtract off between 0.8 and 0, depending on skill and luck.
 
-/obj/machinery/power/emitter/emp_act(var/severity)
+/obj/machinery/power/emitter/emp_act(severity)
 	return
 
 /obj/machinery/power/emitter/Process()
@@ -231,7 +231,7 @@
 						SPAN_NOTICE("You start to weld \the [src] to the floor."),
 						SPAN_ITALIC("You hear welding.")
 					)
-					if (do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
+					if (do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
 						if (!WT.isOn())
 							return
 						state = EMITTER_WELDED
@@ -252,7 +252,7 @@
 						SPAN_NOTICE("You start to cut \the [src] free from the floor."),
 						SPAN_ITALIC("You hear welding.")
 					)
-					if (do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
+					if (do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
 						if (!WT.isOn())
 							return
 						state = EMITTER_WRENCHED
@@ -283,7 +283,7 @@
 	..()
 	return
 
-/obj/machinery/power/emitter/emag_act(var/remaining_charges, var/mob/user)
+/obj/machinery/power/emitter/emag_act(remaining_charges, mob/user)
 	if (!emagged)
 		locked = FALSE
 		emagged = TRUE

@@ -12,10 +12,10 @@ var/global/list/fusion_reactions
 	var/minimum_reaction_temperature = 100
 	var/priority = 100
 
-/decl/fusion_reaction/proc/handle_reaction_special(var/obj/effect/fusion_em_field/holder)
+/decl/fusion_reaction/proc/handle_reaction_special(obj/effect/fusion_em_field/holder)
 	return 0
 
-/proc/get_fusion_reaction(var/p_react, var/s_react, var/m_energy)
+/proc/get_fusion_reaction(p_react, s_react, m_energy)
 	if(!fusion_reactions)
 		fusion_reactions = list()
 		for(var/rtype in typesof(/decl/fusion_reaction) - /decl/fusion_reaction)
@@ -124,7 +124,7 @@ var/global/list/fusion_reactions
 	radiation = 40
 	instability = 20
 
-/decl/fusion_reaction/phoron_supermatter/handle_reaction_special(var/obj/effect/fusion_em_field/holder)
+/decl/fusion_reaction/phoron_supermatter/handle_reaction_special(obj/effect/fusion_em_field/holder)
 
 	wormhole_event(GetConnectedZlevels(holder))
 
@@ -136,7 +136,7 @@ var/global/list/fusion_reactions
 	// Copied from the SM for proof of concept. //Not any more --Cirra //Use the whole z proc --Leshana
 	SSradiation.z_radiate(locate(1, 1, holder.z), radiation_level, 1)
 
-	for(var/mob/living/mob in GLOB.living_mob_list_)
+	for(var/mob/living/mob in GLOB.alive_mobs)
 		var/turf/T = get_turf(mob)
 		if(T && (holder.z == T.z))
 			if(istype(mob, /mob/living/carbon/human))

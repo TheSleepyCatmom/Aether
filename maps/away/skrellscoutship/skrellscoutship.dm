@@ -96,13 +96,14 @@ var/global/const/access_skrellscoutship = "ACCESS_SKRELLSCOUT"
 					SKILL_WEAPONS = SKILL_ADEPT,
 					SKILL_MEDICAL = SKILL_BASIC)
 
-/datum/job/submap/skrellscoutship_crew/equip(var/mob/living/carbon/human/H, var/alt_title, var/datum/mil_branch/branch, var/datum/mil_rank/grade)
+/datum/job/submap/skrellscoutship_crew/equip(mob/living/carbon/human/H, alt_title, datum/mil_branch/branch, datum/mil_rank/grade)
 	. = ..(H, alt_title, branch, grade)	//passing through arguments
-	//Limited to subcastes that make sense on the vessel. No need for ground-forces or R&D on such a ship.
+	//Limited to subcastes that make sense on the vessel. No need for ground-forces on such a ship.
 	var/skrellscoutcastes = list(
 		"Malish-Katish" = list(
 			"Mero'ta-Ketish",
-			"Toglo'i-Ketish"
+			"Toglo'i-Ketish",
+			"Keloa-Ketish"
 		),
 		"Kanin-Katish" = list(
 			"Xiqarr-Ketish",
@@ -148,17 +149,17 @@ var/global/const/access_skrellscoutship = "ACCESS_SKRELLSCOUT"
 
 /obj/item/reagent_containers/food/condiment/psilocybin
 	label_text = "Psilocybin"
-	starting_reagents = list(/datum/reagent/psilocybin = 50)
+	starting_reagents = list(/datum/reagent/drugs/psilocybin = 50)
 
 
 /obj/item/reagent_containers/food/condiment/mindbreaker
 	label_text = "Mindbreaker"
-	starting_reagents = list(/datum/reagent/mindbreaker = 50)
+	starting_reagents = list(/datum/reagent/drugs/mindbreaker = 50)
 
 
-/obj/item/reagent_containers/food/condiment/space_drugs
+/obj/item/reagent_containers/food/condiment/hextro
 	label_text = "Ambrosia"
-	starting_reagents = list(/datum/reagent/space_drugs = 50)
+	starting_reagents = list(/datum/reagent/drugs/hextro = 50)
 
 
 /datum/mil_branch/skrell_fleet

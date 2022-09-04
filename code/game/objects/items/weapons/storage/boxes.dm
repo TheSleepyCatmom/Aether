@@ -439,22 +439,6 @@
 	icon_state = "box"
 	startswith = list(/obj/item/device/flashlight/flare/glowstick = 6)
 
-/obj/item/storage/box/freezer
-	name = "portable freezer"
-	desc = "This nifty shock-resistant device will keep your 'groceries' nice and non-spoiled."
-	icon = 'icons/obj/storage.dmi'
-	icon_state = "portafreezer"
-	item_state = "medicalpack"
-	foldable = null
-	max_w_class = ITEM_SIZE_NORMAL
-	w_class = ITEM_SIZE_LARGE
-	can_hold = list(/obj/item/organ, /obj/item/reagent_containers/food, /obj/item/reagent_containers/glass)
-	max_storage_space = DEFAULT_LARGEBOX_STORAGE
-	use_to_pickup = 1 // for picking up broken bulbs, not that most people will try
-	temperature = -16 CELSIUS
-
-/obj/item/storage/box/freezer/ProcessAtomTemperature()
-	return PROCESS_KILL
 
 /obj/item/storage/box/checkers
 	name = "checkers box"
@@ -606,17 +590,42 @@
 /obj/item/storage/box/snack/chips
 	startswith = list(/obj/item/reagent_containers/food/snacks/chips = 7)
 
-//canned goods in cardboard
-/obj/item/storage/box/canned
+
+/obj/item/storage/box/canned_spinach
 	name = "box of canned food"
 	desc = "A box full of canned foods."
-	startswith = list(/obj/item/reagent_containers/food/snacks/canned/spinach = 1)
+	startswith = list(
+		/obj/item/reagent_containers/food/snacks/canned/spinach = 6
+	)
 
-/obj/item/storage/box/canned/beef
-	startswith = list(/obj/item/reagent_containers/food/snacks/canned/beef = 6)
 
-/obj/item/storage/box/canned/beans
-	startswith = list(/obj/item/reagent_containers/food/snacks/canned/beans = 6)
+/obj/item/storage/box/canned_beef
+	name = "box of canned food"
+	desc = "A box full of canned foods."
+	startswith = list(
+		/obj/item/reagent_containers/food/snacks/canned/beef = 6
+	)
 
-/obj/item/storage/box/canned/tomato
-	startswith = list(/obj/item/reagent_containers/food/snacks/canned/tomato = 6)
+
+/obj/item/storage/box/canned_beans
+	name = "box of canned food"
+	desc = "A box full of canned foods."
+	startswith = list(
+		/obj/item/reagent_containers/food/snacks/canned/beans = 6
+	)
+
+
+/obj/item/storage/box/canned_tomato
+	name = "box of canned food"
+	desc = "A box full of canned foods."
+	startswith = list(
+		/obj/item/reagent_containers/food/snacks/canned/tomato = 6
+	)
+
+
+/obj/item/storage/box/canned_berries
+	name = "box of canned food"
+	desc = "A box full of canned foods."
+	startswith = list(
+		/obj/item/reagent_containers/food/snacks/canned/berries = 6
+	)

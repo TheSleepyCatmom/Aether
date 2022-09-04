@@ -10,7 +10,8 @@
 	construct_state = /decl/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
-	
+	init_flags = EMPTY_BITFIELD
+
 	machine_name = "hydroponics tray"
 	machine_desc = "These are waist-high trays that can grow a vast variety of plants in a nutrient bath. Also comes with a sealable lid for plants that don't grow in a surrounding atmosphere. A cornerstone of self-sufficient spaceships across the galaxy."
 
@@ -61,7 +62,7 @@
 		/datum/reagent/toxin/plantbgone =  3,
 		/datum/reagent/cryoxadone =       -3,
 		/datum/reagent/radium =            2,
-		/datum/reagent/three_eye =         2
+		/datum/reagent/drugs/three_eye =         2
 		)
 	var/static/list/nutrient_reagents = list(
 		/datum/reagent/drink/milk =                     0.1,
@@ -123,7 +124,7 @@
 		/datum/reagent/adminordrazine =                  list(  1,    1,   1  ),
 		/datum/reagent/toxin/fertilizer/robustharvest =  list(  0,    0.2, 0  ),
 		/datum/reagent/toxin/fertilizer/left4zed =       list(  0,    0,   0.2),
-		/datum/reagent/three_eye =                       list(  -1  , 0,   0.5)
+		/datum/reagent/drugs/three_eye =                       list(  -1  , 0,   0.5)
 		)
 
 	// Mutagen list specifies minimum value for the mutation to take place, rather
@@ -139,7 +140,7 @@
 		return 1
 	return ..()
 
-/obj/machinery/portable_atmospherics/hydroponics/attack_ghost(var/mob/observer/ghost/user)
+/obj/machinery/portable_atmospherics/hydroponics/attack_ghost(mob/observer/ghost/user)
 	if(!(harvest && seed && seed.has_mob_product))
 		return
 
@@ -161,20 +162,19 @@
 	if(mechanical)
 		connect()
 	update_icon()
-	STOP_PROCESSING_MACHINE(src, MACHINERY_PROCESS_ALL)
-	START_PROCESSING(SSplants, src)
+	SSplants.active_plants += src
 	return INITIALIZE_HINT_LATELOAD
 
 /obj/machinery/portable_atmospherics/hydroponics/Destroy()
-	STOP_PROCESSING(SSplants, src)
-	. = ..()
+	SSplants.active_plants -= src
+	return ..()
 
 /obj/machinery/portable_atmospherics/hydroponics/LateInitialize()
-	. = ..()
+	..()
 	if(locate(/obj/item/seeds) in get_turf(src))
 		plant()
 
-/obj/machinery/portable_atmospherics/hydroponics/bullet_act(var/obj/item/projectile/Proj)
+/obj/machinery/portable_atmospherics/hydroponics/bullet_act(obj/item/projectile/Proj)
 
 	//Don't act on seeds like dionaea that shouldn't change.
 	if(seed && seed.get_trait(TRAIT_IMMUTABLE) > 0)
@@ -203,7 +203,7 @@
 	else
 		return !density
 
-/obj/machinery/portable_atmospherics/hydroponics/proc/check_health(var/icon_update = 1)
+/obj/machinery/portable_atmospherics/hydroponics/proc/check_health(icon_update = 1)
 	if(seed && !dead && health <= 0)
 		die()
 	check_level_sanity()
@@ -269,7 +269,7 @@
 	check_health()
 
 //Harvests the product of a plant.
-/obj/machinery/portable_atmospherics/hydroponics/proc/harvest(var/mob/user)
+/obj/machinery/portable_atmospherics/hydroponics/proc/harvest(mob/user)
 
 	//Harvest the product of the plant,
 	if(!seed || !harvest)
@@ -298,7 +298,7 @@
 	check_health()
 
 //Clears out a dead plant.
-/obj/machinery/portable_atmospherics/hydroponics/proc/remove_dead(var/mob/user, var/silent)
+/obj/machinery/portable_atmospherics/hydroponics/proc/remove_dead(mob/user, silent)
 	if(!dead)
 		return
 
@@ -341,7 +341,7 @@
 
 	return
 
-/obj/machinery/portable_atmospherics/hydroponics/proc/mutate(var/severity)
+/obj/machinery/portable_atmospherics/hydroponics/proc/mutate(severity)
 
 	// No seed, no mutations.
 	if(!seed)
@@ -412,7 +412,7 @@
 
 	return
 
-/obj/machinery/portable_atmospherics/hydroponics/attackby(var/obj/item/O, var/mob/user)
+/obj/machinery/portable_atmospherics/hydroponics/attackby(obj/item/O, mob/user)
 
 	if (O.is_open_container())
 		return 0
@@ -525,7 +525,7 @@
 	else if(mechanical)
 		return component_attackby(O, user)
 
-/obj/machinery/portable_atmospherics/hydroponics/proc/plant_seed(var/mob/user, var/obj/item/seeds/S)
+/obj/machinery/portable_atmospherics/hydroponics/proc/plant_seed(mob/user, obj/item/seeds/S)
 
 	if(seed)
 		to_chat(user, "<span class='warning'>\The [src] already has seeds in it!</span>")
@@ -620,7 +620,7 @@
 		close_lid(usr)
 	return
 
-/obj/machinery/portable_atmospherics/hydroponics/proc/close_lid(var/mob/living/user)
+/obj/machinery/portable_atmospherics/hydroponics/proc/close_lid(mob/living/user)
 	closed_system = !closed_system
 	to_chat(user, "You [closed_system ? "close" : "open"] the tray's lid.")
 	update_icon()
@@ -637,10 +637,9 @@
 	qdel(S)
 	check_health()
 
-/obj/machinery/portable_atmospherics/hydroponics/do_simple_ranged_interaction(var/mob/user)
+/obj/machinery/portable_atmospherics/hydroponics/do_simple_ranged_interaction(mob/user)
 	if(dead)
 		remove_dead()
 	else if(harvest)
 		harvest()
 	return TRUE
-

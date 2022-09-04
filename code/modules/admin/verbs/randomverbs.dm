@@ -116,7 +116,7 @@
 		log_and_message_staff(" - GlobalNarrate [region] [result[2]]/[result[3]]: [result[4]]")
 
 
-/proc/cmd_admin_narrate_helper(var/user, var/style, var/size, var/message)
+/proc/cmd_admin_narrate_helper(user, style, size, message)
 	if (!style)
 		style = input("Pick a text style:", "Text Style") as null|anything in list(
 			"default",
@@ -204,7 +204,7 @@
 
 
 // Targetted narrate: will narrate to one specific mob
-/client/proc/cmd_admin_direct_narrate(var/mob/M)
+/client/proc/cmd_admin_direct_narrate(mob/M)
 	set popup_menu = FALSE
 	set category = null
 	set name = "Direct Narrate"
@@ -248,7 +248,7 @@
 	log_and_message_staff(" - LocalNarrate [result[2]]/[result[3]]: [result[4]]")
 
 // Visible narrate, it's as if it's a visible message
-/client/proc/cmd_admin_visible_narrate(var/atom/A)
+/client/proc/cmd_admin_visible_narrate(atom/A)
 	set popup_menu = FALSE
 	set category = null
 	set name = "Visible Narrate"
@@ -271,7 +271,7 @@
 	log_and_message_staff(" - VisibleNarrate [result[2]]/[result[3]] on [A]: [result[4]]")
 
 // Visible narrate, it's as if it's a audible message
-/client/proc/cmd_admin_audible_narrate(var/atom/A)
+/client/proc/cmd_admin_audible_narrate(atom/A)
 	set popup_menu = FALSE
 	set category = null
 	set name = "Audible Narrate"
@@ -375,7 +375,7 @@ Allow admins to set players to be able to respawn/bypass 30 min wait, without th
 Ccomp's first proc.
 */
 
-/client/proc/get_ghosts(var/notify = 0,var/what = 2)
+/client/proc/get_ghosts(notify = 0,what = 2)
 	// what = 1, return ghosts ass list.
 	// what = 2, return mob list
 
@@ -405,7 +405,7 @@ Ccomp's first proc.
 		.[M.ckey] = M
 	. = sortAssoc(.)
 
-/client/proc/allow_character_respawn(var/selection in get_ghosts_by_key())
+/client/proc/allow_character_respawn(selection in get_ghosts_by_key())
 	set category = "Special Verbs"
 	set name = "Allow player to respawn"
 	set desc = "Allows the player bypass the wait to respawn or allow them to re-enter their corpse."
@@ -435,6 +435,72 @@ Ccomp's first proc.
 
 	G.show_message("<span class=notice><b>You may now respawn.  You should roleplay as if you learned nothing about the round during your time with the dead.</b></span>", 1)
 	log_and_message_admins("has allowed [key_name(G)] to bypass the [config.respawn_delay] minute respawn limit.")
+
+
+/client/proc/allow_respawn()
+	set category = "Special Verbs"
+	set name = "Allow Respawn"
+	set desc = "Allows a ghost or lobby player to bypass respawn timers."
+	if(!check_rights(R_ADMIN))
+		return
+	var/time = world.time
+	var/list/candidates = list()
+	for (var/client/candidate as anything in GLOB.clients)
+		if (candidate.holder)
+			continue
+		if (!candidate.mob)
+			continue
+		if (candidate.mob.type == /mob/new_player)
+			if (config.respawn_menu_delay)
+				var/mob/new_player/subject = candidate.mob
+				if (!subject.respawned_time)
+					continue
+				if (subject.respawned_time + config.respawn_menu_delay < time)
+					continue
+			candidates["[candidate.ckey] (Lobby)"] = list(candidate, 1)
+		else if (candidate.mob.type == /mob/observer/ghost)
+			candidates["[candidate.ckey] (Ghost)"] = list(candidate, 2)
+	if (!length(candidates))
+		to_chat(usr, SPAN_WARNING("There are no users eligible to be respawned."))
+		return
+	var/response = input(usr, null, "Allow Respawn") in null | candidates
+	if (!response)
+		return
+	response = candidates[response]
+	if (!response)
+		return
+	var/client/selected = response[1]
+	var/state = response[2]
+	if (state == 2)
+		if (selected.mob.type == /mob/observer/ghost)
+			var/mob/observer/ghost/subject = selected.mob
+			if (subject.has_enabled_antagHUD == 1 && config.antag_hud_restricted)
+				var/confirm = alert(src, "[subject.ckey] has enabled antag HUD. Are you sure?", "Confirm Respawn", "Yes", "No")
+				if (confirm != "Yes")
+					return
+				if (selected.mob.type != /mob/observer/ghost)
+					if (selected.mob.type == /mob/new_player)
+						state = 1
+					else
+						to_chat(usr, SPAN_WARNING("Something went wrong. [selected.ckey] re-entered their body or disconnected."))
+						return
+			if (state == 2)
+				subject.timeofdeath = -1e5
+				subject.has_enabled_antagHUD = 2
+				subject.can_reenter_corpse = CORPSE_CAN_REENTER_AND_RESPAWN
+				state = 3
+		else if (selected.mob.type == /mob/new_player)
+			state = 1
+	if (state == 1 && selected.mob.type == /mob/new_player)
+		var/mob/new_player/subject = selected.mob
+		subject.respawned_time = -1e5
+		state = 3
+	if (state == 3)
+		log_and_message_admins("has allowed [key_name(selected)] to bypass respawn timers.")
+		to_chat(selected, SPAN_NOTICE("You have been allowed to bypass respawn timers."))
+	else
+		to_chat(usr, SPAN_WARNING("Something went wrong. [selected.ckey] re-entered their body or disconnected."))
+
 
 /client/proc/toggle_antagHUD_use()
 	set category = "Server"
@@ -873,3 +939,102 @@ Ccomp's first proc.
 			mob.AdjustStunned(2)
 			++floored
 	log_and_message_admins("[key_name_admin(user)] simulated a distant explosion, affecting [affected] players and flooring [floored] on levels [levels.Join(", ")].")
+
+
+/client/proc/bombard_zlevel()
+	set category = "Fun"
+	set name = "Bombard Z-Level"
+	set desc = "Bombard a z-level with randomly placed explosions."
+	set waitfor = FALSE
+
+	var/zlevel = input("What z-level?", "Z-Level", get_z(usr)) as num|null
+	if (!isnum(zlevel))
+		return
+
+	var/connected = alert("Bomb connected z-levels?", "Connected Zs", "Yes", "No", "Cancel")
+	if (connected == "Cancel")
+		return
+
+	var/delay = input("How much delay between explosions? (In seconds)", "Delay") as num|null
+	if (!delay)
+		return
+
+	var/booms = input("How many explosions to create?", "Number of Booms") as num|null
+	if (!booms)
+		return
+
+	var/break_turfs = alert("Turf breaker explosions?", "Break Turfs?", "Yes", "No", "Cancel")
+	if (break_turfs == "Cancel")
+		return
+
+	if (break_turfs == "Yes")
+		break_turfs = TRUE
+	else
+		break_turfs = FALSE
+
+	var/range
+	var/high_intensity
+	var/low_intensity
+	while(booms > 0)
+		range = rand(0, 2)
+		high_intensity = rand(5,8)
+		low_intensity = rand(7,10)
+		var/turf/T
+		if (connected == "Yes")
+			T = pick_area_turf_in_connected_z_levels(list(/proc/is_not_space_area), z_level = zlevel)
+		else
+			T = pick_area_turf_in_single_z_level(list(/proc/is_not_space_area), z_level = zlevel)
+		explosion(T, range, high_intensity, low_intensity, turf_breaker = break_turfs)
+		booms = booms - 1
+		sleep(delay SECONDS)
+
+/client/proc/rename_shuttle()
+	set category = "Fun"
+	set name = "Rename Ship"
+	set desc = "Rename a ship (Does not rename areas on the ship)"
+
+	var/obj/effect/overmap/visitable/ship/ship = input("What ship?", "Rename Ship") as null | anything in SSshuttle.ships
+	if (!ship)
+		return
+
+	var/original_name = ship.name
+
+	var/name = input("What do you want to name it?", "New Name") as text | null
+	if (!name)
+		return
+
+	ship.name = name
+
+	for (var/S in SSshuttle.shuttles)
+		if (S == original_name)
+			var/datum/shuttle/shuttle = SSshuttle.shuttles[S]
+			SSshuttle.shuttles[name] = shuttle
+			SSshuttle.shuttles -= original_name
+			shuttle.name = name
+			break
+
+	for (var/obj/effect/shuttle_landmark/ship/S in landmarks_list)
+		if (S.name == original_name)
+			S.shuttle_name = name
+		if (istype(S, /obj/effect/overmap/visitable/ship/landable))
+			var/obj/effect/overmap/visitable/ship/landable/SL = S
+			SL.landmark.landmark_tag = "ship_[name]"
+			SL.landmark.shuttle_name = name
+	//rename waypoints based on the origin ship name
+	for (var/obj/effect/overmap/visitable/ship/S in SSshuttle.ships)
+		for (var/key in S.restricted_waypoints)
+			if (key == original_name)
+				S.add_landmark(S.restricted_waypoints[key][1], name)
+				S.remove_landmark(S.restricted_waypoints[key][1], original_name)
+				if (istype(S, /obj/effect/overmap/visitable/ship/landable))
+					var/obj/effect/overmap/visitable/ship/landable/SL = S
+					SL.landmark.landmark_tag = "ship_[name]"
+					SL.landmark.shuttle_name = name
+					SL.shuttle = name
+
+	for (var/obj/machinery/computer/shuttle_control/S in SSmachines.machinery)
+		if (S.shuttle_tag == original_name)
+			S.shuttle_tag = name
+			S.name = "[name] Control Console"
+
+	log_and_message_admins("renamed \the [original_name] ship to [name].", )

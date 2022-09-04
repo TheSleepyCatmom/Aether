@@ -22,7 +22,7 @@ LINEN BINS
 /obj/item/bedsheet/attackby(obj/item/I, mob/user)
 	if(is_sharp(I))
 		user.visible_message("<span class='notice'>\The [user] begins cutting up \the [src] with \a [I].</span>", "<span class='notice'>You begin cutting up \the [src] with \the [I].</span>")
-		if(do_after(user, 5 SECONDS, src, DO_PUBLIC_UNIQUE))
+		if(do_after(user, 5 SECONDS, src, DO_REPAIR_CONSTRUCT))
 			to_chat(user, "<span class='notice'>You cut \the [src] into pieces!</span>")
 			for(var/i in 1 to rand(2,5))
 				new /obj/item/reagent_containers/glass/rag(get_turf(src))
@@ -138,14 +138,14 @@ LINEN BINS
 		hidden = I
 		to_chat(user, "<span class='notice'>You hide [I] among the sheets.</span>")
 
-/obj/structure/bedsheetbin/attack_hand(var/mob/user)
+/obj/structure/bedsheetbin/attack_hand(mob/user)
 	var/obj/item/bedsheet/B = remove_sheet()
 	if(B)
 		user.put_in_hands(B)
 		to_chat(user, SPAN_NOTICE("You take \a [B] out of \the [src]."))
 		add_fingerprint(user)
 
-/obj/structure/bedsheetbin/do_simple_ranged_interaction(var/mob/user)
+/obj/structure/bedsheetbin/do_simple_ranged_interaction(mob/user)
 	remove_sheet()
 	return TRUE
 

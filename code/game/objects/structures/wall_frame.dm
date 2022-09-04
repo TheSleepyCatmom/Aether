@@ -22,7 +22,7 @@
 	noblend_objects = list(/obj/machinery/door/window)
 	material = DEFAULT_WALL_MATERIAL
 
-/obj/structure/wall_frame/New(var/new_loc, var/materialtype)
+/obj/structure/wall_frame/New(new_loc, materialtype)
 	..(new_loc)
 
 	if (!materialtype)
@@ -51,7 +51,7 @@
 	if(paint_color)
 		to_chat(user, "<span class='notice'>It has a smooth coat of paint applied.</span>")
 
-/obj/structure/wall_frame/attackby(var/obj/item/W, var/mob/user)
+/obj/structure/wall_frame/attackby(obj/item/W, mob/user)
 	src.add_fingerprint(user)
 
 	if (user.a_intent == I_HURT)
@@ -85,7 +85,7 @@
 				return
 		playsound(src.loc, 'sound/items/Ratchet.ogg', 100, 1)
 		to_chat(user, "<span class='notice'>Now disassembling the low wall...</span>")
-		if(do_after(user, 4 SECONDS, src, DO_PUBLIC_UNIQUE))
+		if(do_after(user, 4 SECONDS, src, DO_REPAIR_CONSTRUCT))
 			to_chat(user, "<span class='notice'>You dissasembled the low wall!</span>")
 			dismantle()
 		return
@@ -150,7 +150,7 @@
 			paint_color = adjust_brightness(paint_color, bleach_factor)
 		update_icon()
 
-/obj/structure/wall_frame/hitby(AM as mob|obj, var/datum/thrownthing/TT)
+/obj/structure/wall_frame/hitby(AM as mob|obj, datum/thrownthing/TT)
 	..()
 	var/tforce = 0
 	if(ismob(AM)) // All mobs have a multiplier and a size according to mob_defines.dm
@@ -173,7 +173,7 @@
 /obj/structure/wall_frame/get_color()
 	return paint_color
 
-/obj/structure/wall_frame/set_color(var/color)
+/obj/structure/wall_frame/set_color(color)
 	paint_color = color
 	update_icon()
 

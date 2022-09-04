@@ -5,7 +5,7 @@ Single Use Emergency Pouches
 /obj/item/storage/med_pouch
 	name = "emergency medical pouch"
 	desc = "For use in emergency situations only."
-	icon = 'icons/obj/med_pouch.dmi'
+	icon = 'icons/obj/medical.dmi'
 	storage_slots = 7
 	w_class = ITEM_SIZE_SMALL
 	max_w_class = ITEM_SIZE_SMALL
@@ -51,7 +51,7 @@ Single Use Emergency Pouches
 /obj/item/storage/med_pouch/CanUseTopic()
 	return STATUS_INTERACTIVE
 
-/obj/item/storage/med_pouch/OnTopic(var/user, var/list/href_list)
+/obj/item/storage/med_pouch/OnTopic(user, list/href_list)
 	if(href_list["show_info"])
 		to_chat(user, instructions)
 		return TOPIC_HANDLED

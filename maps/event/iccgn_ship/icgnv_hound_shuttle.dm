@@ -3,6 +3,7 @@
 	warmup_time = 5
 	shuttle_area = list(/area/map_template/icgnv_hound)
 	current_location = "nav_icgnv_hound_start"
+	dock_target = "icgnv_hound_shuttle"
 	range = 1
 	fuel_consumption = 0
 	ceiling_type = /turf/simulated/floor/shuttle_ceiling
@@ -32,9 +33,10 @@
 /obj/effect/shuttle_landmark/icgnv_hound/nav4
 	landmark_tag = "nav_icgnv_hound_4"
 
-/obj/effect/shuttle_landmark/icgnv_hound/dock //gotta actually make a proper docking point at the torch i think
+/obj/effect/shuttle_landmark/icgnv_hound/dock
 	name = "4th Deck, Fore Airlock"
 	landmark_tag = "nav_icgnv_hound_dock"
+	docking_controller = "admin_shuttle_dock_airlock"
 
 /obj/effect/shuttle_landmark/transit/iccgn
 	name = "In transit"
@@ -50,3 +52,29 @@
 /obj/machinery/power/apc/debug/iccgn
 	cell_type = /obj/item/cell/infinite
 	req_access = list(access_syndicate)
+
+/obj/machinery/telecomms/allinone/iccgn
+	listening_freqs = list(ICCGN_FREQ)
+	channel_color = COMMS_COLOR_ICCG
+	channel_name = "ICGNV Hound"
+	circuitboard = /obj/item/stock_parts/circuitboard/telecomms/allinone/iccgn
+
+
+//Items
+/obj/item/device/radio/headset/iccgn
+	name = "iccgn headset"
+	desc = "Headset belonging to an ICCGN operative."
+	icon_state = "syndie_headset"
+	item_state = "headset"
+	ks1type = /obj/item/device/encryptionkey/iccgn
+
+/obj/item/device/radio/headset/iccgn/Initialize()
+	. = ..()
+	set_frequency(ICCGN_FREQ)
+
+/obj/item/device/encryptionkey/iccgn
+	name = "\improper ICCGN radio encryption key"
+	channels = list("ICGNV Hound" = 1)
+
+/obj/item/stock_parts/circuitboard/telecomms/allinone/iccgn
+	build_path = /obj/machinery/telecomms/allinone/iccgn

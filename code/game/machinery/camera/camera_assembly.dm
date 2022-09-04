@@ -152,7 +152,7 @@
 	if(!anchored)
 		..()
 
-/obj/item/camera_assembly/proc/weld(var/obj/item/weldingtool/WT, var/mob/user)
+/obj/item/camera_assembly/proc/weld(obj/item/weldingtool/WT, mob/user)
 
 	if(busy)
 		return 0
@@ -161,7 +161,7 @@
 		to_chat(user, "<span class='notice'>You start to weld \the [src]..</span>")
 		playsound(src.loc, 'sound/items/Welder.ogg', 50, 1)
 		busy = 1
-		if(do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE) && WT.isOn())
+		if(do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT) && WT.isOn())
 			playsound(src.loc, 'sound/items/Welder.ogg', 50, 1)
 			busy = 0
 			return 1

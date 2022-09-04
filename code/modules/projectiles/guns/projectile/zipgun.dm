@@ -25,7 +25,7 @@
 		/obj/item/ammo_casing/rifle
 		)
 
-/obj/item/gun/projectile/pirate/toggle_safety(var/mob/user)
+/obj/item/gun/projectile/pirate/toggle_safety(mob/user)
 	to_chat(user, "<span class='warning'>There's no safety on \the [src]!</span>")
 
 /obj/item/gun/projectile/pirate/Initialize()
@@ -36,3 +36,10 @@
 
 /obj/item/gun/projectile/pirate/unloaded
 	starts_loaded = FALSE
+
+/obj/item/gun/projectile/pirate/on_update_icon()
+	..()
+	if(length(loaded))
+		icon_state = initial(icon_state)
+	else
+		icon_state = "[initial(icon_state)]-empty"

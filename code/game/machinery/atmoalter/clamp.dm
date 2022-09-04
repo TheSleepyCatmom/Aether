@@ -13,7 +13,7 @@
 	var/datum/pipe_network/network_node1
 	var/datum/pipe_network/network_node2
 
-/obj/machinery/clamp/New(loc, var/obj/machinery/atmospherics/pipe/simple/to_attach = null)
+/obj/machinery/clamp/New(loc, obj/machinery/atmospherics/pipe/simple/to_attach = null)
 	..()
 	if(istype(to_attach))
 		target = to_attach
@@ -38,7 +38,7 @@
 			var/datum/pipeline/P2 = node2.parent
 			network_node2 = P2.network
 
-/obj/machinery/clamp/physical_attack_hand(var/mob/user)
+/obj/machinery/clamp/physical_attack_hand(mob/user)
 	if(!target)
 		return FALSE
 	if(!open)
@@ -124,7 +124,7 @@
 
 	if(open && over_object == usr && Adjacent(usr))
 		to_chat(usr, "<span class='notice'>You begin to remove \the [src]...</span>")
-		if (do_after(usr, 3 SECONDS, over_object, DO_PUBLIC_UNIQUE))
+		if (do_after(usr, 3 SECONDS, over_object, DO_REPAIR_CONSTRUCT))
 			to_chat(usr, "<span class='notice'>You have removed \the [src].</span>")
 			var/obj/item/clamp/C = new/obj/item/clamp(src.loc)
 			C.forceMove(usr.loc)
@@ -148,7 +148,7 @@
 	icon_state = "pclamp0"
 	origin_tech = list(TECH_ENGINEERING = 4, TECH_MAGNET = 4)
 
-/obj/item/clamp/afterattack(var/atom/A, mob/user as mob, proximity)
+/obj/item/clamp/afterattack(atom/A, mob/user as mob, proximity)
 	if(!proximity)
 		return
 
@@ -159,7 +159,7 @@
 			return
 
 		to_chat(user, "<span class='notice'>You begin to attach \the [src] to \the [A]...</span>")
-		if (do_after(user, 3 SECONDS, A, DO_PUBLIC_UNIQUE))
+		if (do_after(user, 3 SECONDS, A, DO_REPAIR_CONSTRUCT))
 			if (QDELETED(P))
 				return
 			if (P.clamp)

@@ -12,7 +12,7 @@ var/global/list/empty_playable_ai_cores = list()
 	var/obj/item/device/mmi/brain = null
 	var/authorized
 
-/obj/structure/AIcore/emag_act(var/remaining_charges, var/mob/user, var/emag_source)
+/obj/structure/AIcore/emag_act(remaining_charges, mob/user, emag_source)
 	if(!authorized)
 		to_chat(user, "<span class='warning'>You swipe [emag_source] at [src] and jury rig it into the systems of [GLOB.using_map.full_name]!</span>")
 		authorized = 1
@@ -28,7 +28,7 @@ var/global/list/empty_playable_ai_cores = list()
 		if(0)
 			if(isWrench(P))
 				playsound(loc, 'sound/items/Ratchet.ogg', 50, 1)
-				if(do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
+				if(do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
 					to_chat(user, "<span class='notice'>You wrench the frame into place.</span>")
 					anchored = TRUE
 					state = 1
@@ -38,7 +38,7 @@ var/global/list/empty_playable_ai_cores = list()
 					to_chat(user, "The welder must be on for this task.")
 					return
 				playsound(loc, 'sound/items/Welder.ogg', 50, 1)
-				if(do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
+				if(do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
 					if(!src || !WT.remove_fuel(0, user)) return
 					to_chat(user, "<span class='notice'>You deconstruct the frame.</span>")
 					new /obj/item/stack/material/plasteel( loc, 4)
@@ -47,7 +47,7 @@ var/global/list/empty_playable_ai_cores = list()
 		if(1)
 			if(isWrench(P))
 				playsound(loc, 'sound/items/Ratchet.ogg', 50, 1)
-				if(do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
+				if(do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
 					to_chat(user, "<span class='notice'>You unfasten the frame.</span>")
 					anchored = FALSE
 					state = 0
@@ -81,7 +81,7 @@ var/global/list/empty_playable_ai_cores = list()
 					return
 				to_chat(user, "<span class='notice'>You start to add cables to the frame.</span>")
 				playsound(loc, 'sound/items/Deconstruct.ogg', 50, 1)
-				if (do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE) && state == 2)
+				if (do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT) && state == 2)
 					if (C.use(5))
 						state = 3
 						icon_state = "3"
@@ -107,7 +107,7 @@ var/global/list/empty_playable_ai_cores = list()
 						return
 					to_chat(user, "<span class='notice'>You start to put in the glass panel.</span>")
 					playsound(loc, 'sound/items/Deconstruct.ogg', 50, 1)
-					if (do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE) && state == 3)
+					if (do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT) && state == 3)
 						if(RG.use(2))
 							to_chat(user, "<span class='notice'>You put in the glass panel.</span>")
 							state = 4
@@ -211,7 +211,7 @@ var/global/list/empty_playable_ai_cores = list()
 	empty_playable_ai_cores -= src
 	. = ..()
 
-/obj/structure/AIcore/deactivated/proc/load_ai(var/mob/living/silicon/ai/transfer, var/obj/item/aicard/card, var/mob/user)
+/obj/structure/AIcore/deactivated/proc/load_ai(mob/living/silicon/ai/transfer, obj/item/aicard/card, mob/user)
 
 	if(!istype(transfer) || locate(/mob/living/silicon/ai) in src)
 		return
@@ -230,13 +230,13 @@ var/global/list/empty_playable_ai_cores = list()
 
 	qdel(src)
 
-/obj/structure/AIcore/deactivated/proc/check_malf(var/mob/living/silicon/ai/ai)
+/obj/structure/AIcore/deactivated/proc/check_malf(mob/living/silicon/ai/ai)
 	if(!ai) return
 	for (var/datum/mind/malfai in GLOB.malf.current_antagonists)
 		if (ai.mind == malfai)
 			return 1
 
-/obj/structure/AIcore/deactivated/attackby(var/obj/item/W, var/mob/user)
+/obj/structure/AIcore/deactivated/attackby(obj/item/W, mob/user)
 
 	if(istype(W, /obj/item/aicard))
 		var/obj/item/aicard/card = W
@@ -249,7 +249,7 @@ var/global/list/empty_playable_ai_cores = list()
 	else if(istype(W, /obj/item/wrench))
 		if(anchored)
 			user.visible_message("<span class='notice'>\The [user] starts to unbolt \the [src] from the plating...</span>")
-			if(!do_after(user, 4 SECONDS, src, DO_PUBLIC_UNIQUE))
+			if(!do_after(user, 4 SECONDS, src, DO_REPAIR_CONSTRUCT))
 				user.visible_message("<span class='notice'>\The [user] decides not to unbolt \the [src].</span>")
 				return
 			user.visible_message("<span class='notice'>\The [user] finishes unfastening \the [src]!</span>")
@@ -257,7 +257,7 @@ var/global/list/empty_playable_ai_cores = list()
 			return
 		else
 			user.visible_message("<span class='notice'>\The [user] starts to bolt \the [src] to the plating...</span>")
-			if(!do_after(user, 4 SECONDS, src, DO_PUBLIC_UNIQUE))
+			if(!do_after(user, 4 SECONDS, src, DO_REPAIR_CONSTRUCT))
 				user.visible_message("<span class='notice'>\The [user] decides not to bolt \the [src].</span>")
 				return
 			user.visible_message("<span class='notice'>\The [user] finishes fastening down \the [src]!</span>")

@@ -11,19 +11,32 @@ var/global/list/ticket_panels = list()
 	var/opened_time
 	var/timeout = FALSE
 
-/datum/ticket/New(var/datum/client_lite/owner)
+/datum/ticket/New(datum/client_lite/owner)
 	src.owner = owner
 	tickets |= src
 	id = tickets.len
 	opened_time = world.time
-	addtimer(CALLBACK(src, .proc/timeoutcheck), 5 MINUTES)
+	addtimer(CALLBACK(src, .proc/timeoutcheck), 5 MINUTES, TIMER_STOPPABLE)
 
 /datum/ticket/proc/timeoutcheck()
 	if(status == TICKET_OPEN)
+		message_staff(SPAN_DANGER("[owner.key_name(0)] has not received a reply to their initial ahelp after 5 minutes!"))
+		addtimer(CALLBACK(src, .proc/timeoutchecklast), 5 MINUTES, TIMER_STOPPABLE)
+
+
+/datum/ticket/proc/timeoutchecklast()
+	if (status == TICKET_OPEN)
+		message_staff(SPAN_DANGER("[owner.key_name(0)]'s ticket has timed out after 10 minutes with no staff response!"))
 		timeout = TRUE
 		close()
 
-/datum/ticket/proc/close(var/datum/client_lite/closed_by)
+/datum/ticket/proc/timeoutchecktaken()
+	if (status == TICKET_ASSIGNED)
+		for (var/datum/client_lite/C in assigned_admins)
+			to_chat(client_by_ckey(C.ckey), SPAN_NOTICE(SPAN_BOLD("Your ticket with [client_by_ckey(owner.ckey)] has timed out and auto-closed.")))
+		close(assigned_admins[1])
+
+/datum/ticket/proc/close(datum/client_lite/closed_by)
 	if(status == TICKET_CLOSED)
 		return
 
@@ -47,9 +60,12 @@ var/global/list/ticket_panels = list()
 
 	update_ticket_panels()
 
+	for (var/datum/timedevent/T as anything in active_timers)
+		deltimer(T.id)
+
 	return 1
 
-/datum/ticket/proc/take(var/datum/client_lite/assigned_admin)
+/datum/ticket/proc/take(datum/client_lite/assigned_admin)
 	if(status == TICKET_CLOSED)
 		return
 
@@ -67,6 +83,7 @@ var/global/list/ticket_panels = list()
 	to_chat(client_by_ckey(src.owner.ckey), "<span class='notice'><b>[assigned_admin.key] has added themself to your ticket and should respond shortly. Thanks for your patience!</b></span>")
 
 	update_ticket_panels()
+	addtimer(CALLBACK(src, .proc/timeoutchecktaken), 30 MINUTES, TIMER_STOPPABLE)
 
 	return 1
 
@@ -82,7 +99,7 @@ var/global/list/ticket_panels = list()
 	for(var/datum/client_lite/assigned_admin in assigned_admins)
 		. |= assigned_admin.key
 
-/proc/get_open_ticket_by_client(var/datum/client_lite/owner)
+/proc/get_open_ticket_by_client(datum/client_lite/owner)
 	for(var/datum/ticket/ticket in tickets)
 		if(ticket.owner.ckey == owner.ckey && (ticket.status == TICKET_OPEN || ticket.status == TICKET_ASSIGNED))
 			return ticket // there should only be one open ticket by a client at a time, so no need to keep looking
@@ -96,6 +113,7 @@ var/global/list/ticket_panels = list()
 		if(admin_client && !admin_client.is_afk())
 			return 1
 
+
 	return 0
 
 /datum/ticket_msg
@@ -104,7 +122,7 @@ var/global/list/ticket_panels = list()
 	var/msg
 	var/time_stamp
 
-/datum/ticket_msg/New(var/msg_from, var/msg_to, var/msg)
+/datum/ticket_msg/New(msg_from, msg_to, msg)
 	src.msg_from = msg_from
 	src.msg_to = msg_to
 	src.msg = msg

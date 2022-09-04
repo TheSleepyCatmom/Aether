@@ -36,7 +36,7 @@
 /obj/item/clothing/mask/gas/filters_water()
 	return (filter_water && !clogged)
 
-/obj/item/clothing/mask/gas/attack_self(var/mob/user)
+/obj/item/clothing/mask/gas/attack_self(mob/user)
 	if(clogged)
 		user.visible_message("<span class='notice'>\The [user] begins unclogging the intakes of \the [src].</span>")
 		if(do_after(user, 10 SECONDS, src, DO_PUBLIC_UNIQUE) && clogged)
@@ -201,7 +201,7 @@
 	item_state = "respirator"
 	flags_inv = 0
 	body_parts_covered = 0
-	species_restricted = list(SPECIES_VOX, SPECIES_VOX_ARMALIS)
+	species_restricted = list(SPECIES_VOX)
 	filtered_gases = list(GAS_OXYGEN)
 
 
@@ -211,7 +211,7 @@
 	icon_state = "voxswat"
 	item_state = "voxswat"
 	body_parts_covered = EYES
-	species_restricted = list(SPECIES_VOX, SPECIES_VOX_ARMALIS)
+	species_restricted = list(SPECIES_VOX)
 	filtered_gases = list(
 		GAS_OXYGEN,
 		GAS_PHORON,

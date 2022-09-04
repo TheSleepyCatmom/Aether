@@ -67,11 +67,11 @@ var/global/list/meteors_cataclysm = list(\
 //Meteor spawning global procs
 ///////////////////////////////
 
-/proc/spawn_meteors(var/number = 10, var/list/meteortypes, var/startSide, var/zlevel)
+/proc/spawn_meteors(number = 10, list/meteortypes, startSide, zlevel)
 	for(var/i = 0; i < number; i++)
 		spawn_meteor(meteortypes, startSide, zlevel)
 
-/proc/spawn_meteor(var/list/meteortypes, var/startSide, var/zlevel)
+/proc/spawn_meteor(list/meteortypes, startSide, zlevel)
 	var/turf/pickedstart = spaceDebrisStartLoc(startSide, zlevel)
 	var/turf/pickedgoal = spaceDebrisFinishLoc(startSide, zlevel)
 
@@ -183,7 +183,7 @@ var/global/list/meteors_cataclysm = list(\
 /obj/effect/meteor/CanPass(atom/movable/mover, turf/target, height=0, air_group=0)
 	return istype(mover, /obj/effect/meteor) ? 1 : ..()
 
-/obj/effect/meteor/proc/ram_turf(var/turf/T)
+/obj/effect/meteor/proc/ram_turf(turf/T)
 	//first bust whatever is in the turf
 	for(var/atom/A in T)
 		if(A != src && !A.CanPass(src, src.loc, 0.5, 0)) //only ram stuff that would actually block us
@@ -389,3 +389,47 @@ var/global/list/meteors_cataclysm = list(\
 	meteordrop = null
 	ismissile = TRUE
 	dropamt = 0
+
+/obj/effect/meteor/supermatter/missile/admin_missile
+	name = "Hull Buster"
+	desc = "A highly advanced warhead capable of destroying even the most well-armoured space installations."
+	icon = 'icons/obj/missile.dmi'
+	icon_state = "photon"
+	meteordrop = null
+	ismissile = TRUE
+	hitpwr = EX_ACT_DEVASTATING
+	hits = 6
+
+/obj/effect/meteor/supermatter/missile/admin_missile/meteor_effect()
+	explosion(loc, 1, 2, 4, 0, 0, shaped = get_dir(src, dest), turf_breaker = TRUE)
+
+
+/obj/effect/meteor/supermatter/missile/sabot_round
+	name = "Sabot Round"
+	desc = "A warhead that penetrates the hull and detonates to send a secondary warhead further in before exploding for massive damage."
+	icon = 'icons/obj/missile.dmi'
+	icon_state = "sabot"
+	meteordrop = null
+	ismissile = TRUE
+	hitpwr = EX_ACT_HEAVY
+	hits = 6
+
+/obj/effect/meteor/supermatter/missile/sabot_round/meteor_effect()
+	explosion(loc, 0, 1, 4, 0, 0, shaped = TRUE, turf_breaker = TRUE)
+	var/obj/effect/meteor/supermatter/missile/sabot_secondary_round/M = new(get_turf(src))
+	M.dest = dest
+	spawn(0)
+		walk_towards(M, dest, 3)
+
+/obj/effect/meteor/supermatter/missile/sabot_secondary_round
+	name = "Sabot Round Secondary"
+	desc = "Secondary warhead of the Sabot Round, causes extreme damage."
+	icon = 'icons/obj/missile.dmi'
+	icon_state = "sabot_2"
+	meteordrop = null
+	ismissile = TRUE
+	hitpwr = EX_ACT_DEVASTATING
+	hits = 4
+
+/obj/effect/meteor/supermatter/missile/sabot_secondary_round/meteor_effect()
+	explosion(loc, 0.5, 2, 3, 0, shaped = get_dir(src, dest), turf_breaker = TRUE)

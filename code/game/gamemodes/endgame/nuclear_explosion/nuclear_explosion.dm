@@ -35,7 +35,7 @@
 
 	sleep(100)
 
-	for(var/mob/living/L in GLOB.living_mob_list_)
+	for(var/mob/living/L in GLOB.alive_mobs)
 		if(L.client)
 			L.client.screen -= cinematic
 
@@ -51,7 +51,7 @@
 	if(SSticker.mode)
 		SSticker.mode.explosion_in_progress = 0
 
-/datum/universal_state/nuclear_explosion/proc/dust_mobs(var/list/affected_z_levels)
+/datum/universal_state/nuclear_explosion/proc/dust_mobs(list/affected_z_levels)
 	for(var/mob/living/L in SSmobs.mob_list)
 		var/turf/T = get_turf(L)
 		if(T && (T.z in affected_z_levels))

@@ -121,7 +121,7 @@
 	air_contents.volume = ATMOS_DEFAULT_VOLUME_PUMP + 800
 
 
-/obj/machinery/atmospherics/unary/vent_pump/on_update_icon(var/safety = 0)
+/obj/machinery/atmospherics/unary/vent_pump/on_update_icon(safety = 0)
 	if(!check_icon_cache())
 		return
 	if (!node)
@@ -278,7 +278,7 @@
 		to_chat(user, "<span class='notice'>Now welding \the [src].</span>")
 		playsound(src, 'sound/items/Welder.ogg', 50, 1)
 
-		if(!do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
+		if(!do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
 			to_chat(user, "<span class='notice'>You must remain close to finish this task.</span>")
 			return 1
 
@@ -309,7 +309,7 @@
 	if(welded)
 		to_chat(user, "It seems welded shut.")
 
-/obj/machinery/atmospherics/unary/vent_pump/attackby(var/obj/item/W as obj, var/mob/user as mob)
+/obj/machinery/atmospherics/unary/vent_pump/attackby(obj/item/W as obj, mob/user as mob)
 	if(isWrench(W))
 		if (!(stat & NOPOWER) && use_power)
 			to_chat(user, "<span class='warning'>You cannot unwrench \the [src], turn it off first.</span>")
@@ -326,7 +326,7 @@
 			return 1
 		playsound(src.loc, 'sound/items/Ratchet.ogg', 50, 1)
 		to_chat(user, "<span class='notice'>You begin to unfasten \the [src]...</span>")
-		if (do_after(user, 4 SECONDS, src, DO_PUBLIC_UNIQUE))
+		if (do_after(user, 4 SECONDS, src, DO_REPAIR_CONSTRUCT))
 			user.visible_message( \
 				"<span class='notice'>\The [user] unfastens \the [src].</span>", \
 				"<span class='notice'>You have unfastened \the [src].</span>", \

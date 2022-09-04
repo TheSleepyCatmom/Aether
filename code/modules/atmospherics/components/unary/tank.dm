@@ -58,7 +58,7 @@
 /obj/machinery/atmospherics/unary/tank/return_air()
 	return air_contents
 
-/obj/machinery/atmospherics/unary/tank/attackby(var/obj/item/W as obj, var/mob/user as mob)
+/obj/machinery/atmospherics/unary/tank/attackby(obj/item/W as obj, mob/user as mob)
 	if(isWrench(W))
 		if (air_contents.return_pressure() > 2*ONE_ATMOSPHERE)
 			to_chat(user, "<span class='warning'>You cannot unwrench \the [src], it is too exerted due to internal pressure.</span>")
@@ -68,7 +68,7 @@
 		playsound(src.loc, 'sound/items/Ratchet.ogg', 50, 1)
 		to_chat(user, "<span class='notice'>You begin to unfasten \the [src]...</span>")
 
-		if (do_after(user, 4 SECONDS, src, DO_PUBLIC_UNIQUE))
+		if (do_after(user, 4 SECONDS, src, DO_REPAIR_CONSTRUCT))
 			user.visible_message("<span class='notice'>\The [user] unfastens \the [src].</span>", "<span class='notice'>You have unfastened \the [src].</span>", "You hear a ratchet.")
 			new /obj/item/pipe/tank(loc, src)
 			qdel(src)

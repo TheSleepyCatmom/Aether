@@ -54,7 +54,7 @@
 *   Item Adding
 ********************/
 
-/obj/machinery/microwave/attackby(var/obj/item/O as obj, var/mob/user as mob)
+/obj/machinery/microwave/attackby(obj/item/O as obj, mob/user as mob)
 	if(broken > 0)
 		// Start repairs by using a screwdriver
 		if(broken == 2 && isScrewdriver(O))
@@ -62,7 +62,7 @@
 				"<span class='notice'>\The [user] starts to fix part of the microwave.</span>", \
 				"<span class='notice'>You start to fix part of the microwave.</span>" \
 			)
-			if (do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
+			if (do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
 				user.visible_message( \
 					"<span class='notice'>\The [user] fixes part of the microwave.</span>", \
 					"<span class='notice'>You have fixed part of the microwave.</span>" \
@@ -75,7 +75,7 @@
 				"<span class='notice'>\The [user] starts to fix part of the microwave.</span>", \
 				"<span class='notice'>You start to fix part of the microwave.</span>" \
 			)
-			if (do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
+			if (do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
 				user.visible_message( \
 					"<span class='notice'>\The [user] fixes the microwave.</span>", \
 					"<span class='notice'>You have fixed the microwave.</span>" \
@@ -201,7 +201,7 @@
 			"<span class='notice'>\The [user] begins [anchored ? "securing" : "unsecuring"] the microwave.</span>", \
 			"<span class='notice'>You attempt to [anchored ? "secure" : "unsecure"] the microwave.</span>"
 			)
-		if (do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
+		if (do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
 			anchored = !anchored
 			user.visible_message( \
 			"<span class='notice'>\The [user] [anchored ? "secures" : "unsecures"] the microwave.</span>", \
@@ -366,7 +366,7 @@
 		return
 
 // Behold: the worst proc name in the codebase.
-/obj/machinery/microwave/proc/wzhzhzh(var/seconds)
+/obj/machinery/microwave/proc/wzhzhzh(seconds)
 	for (var/i = 1 to seconds)
 		if (stat & (NOPOWER|BROKEN))
 			return FALSE

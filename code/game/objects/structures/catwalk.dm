@@ -58,7 +58,7 @@
 		do_pull_click(user, src)
 	..()
 
-/obj/structure/catwalk/attack_robot(var/mob/user)
+/obj/structure/catwalk/attack_robot(mob/user)
 	if(Adjacent(user))
 		attack_hand(user)
 
@@ -103,7 +103,7 @@
 		if(!ST.in_use)
 			to_chat(user, "<span class='notice'>Placing tile...</span>")
 			ST.in_use = 1
-			if (!do_after(user, 1 SECOND, src, DO_PUBLIC_UNIQUE))
+			if (!do_after(user, 1 SECOND, src, DO_REPAIR_CONSTRUCT))
 				ST.in_use = 0
 				return
 			to_chat(user, "<span class='notice'>You plate \the [src]</span>")

@@ -15,7 +15,7 @@
 		action.button_icon_state = "adherent-brain"
 		if(action.button) action.button.UpdateIcon()
 
-/obj/item/organ/internal/brain/adherent/attack_self(var/mob/user)
+/obj/item/organ/internal/brain/adherent/attack_self(mob/user)
 	. = ..()
 	if(.)
 
@@ -64,7 +64,7 @@
 		action.button_icon_state = "[base_action_state]-[active ? "on" : "off"]"
 		if(action.button) action.button.UpdateIcon()
 
-/obj/item/organ/internal/powered/attack_self(var/mob/user)
+/obj/item/organ/internal/powered/attack_self(mob/user)
 	. = ..()
 	if(.)
 		sound_to(user, sound('sound/effects/ding2.ogg'))
@@ -125,6 +125,7 @@
 	name = "piezoelectric core"
 	icon = 'icons/mob/human_races/species/adherent/organs.dmi'
 	icon_state = "cell"
+	cell = /obj/item/cell/hyper
 
 /obj/item/organ/internal/powered/cooling_fins
 	name = "cooling fins"

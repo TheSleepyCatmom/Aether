@@ -54,6 +54,8 @@
 		TAG_FACTION =   FACTION_TEST_SUBJECTS
 	)
 
+	ingest_amount = 6
+
 	var/list/no_touchie = list(/obj/item/mirror,
 							   /obj/item/storage/mirror)
 
@@ -67,7 +69,7 @@
 	)
 	..()
 
-/datum/species/monkey/handle_npc(var/mob/living/carbon/human/H)
+/datum/species/monkey/handle_npc(mob/living/carbon/human/H)
 	if(H.stat != CONSCIOUS)
 		return
 	if(prob(33) && isturf(H.loc) && !H.pulledby) //won't move if being pulled
@@ -111,7 +113,7 @@
 	if(!H.restrained() && H.lying && H.shock_stage >= 60 && prob(3))
 		H.custom_emote("thrashes in agony")
 
-/datum/species/monkey/handle_post_spawn(var/mob/living/carbon/human/H)
+/datum/species/monkey/handle_post_spawn(mob/living/carbon/human/H)
 	..()
 	H.item_state = lowertext(name)
 

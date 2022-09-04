@@ -7,7 +7,7 @@
 	w_class = ITEM_SIZE_NORMAL
 	base_type = /obj/machinery/portable_atmospherics/powered/pump
 
-	var/direction_out = 0 //0 = siphoning, 1 = releasing
+	var/direction_out = 1 //0 = siphoning, 1 = releasing
 	var/target_pressure = ONE_ATMOSPHERE
 
 	var/pressuremin = 0
@@ -106,7 +106,7 @@
 
 	src.updateDialog()
 
-/obj/machinery/portable_atmospherics/powered/pump/interface_interact(var/mob/user)
+/obj/machinery/portable_atmospherics/powered/pump/interface_interact(mob/user)
 	ui_interact(user)
 	return TRUE
 

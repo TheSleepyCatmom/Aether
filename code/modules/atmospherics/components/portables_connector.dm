@@ -35,7 +35,7 @@
 			return
 		add_underlay(T, node, dir)
 
-/obj/machinery/atmospherics/portables_connector/hide(var/i)
+/obj/machinery/atmospherics/portables_connector/hide(i)
 	update_underlays()
 
 /obj/machinery/atmospherics/portables_connector/Process()
@@ -130,7 +130,7 @@
 	return null
 
 
-/obj/machinery/atmospherics/portables_connector/attackby(var/obj/item/W as obj, var/mob/user as mob)
+/obj/machinery/atmospherics/portables_connector/attackby(obj/item/W as obj, mob/user as mob)
 	if(!isWrench(W))
 		return ..()
 	if (connected_device)
@@ -146,7 +146,7 @@
 		return 1
 	playsound(src.loc, 'sound/items/Ratchet.ogg', 50, 1)
 	to_chat(user, "<span class='notice'>You begin to unfasten \the [src]...</span>")
-	if (do_after(user, 4 SECONDS, src, DO_PUBLIC_UNIQUE))
+	if (do_after(user, 4 SECONDS, src, DO_REPAIR_CONSTRUCT))
 		user.visible_message( \
 			"<span class='notice'>\The [user] unfastens \the [src].</span>", \
 			"<span class='notice'>You have unfastened \the [src].</span>", \

@@ -43,7 +43,7 @@
 	for (var/mob/M in selected_mobs)
 		deselect_AI_mob(M)
 
-	for (var/mob/living/M in GLOB.living_mob_list_)
+	for (var/mob/living/M in GLOB.alive_mobs)
 		user.remove_client_image(M.ai_status_image)
 
 /datum/build_mode/ai/TimerEvent()
@@ -52,7 +52,7 @@
 	if (!user)
 		return
 
-	for (var/mob/living/M in GLOB.living_mob_list_)
+	for (var/mob/living/M in GLOB.alive_mobs)
 		if (M.ai_status_image)
 			user.add_client_image(M.ai_status_image)
 
@@ -246,7 +246,7 @@
 		unit.ai_status_image = image('icons/misc/buildmode.dmi', unit, "ai_1")
 		user.add_client_image(unit.ai_status_image)
 
-/proc/build_drag(var/client/user, buildmode, var/atom/fromatom, var/atom/toatom, var/atom/fromloc, var/atom/toloc, var/fromcontrol, var/tocontrol, params)
+/proc/build_drag(client/user, buildmode, atom/fromatom, atom/toatom, atom/fromloc, atom/toloc, fromcontrol, tocontrol, params)
 	if (!istype(buildmode, /datum/build_mode/ai))
 		return
 
@@ -274,7 +274,7 @@
 		var/hi_y = max(c1.y,c2.y)
 		var/z = c1.z
 
-		for(var/mob/living/L in GLOB.living_mob_list_)
+		for(var/mob/living/L in GLOB.alive_mobs)
 			if(L.z != z || L.client)
 				continue
 			if(L.x >= low_x && L.x <= hi_x && L.y >= low_y && L.y <= hi_y)
