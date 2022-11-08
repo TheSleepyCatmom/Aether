@@ -8,6 +8,7 @@
 
 	unarmed_types = list(/datum/unarmed_attack/stomp, /datum/unarmed_attack/kick, /datum/unarmed_attack/punch)
 	species_flags = SPECIES_FLAG_NO_PAIN | SPECIES_FLAG_NO_SCAN | SPECIES_FLAG_NO_POISON
+	appearance_flags = SPECIES_APPEARANCE_HAS_STATIC_HAIR
 	spawn_flags = SPECIES_IS_RESTRICTED
 	siemens_coefficient = 0
 
@@ -40,6 +41,12 @@
 		TAG_CULTURE =   CULTURE_CULTIST,
 		TAG_HOMEWORLD = HOME_SYSTEM_STATELESS,
 		TAG_FACTION =   FACTION_OTHER
+	)
+
+	traits = list(
+		/singleton/trait/boon/clear_mind = TRAIT_LEVEL_MAJOR,
+		/singleton/trait/general/metabolically_inert = TRAIT_LEVEL_MAJOR,
+		/singleton/trait/general/nonpermeable_skin = TRAIT_LEVEL_EXISTS
 	)
 
 /datum/species/golem/handle_post_spawn(mob/living/carbon/human/H)

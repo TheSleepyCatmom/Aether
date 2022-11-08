@@ -50,7 +50,7 @@
 
 /datum/preferences/proc/setup()
 	if(!length(GLOB.skills))
-		decls_repository.get_decl(/decl/hierarchy/skill)
+		GET_SINGLETON(/singleton/hierarchy/skill)
 	player_setup = new(src)
 	gender = pick(MALE, FEMALE)
 	real_name = random_name(gender,species)
@@ -174,7 +174,7 @@
 		if(config.forum_url)
 			send_link(user, config.forum_url)
 		else
-			to_chat(user, "<span class='danger'>The forum URL is not set in the server configuration.</span>")
+			to_chat(user, SPAN_DANGER("The forum URL is not set in the server configuration."))
 			return
 	update_setup_window(usr)
 	return 1

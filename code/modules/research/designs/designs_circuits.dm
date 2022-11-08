@@ -95,19 +95,12 @@
 	build_path = /obj/item/stock_parts/circuitboard/body_scanconsole/display
 	sort_string = "FACAJ"
 
-/datum/design/circuit/bioprinter
-	name = "bioprinter"
-	id = "bioprinter"
-	req_tech = list(TECH_ENGINEERING = 1, TECH_BIO = 3, TECH_DATA = 3)
-	build_path = /obj/item/stock_parts/circuitboard/bioprinter
-	sort_string = "FAGAK"
-
 /datum/design/circuit/roboprinter
 	name = "prosthetic organ fabricator"
 	id = "roboprinter"
 	req_tech = list(TECH_ENGINEERING = 2, TECH_DATA = 3)
 	build_path = /obj/item/stock_parts/circuitboard/roboprinter
-	sort_string = "FAGAM"
+	sort_string = "FAGAK"
 
 /datum/design/circuit/teleconsole
 	name = "teleporter control console"
@@ -274,6 +267,13 @@
 	req_tech = list(TECH_DATA = 4, TECH_ENGINEERING = 3, TECH_MAGNET = 4)
 	build_path = /obj/item/stock_parts/circuitboard/suspension_gen
 	sort_string = "HABAK"
+
+/datum/design/circuit/anomaly_container
+	name = "anomaly container"
+	id = "anomaly_container"
+	req_tech = list(TECH_BLUESPACE = 3, TECH_ENGINEERING = 4, TECH_MAGNET = 4)
+	build_path = /obj/item/stock_parts/circuitboard/anomaly_container
+	sort_string = "HABAL"
 
 /datum/design/circuit/rdservercontrol
 	name = "R&D server control console"

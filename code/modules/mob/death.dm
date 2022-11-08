@@ -86,12 +86,12 @@
 
 	timeofdeath = world.time
 	if(mind)
-		mind.StoreMemory("Time of death: [stationtime2text()]", /decl/memory_options/system)
+		mind.StoreMemory("Time of death: [stationtime2text()]", /singleton/memory_options/system)
 	switch_from_living_to_dead_mob_list()
 
 	update_icon()
 
 	if(SSticker.mode)
 		SSticker.mode.check_win()
-	to_chat(src,"<span class='deadsay'>[show_dead_message]</span>")
+	to_chat(src,SPAN_CLASS("deadsay", "[show_dead_message]"))
 	return 1

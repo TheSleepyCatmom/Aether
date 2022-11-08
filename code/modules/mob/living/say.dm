@@ -117,7 +117,7 @@ var/global/list/channel_to_radio_key = new
 		verb = pick("stammers","stutters")
 		. = 1
 	else if(has_chem_effect(CE_SQUEAKY, 1))
-		message = "<font face = 'Comic Sans MS'>[message]</font>"
+		message = "<span style='font-family: Comic Sans MS'>[message]</span>"
 		verb = "squeaks"
 		. = 1
 
@@ -159,7 +159,7 @@ var/global/list/channel_to_radio_key = new
 /mob/living/say(message, datum/language/speaking = null, verb="says", alt_name="", whispering)
 	if(client)
 		if(client.prefs.muted & MUTE_IC)
-			to_chat(src, "<span class='warning'>You cannot speak in IC (Muted).</span>")
+			to_chat(src, SPAN_WARNING("You cannot speak in IC (Muted)."))
 			return
 
 	if(stat)
@@ -168,9 +168,9 @@ var/global/list/channel_to_radio_key = new
 		return
 
 	var/prefix = copytext_char(message, 1, 2)
-	if(prefix == get_prefix_key(/decl/prefix/custom_emote))
+	if(prefix == get_prefix_key(/singleton/prefix/custom_emote))
 		return emote(copytext_char(message, 2))
-	if(prefix == get_prefix_key(/decl/prefix/visible_emote))
+	if(prefix == get_prefix_key(/singleton/prefix/visible_emote))
 		return custom_emote(1, copytext_char(message, 2))
 
 	//parse the language code and consume it
@@ -198,7 +198,7 @@ var/global/list/channel_to_radio_key = new
 		return 1
 
 	if((is_muzzled()) && !(speaking && (speaking.flags & SIGNLANG)))
-		to_chat(src, "<span class='danger'>You're muzzled and cannot speak!</span>")
+		to_chat(src, SPAN_DANGER("You're muzzled and cannot speak!"))
 		return
 
 	if (speaking)

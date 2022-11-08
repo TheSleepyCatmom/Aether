@@ -7,7 +7,7 @@
 	icon_state = "body_scannerconsole"
 	density = FALSE
 	anchored = TRUE
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
 
@@ -23,7 +23,7 @@
 	FindScanner()
 
 /obj/machinery/body_scanconsole/on_update_icon()
-	if(stat & (BROKEN | NOPOWER))
+	if(inoperable())
 		icon_state = "body_scannerconsole-p"
 	else
 		icon_state = initial(icon_state)
@@ -56,7 +56,7 @@
 	return !!connected_displays.len
 
 /obj/machinery/body_scanconsole/attack_hand(mob/user)
-	if(!connected || (connected.stat & (NOPOWER|BROKEN)))
+	if(!connected || connected.inoperable())
 		to_chat(user, SPAN_WARNING("This console is not connected to a functioning body scanner."))
 		return TRUE
 	return ..()
@@ -150,7 +150,7 @@
 		data["pushEnabled"] = FALSE
 		return TOPIC_REFRESH
 
-/obj/machinery/body_scanconsole/state_transition(decl/machine_construction/default/new_state)
+/obj/machinery/body_scanconsole/state_transition(singleton/machine_construction/default/new_state)
 	. = ..()
 	if(istype(new_state))
 		updateUsrDialog()

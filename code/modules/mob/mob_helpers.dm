@@ -315,10 +315,15 @@ var/global/list/organ_rel_size = list(
 
 
 /mob/proc/abiotic(full_body = FALSE)
-	if(full_body && ((src.l_hand && src.l_hand.simulated) || (src.r_hand && src.r_hand.simulated) || (src.back || src.wear_mask)))
+	var/holding_simulated_item = FALSE
+	for (var/obj/item/item as anything in GetAllHeld())
+		if (item.simulated)
+			holding_simulated_item = TRUE
+
+	if(full_body && (holding_simulated_item || (src.back || src.wear_mask)))
 		return TRUE
 
-	if((src.l_hand && src.l_hand.simulated) || (src.r_hand && src.r_hand.simulated))
+	if (holding_simulated_item)
 		return TRUE
 
 	return FALSE
@@ -389,7 +394,7 @@ var/global/list/intents = list(I_HELP,I_DISARM,I_GRAB,I_HURT)
 	var/turf/sourceturf = get_turf(broadcast_source)
 	for(var/mob/M in targets)
 		if(!sourceturf || (get_z(M) in GetConnectedZlevels(sourceturf.z)))
-			M.show_message("<span class='info'>[icon2html(icon, M)] [message]</span>", 1)
+			M.show_message(SPAN_INFO("[icon2html(icon, M)] [message]"), 1)
 
 /proc/mobs_in_area(area/A)
 	var/list/mobs = new
@@ -432,10 +437,10 @@ var/global/list/intents = list(I_HELP,I_DISARM,I_GRAB,I_HURT)
 		if(C.mob.lastarea)
 			diedat = " at [C.mob.lastarea]"
 		if(joined_ghosts)
-			message = "The ghost of <span class='name'>[name]</span> now [pick("skulks","lurks","prowls","creeps","stalks")] among the dead[diedat]. [message]"
+			message = "The ghost of [SPAN_CLASS("name", "[name]")] now [pick("skulks","lurks","prowls","creeps","stalks")] among the dead[diedat]. [message]"
 		else
-			message = "<span class='name'>[name]</span> no longer [pick("skulks","lurks","prowls","creeps","stalks")] in the realm of the dead. [message]"
-		communicate(/decl/communication_channel/dsay, C || O, message, /decl/dsay_communication/direct)
+			message = "[SPAN_CLASS("name", "[name]")] no longer [pick("skulks","lurks","prowls","creeps","stalks")] in the realm of the dead. [message]"
+		communicate(/singleton/communication_channel/dsay, C || O, message, /singleton/dsay_communication/direct)
 
 /mob/proc/switch_to_camera(obj/machinery/camera/C)
 	if (!C.can_use() || stat || (get_dist(C, src) > 1 || machine != src || blinded))
@@ -490,11 +495,8 @@ var/global/list/intents = list(I_HELP,I_DISARM,I_GRAB,I_HURT)
 		threatcount += 4
 
 	if(auth_weapons && !access_obj.allowed(src))
-		if(istype(l_hand, /obj/item/gun) || istype(l_hand, /obj/item/melee))
-			threatcount += 4
-
-		if(istype(r_hand, /obj/item/gun) || istype(r_hand, /obj/item/melee))
-			threatcount += 4
+		var/list/weapons = GetAllHeld(/obj/item/melee)
+		threatcount += 4 * weapons.len
 
 		if(istype(belt, /obj/item/gun) || istype(belt, /obj/item/melee))
 			threatcount += 2
@@ -542,12 +544,6 @@ var/global/list/intents = list(I_HELP,I_DISARM,I_GRAB,I_HURT)
 
 /mob/living/silicon/ai/get_multitool()
 	return ..(aiMulti)
-
-/proc/get_both_hands(mob/living/carbon/M)
-	if(!istype(M))
-		return
-	var/list/hands = list(M.l_hand, M.r_hand)
-	return hands
 
 /mob/proc/refresh_client_images()
 	if(client)
@@ -598,11 +594,11 @@ var/global/list/intents = list(I_HELP,I_DISARM,I_GRAB,I_HURT)
 	if(src.jitteriness >= 400 && prob(5)) //Kills people if they have high jitters.
 		if(prob(1))
 			L.take_internal_damage(L.max_damage / 2, 0)
-			to_chat(src, "<span class='danger'>Something explodes in your heart.</span>")
+			to_chat(src, SPAN_DANGER("Something explodes in your heart."))
 			admin_victim_log(src, "has taken <b>lethal heart damage</b> at jitteriness level [src.jitteriness].")
 		else
 			L.take_internal_damage(1, 0)
-			to_chat(src, "<span class='danger'>The jitters are killing you! You feel your heart beating out of your chest.</span>")
+			to_chat(src, SPAN_DANGER("The jitters are killing you! You feel your heart beating out of your chest."))
 			admin_victim_log(src, "has taken <i>minor heart damage</i> at jitteriness level [src.jitteriness].")
 	return 1
 

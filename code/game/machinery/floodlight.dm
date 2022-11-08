@@ -6,7 +6,7 @@
 	icon_state = "flood00"
 	density = TRUE
 	obj_flags = OBJ_FLAG_ROTATABLE
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 
 	active_power_usage = 200
@@ -28,7 +28,7 @@
 	. = ..()
 	if(!. || !use_power) return
 
-	if(stat & NOPOWER)
+	if(!is_powered())
 		turn_off(1)
 		return
 
@@ -41,7 +41,7 @@
 
 // Returns 0 on failure and 1 on success
 /obj/machinery/floodlight/proc/turn_on(loud = 0)
-	if(stat & NOPOWER)
+	if(!is_powered())
 		return 0
 
 	set_light(l_max_bright, l_inner_range, l_outer_range)

@@ -9,7 +9,7 @@
 	idle_power_usage = 200	// Some electronics, passive drain.
 	active_power_usage = 60 KILOWATTS // When charging
 	base_type = /obj/machinery/mech_recharger
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
 
@@ -57,7 +57,7 @@
 		stop_charging()
 		return
 
-	if(stat & (BROKEN|NOPOWER))
+	if(inoperable())
 		charging.show_message(SPAN_WARNING("Internal system Error - Charging aborted."))
 		stop_charging()
 		return
@@ -95,7 +95,7 @@
 	return charging && (charging.health == charging.maxHealth)
 
 /obj/machinery/mech_recharger/proc/start_charging(mob/living/exosuit/M)
-	if(stat & (NOPOWER | BROKEN))
+	if(inoperable())
 		M.show_message(SPAN_WARNING("Power port not responding. Terminating."))
 		return
 	if(M.get_cell(TRUE))

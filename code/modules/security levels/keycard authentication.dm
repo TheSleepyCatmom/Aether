@@ -20,11 +20,11 @@
 	power_channel = ENVIRON
 
 /obj/machinery/keycard_auth/attack_ai(mob/user as mob)
-	to_chat(user, "<span class='warning'>A firewall prevents you from interfacing with this device!</span>")
+	to_chat(user, SPAN_WARNING("A firewall prevents you from interfacing with this device!"))
 	return
 
 /obj/machinery/keycard_auth/attackby(obj/item/W as obj, mob/user as mob)
-	if(stat & (NOPOWER|BROKEN))
+	if(inoperable())
 		to_chat(user, "This device is not powered.")
 		return
 	if(istype(W,/obj/item/card/id))
@@ -36,14 +36,14 @@
 					event_source.confirmed = 1
 					event_source.event_confirmed_by = usr
 				else
-					to_chat(user, "<span class='warning'>Unable to confirm, DNA matches that of origin.</span>")
+					to_chat(user, SPAN_WARNING("Unable to confirm, DNA matches that of origin."))
 			else if(screen == 2)
 				event_triggered_by = usr
 				broadcast_request() //This is the device making the initial event request. It needs to broadcast to other devices
 
 //icon_state gets set everwhere besides here, that needs to be fixed sometime
 /obj/machinery/keycard_auth/on_update_icon()
-	if(stat &NOPOWER)
+	if(!is_powered())
 		icon_state = "auth_off"
 
 /obj/machinery/keycard_auth/interface_interact(mob/user)
@@ -64,7 +64,7 @@
 	if(screen == 1)
 		dat += "Select an event to trigger:<ul>"
 
-		var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
+		var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
 		if(security_state.current_security_level == security_state.severe_security_level)
 			dat += "<li>Cannot modify the alert level at this time: [security_state.severe_security_level.name] engaged.</li>"
 		else
@@ -134,7 +134,7 @@
 	reset()
 
 /obj/machinery/keycard_auth/proc/receive_request(obj/machinery/keycard_auth/source)
-	if(stat & (BROKEN|NOPOWER))
+	if(inoperable())
 		return
 	event_source = source
 	busy = 1
@@ -151,11 +151,11 @@
 /obj/machinery/keycard_auth/proc/trigger_event()
 	switch(event)
 		if("Red alert")
-			var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
+			var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
 			security_state.stored_security_level = security_state.current_security_level
 			security_state.set_security_level(security_state.high_security_level)
 		if("Revert alert")
-			var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
+			var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
 			security_state.set_security_level(security_state.stored_security_level)
 		if("Grant Emergency Maintenance Access")
 			GLOB.using_map.make_maint_all_access()
@@ -163,7 +163,7 @@
 			GLOB.using_map.revoke_maint_all_access()
 		if("Emergency Response Team")
 			if(is_ert_blocked())
-				to_chat(usr, "<span class='warning'>All emergency response teams are dispatched and can not be called at this time.</span>")
+				to_chat(usr, SPAN_WARNING("All emergency response teams are dispatched and can not be called at this time."))
 				return
 
 			trigger_armed_response_team(1)

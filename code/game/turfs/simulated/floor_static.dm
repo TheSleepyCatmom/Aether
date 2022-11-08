@@ -6,7 +6,7 @@
 	icon = 'icons/turf/flooring/tiles.dmi'
 	icon_state = "steel"
 	initial_flooring = null
-	footstep_type = /decl/footsteps/plating
+	footstep_type = /singleton/footsteps/plating
 
 /turf/simulated/floor/fixed/attackby(obj/item/C, mob/user)
 	if(istype(C, /obj/item/stack) && !isCoil(C))
@@ -30,7 +30,7 @@
 
 /turf/simulated/floor/fixed/alium/attackby(obj/item/C, mob/user)
 	if(isCrowbar(C))
-		to_chat(user, "<span class='notice'>There aren't any openings big enough to pry it away...</span>")
+		to_chat(user, SPAN_NOTICE("There aren't any openings big enough to pry it away..."))
 		return
 	return ..()
 

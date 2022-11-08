@@ -13,7 +13,7 @@
 	anchored = TRUE
 	idle_power_usage = 0
 	active_power_usage = 1.2 KILOWATTS
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
 	machine_name = "chemical heater"
@@ -64,7 +64,7 @@
 	..()
 	if(temperature != last_temperature)
 		queue_icon_update()
-	if(((stat & (BROKEN|NOPOWER)) || !anchored) && use_power >= POWER_USE_ACTIVE)
+	if(((inoperable()) || !anchored) && use_power >= POWER_USE_ACTIVE)
 		update_use_power(POWER_USE_IDLE)
 		queue_icon_update()
 
@@ -108,7 +108,7 @@
 			anchored = !anchored
 			visible_message(SPAN_NOTICE("\The [user] [anchored ? "secured" : "unsecured"] \the [src]."))
 			playsound(src.loc, 'sound/items/Ratchet.ogg', 75, 1)
-		return
+		return TRUE
 
 	if(thing.reagents)
 		for(var/checktype in permitted_types)
@@ -120,8 +120,9 @@
 					container = thing
 					visible_message(SPAN_NOTICE("\The [user] places \the [container] on \the [src]."))
 					update_icon()
-				return
+				return TRUE
 		to_chat(user, SPAN_WARNING("\The [src] cannot accept \the [thing]."))
+	return ..()
 
 /obj/machinery/reagent_temperature/on_update_icon()
 
@@ -187,7 +188,7 @@
 
 /obj/machinery/reagent_temperature/proc/ToggleUsePower()
 
-	if(stat & (BROKEN|NOPOWER))
+	if(inoperable())
 		return TOPIC_HANDLED
 
 	update_use_power(use_power <= POWER_USE_IDLE ? POWER_USE_ACTIVE : POWER_USE_IDLE)

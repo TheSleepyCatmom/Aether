@@ -18,7 +18,7 @@
 	. = ..()
 
 /obj/machinery/computer/modular/Process()
-	if(stat & NOPOWER)
+	if(!is_powered())
 		return
 	var/datum/extension/interactive/ntos/os = get_extension(src, /datum/extension/interactive/ntos)
 	if(os)
@@ -26,7 +26,7 @@
 
 /obj/machinery/computer/modular/power_change()
 	. = ..()
-	if(. && (stat & NOPOWER))
+	if(. && (!is_powered()))
 		var/datum/extension/interactive/ntos/os = get_extension(src, /datum/extension/interactive/ntos)
 		if(os)
 			os.event_powerfailure()
@@ -93,7 +93,7 @@
 	set src in view(1)
 
 	if(!CanPhysicallyInteract(usr))
-		to_chat(usr, "<span class='warning'>You can't reach it.</span>")
+		to_chat(usr, SPAN_WARNING("You can't reach it."))
 		return
 
 	if(ismob(usr))

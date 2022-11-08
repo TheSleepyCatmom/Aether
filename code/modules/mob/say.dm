@@ -6,26 +6,25 @@
 	set category = "IC"
 	return
 
+
 /mob/verb/say_verb(message as text)
 	set name = "Say"
 	set category = "IC"
-	remove_typing_indicator()
 	usr.say(message)
+
 
 /mob/verb/me_verb(message as text)
 	set name = "Me"
 	set category = "IC"
-
 	message = sanitize(message)
-
-	remove_typing_indicator()
 	if(use_me)
 		usr.emote("me",usr.emote_type,message)
 	else
 		usr.emote(message)
 
+
 /mob/proc/say_dead(message)
-	communicate(/decl/communication_channel/dsay, client, message)
+	communicate(/singleton/communication_channel/dsay, client, message)
 
 /mob/proc/say_understands(mob/other,datum/language/speaking = null)
 
@@ -91,7 +90,7 @@
 //returns the message mode string or null for no message mode.
 //standard mode is the mode returned for the special ';' radio code.
 /mob/proc/parse_message_mode(message, standard_mode="headset")
-	if(length(message) >= 1 && copytext_char(message,1,2) == get_prefix_key(/decl/prefix/radio_main_channel))
+	if(length(message) >= 1 && copytext_char(message,1,2) == get_prefix_key(/singleton/prefix/radio_main_channel))
 		return standard_mode
 
 	if(length(message) >= 2)
@@ -104,7 +103,7 @@
 //returns the language object only if the code corresponds to a language that src can speak, otherwise null.
 /mob/proc/parse_language(message)
 	var/prefix = copytext_char(message,1,2)
-	if(length(message) >= 1 && prefix == get_prefix_key(/decl/prefix/audible_emote))
+	if(length(message) >= 1 && prefix == get_prefix_key(/singleton/prefix/audible_emote))
 		return all_languages["Noise"]
 
 	if(length(message) >= 2 && is_language_prefix(prefix))

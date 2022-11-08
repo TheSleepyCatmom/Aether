@@ -29,7 +29,7 @@
 	icon_state = "t-ray[on]"
 
 /obj/item/device/t_scanner/emp_act()
-	audible_message("<span class = 'notice'> \The [src] buzzes oddly.</span>")
+	audible_message(SPAN_NOTICE(" \The [src] buzzes oddly."))
 	set_active(FALSE)
 	..()
 
@@ -40,7 +40,7 @@
 /obj/item/device/t_scanner/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
 	var/obj/structure/disposalpipe/D = target
 	if(D && istype(D))
-		to_chat(user, "<span class='info'>Pipe segment integrity: [100 - D.get_damage_percentage()]%</span>")
+		to_chat(user, SPAN_INFO("Pipe segment integrity: [100 - D.get_damage_percentage()]%"))
 
 /obj/item/device/t_scanner/proc/set_active(active)
 	on = active
@@ -103,7 +103,7 @@
 		if(ismob(scanned))
 			if(ishuman(scanned))
 				var/mob/living/carbon/human/H = scanned
-				if(H.species.appearance_flags & HAS_SKIN_COLOR)
+				if(H.species.appearance_flags & SPECIES_APPEARANCE_HAS_SKIN_COLOR)
 					I.color = H.skin_color
 					I.icon = 'icons/mob/mob.dmi'
 					I.icon_state = "phaseout"

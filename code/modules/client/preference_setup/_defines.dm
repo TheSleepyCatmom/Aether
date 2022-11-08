@@ -1,13 +1,13 @@
-#define SETUP_SUBTYPE_DECLS_BY_NAME(decl_prototype, decls_by_name) \
-if(!decls_by_name) \
+#define SETUP_SUBTYPE_SINGLETONS_BY_NAME(singleton_prototype, singletons_by_name) \
+if(!singletons_by_name) \
 {\
-	decls_by_name = list();\
-	var/decls_by_type = decls_repository.get_decls_of_subtype(decl_prototype);\
-	for(var/decl_type in decls_by_type) \
+	singletons_by_name = list();\
+	var/singletons_by_type = GET_SINGLETON_SUBTYPE_MAP(singleton_prototype);\
+	for(var/singleton_type in singletons_by_type) \
 	{\
-		var##decl_prototype/decl_instance = decls_by_type[decl_type];\
-		ADD_SORTED(decls_by_name, decl_instance.name, /proc/cmp_text_asc);\
-		decls_by_name[decl_instance.name] = decl_instance;\
+		var##singleton_prototype/singleton_instance = singletons_by_type[singleton_type];\
+		ADD_SORTED(singletons_by_name, singleton_instance.name, /proc/cmp_text_asc);\
+		singletons_by_name[singleton_instance.name] = singleton_instance;\
 	}\
 }
 
@@ -37,7 +37,7 @@ if(!decls_by_name) \
 #define BTN(key, label) FBTN(key, 1, label, "", "")
 
 #define COLOR_PREVIEW(color) \
-"<font size=\"2\" color=\"[color]\"><table style=\"display:inline\" bgcolor=\"[color]\"><tr><td>__</td></tr></table></font>"
+"<table style=\"display: inline; font-size: 13px; color: [color]\" bgcolor=\"[color]\"><tr><td>__</td></tr></table>"
 
-#define UI_FONT_GOOD(X) "<font color='55cc55'>[X]</font>"
-#define UI_FONT_BAD(X) "<font color='cc5555'>[X]</font>"
+#define UI_FONT_GOOD(X) SPAN_COLOR("#55cc55", X)
+#define UI_FONT_BAD(X) SPAN_COLOR("#cc5555", X)

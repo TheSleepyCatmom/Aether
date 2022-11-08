@@ -34,7 +34,37 @@
 
 /obj/item/gun/projectile/shotgun/pump/attack_self(mob/living/user as mob)
 	if(world.time >= recentpump + 10)
-		pump(user)
+		if(!is_held_twohanded(user))
+			var/fail_chance = user.skill_fail_chance(SKILL_WEAPONS, 90, SKILL_EXPERT, 0.25)
+			var/drop_chance = user.skill_fail_chance(SKILL_WEAPONS, 50, SKILL_EXPERT, 0.5)
+
+			if (!fail_chance)
+				user.visible_message(
+					SPAN_NOTICE("\The [user] racks \the [src] with one hand."),
+					SPAN_NOTICE("You manage to rack \the [src] with one hand.")
+				)
+				pump(user)
+			else if (prob(fail_chance))
+				if (prob(drop_chance) && user.unEquip(src, user.loc))
+					user.visible_message(
+						SPAN_WARNING("\The [user] attempts to rack \the [src], but it falls out of their hands!"),
+						SPAN_WARNING("You attempt to rack \the [src], but it falls out of your hands!")
+					)
+				else
+					user.visible_message(
+						SPAN_WARNING("\The [user] fails to rack \the [src]!"),
+						SPAN_WARNING("You fail to rack \the [src]!")
+					)
+			else
+				user.visible_message(
+					SPAN_NOTICE("\The [user] manages to akwardly rack \the [src] with one hand."),
+					SPAN_NOTICE("You manage to awkwardly rack \the [src] with one hand.")
+				)
+				pump(user)
+
+		else
+			pump(user)
+
 		recentpump = world.time
 
 /obj/item/gun/projectile/shotgun/pump/proc/pump(mob/M as mob)
@@ -118,18 +148,18 @@
 			var/obj/item/gun/energy/plasmacutter/cutter = A
 			if(!cutter.slice(user))
 				return ..()
-		to_chat(user, "<span class='notice'>You begin to shorten the barrel of \the [src].</span>")
+		to_chat(user, SPAN_NOTICE("You begin to shorten the barrel of \the [src]."))
 		if(loaded.len)
 			for(var/i in 1 to max_shells)
 				Fire(user, user)	//will this work? //it will. we call it twice, for twice the FUN
-			user.visible_message("<span class='danger'>The shotgun goes off!</span>", "<span class='danger'>The shotgun goes off in your face!</span>")
+			user.visible_message(SPAN_DANGER("The shotgun goes off!"), SPAN_DANGER("The shotgun goes off in your face!"))
 			return
 		if(do_after(user, 3 SECONDS, src, DO_DEFAULT | DO_BOTH_UNIQUE_ACT))	//SHIT IS STEALTHY EYYYYY
 			user.unEquip(src)
 			var/obj/item/gun/projectile/shotgun/doublebarrel/sawn/empty/buddy = new(loc)
 			transfer_fingerprints_to(buddy)
 			qdel(src)
-			to_chat(user, "<span class='warning'>You shorten the barrel of \the [src]!</span>")
+			to_chat(user, SPAN_WARNING("You shorten the barrel of \the [src]!"))
 	else
 		..()
 

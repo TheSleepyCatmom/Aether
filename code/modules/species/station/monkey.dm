@@ -145,7 +145,6 @@
 	greater_form = SPECIES_SKRELL
 	flesh_color = "#8cd7a3"
 	blood_color = "#1d2cbf"
-	reagent_tag = IS_SKRELL
 	tail = null
 	force_cultural_info = list(
 		TAG_CULTURE =   CULTURE_NEARA,
@@ -166,20 +165,14 @@
 	greater_form = SPECIES_UNATHI
 	flesh_color = "#34af10"
 	base_color = "#066000"
-	reagent_tag = IS_UNATHI
 	force_cultural_info = list(
 		TAG_CULTURE =   CULTURE_STOK,
 		TAG_HOMEWORLD = HOME_SYSTEM_STATELESS,
 		TAG_FACTION =   FACTION_TEST_SUBJECTS
 	)
 
-/datum/species/monkey/unathi/proc/handle_sugar(mob/living/carbon/human/M, datum/reagent/sugar, efficiency = 1)
-	var/effective_dose = efficiency * M.chem_doses[sugar.type]
-	if(effective_dose < 5)
-		return
-	M.druggy = max(M.druggy, 10)
-	M.add_chemical_effect(CE_PULSE, -1)
-	if(effective_dose > 15 && prob(7))
-		M.emote(pick("twitch", "drool"))
-	if(effective_dose > 20 && prob(10))
-		M.SelfMove(pick(GLOB.cardinal))
+	traits = list(
+		/singleton/trait/boon/filtered_blood = TRAIT_LEVEL_EXISTS,
+		/singleton/trait/boon/cast_iron_stomach = TRAIT_LEVEL_EXISTS,
+		/singleton/trait/malus/sugar = TRAIT_LEVEL_MAJOR
+	)

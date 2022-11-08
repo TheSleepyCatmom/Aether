@@ -13,7 +13,7 @@
 	var/improvefloors = 0
 	var/eattiles = 0
 	var/maketiles = 0
-	var/floor_build_type = /decl/flooring/tiling // Basic steel floor.
+	var/floor_build_type = /singleton/flooring/tiling // Basic steel floor.
 	var/boxtype = "blue"
 
 /mob/living/bot/floorbot/premade
@@ -80,7 +80,7 @@
 	if(!emagged)
 		emagged = TRUE
 		if(user)
-			to_chat(user, "<span class='notice'>The [src] buzzes and beeps.</span>")
+			to_chat(user, SPAN_NOTICE("The [src] buzzes and beeps."))
 		return 1
 
 /mob/living/bot/floorbot/handleRegular()
@@ -143,12 +143,12 @@
 		busy = 1
 		update_icons()
 		if(F.flooring)
-			visible_message("<span class='warning'>[src] begins to tear the floor tile from the floor.</span>")
+			visible_message(SPAN_WARNING("[src] begins to tear the floor tile from the floor."))
 			if(do_after(src, 5 SECONDS, F, DO_DEFAULT | DO_USER_UNIQUE_ACT | DO_PUBLIC_PROGRESS))
 				F.break_tile_to_plating()
 				addTiles(1)
 		else
-			visible_message("<span class='danger'>[src] begins to tear through the floor!</span>")
+			visible_message(SPAN_DANGER("[src] begins to tear through the floor!"))
 			if(do_after(src, 15 SECONDS, F, DO_DEFAULT | DO_USER_UNIQUE_ACT | DO_PUBLIC_PROGRESS)) // Extra time because this can and will kill.
 				F.ReplaceWithLattice()
 				addTiles(1)
@@ -159,7 +159,7 @@
 		if(F.broken || F.burnt)
 			busy = 1
 			update_icons()
-			visible_message("<span class='notice'>[src] begins to remove the broken floor.</span>")
+			visible_message(SPAN_NOTICE("[src] begins to remove the broken floor."))
 			anchored = TRUE
 			if(do_after(src, 5 SECONDS, F, DO_DEFAULT | DO_USER_UNIQUE_ACT | DO_PUBLIC_PROGRESS))
 				if(F.broken || F.burnt)
@@ -171,18 +171,18 @@
 		else if(!F.flooring && amount)
 			busy = 1
 			update_icons()
-			visible_message("<span class='notice'>[src] begins to improve the floor.</span>")
+			visible_message(SPAN_NOTICE("[src] begins to improve the floor."))
 			anchored = TRUE
 			if(do_after(src, 5 SECONDS, F, DO_DEFAULT | DO_USER_UNIQUE_ACT | DO_PUBLIC_PROGRESS))
 				if(!F.flooring)
-					F.set_flooring(decls_repository.get_decl(floor_build_type))
+					F.set_flooring(GET_SINGLETON(floor_build_type))
 					addTiles(-1)
 			anchored = FALSE
 			target = null
 			update_icons()
 	else if(istype(A, /obj/item/stack/tile/floor) && amount < maxAmount)
 		var/obj/item/stack/tile/floor/T = A
-		visible_message("<span class='notice'>\The [src] begins to collect tiles.</span>")
+		visible_message(SPAN_NOTICE("\The [src] begins to collect tiles."))
 		busy = 1
 		update_icons()
 		anchored = TRUE
@@ -197,7 +197,7 @@
 	else if(istype(A, /obj/item/stack/material) && amount + 4 <= maxAmount)
 		var/obj/item/stack/material/M = A
 		if(M.get_material_name() == MATERIAL_STEEL)
-			visible_message("<span class='notice'>\The [src] begins to make tiles.</span>")
+			visible_message(SPAN_NOTICE("\The [src] begins to make tiles."))
 			busy = 1
 			anchored = TRUE
 			update_icons()
@@ -209,7 +209,7 @@
 
 /mob/living/bot/floorbot/explode()
 	turn_off()
-	visible_message("<span class='danger'>[src] blows apart!</span>")
+	visible_message(SPAN_DANGER("[src] blows apart!"))
 	var/turf/Tsec = get_turf(src)
 
 

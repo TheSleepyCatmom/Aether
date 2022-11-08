@@ -42,7 +42,7 @@
 			if(nozzle.check_blockage())
 				return
 		nozzle.update_use_power(POWER_USE_IDLE)
-		if(nozzle.stat & NOPOWER)//try again
+		if(!nozzle.is_powered())//try again
 			nozzle.power_change()
 		if(nozzle.is_on())//if everything is in working order, start booting!
 			nozzle.next_on = world.time + nozzle.boot_time
@@ -62,7 +62,7 @@
 	atmos_canpass = CANPASS_NEVER
 	connect_types = CONNECT_TYPE_REGULAR|CONNECT_TYPE_FUEL
 
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	maximum_component_parts = list(/obj/item/stock_parts = 6)//don't want too many, let upgraded component shine
 	uncreated_component_parts = list(/obj/item/stock_parts/power/apc/buildable = 1)
 
@@ -110,14 +110,14 @@
 /obj/machinery/atmospherics/unary/engine/proc/get_status()
 	. = list()
 	.+= "Location: [get_area(src)]."
-	if(stat & NOPOWER)
-		.+= "<span class='average'>Insufficient power to operate.</span>"
+	if(!is_powered())
+		.+= SPAN_CLASS("average", "Insufficient power to operate.")
 	if(!check_fuel())
-		.+= "<span class='average'>Insufficient fuel for a burn.</span>"
-	if(stat & BROKEN)
-		.+= "<span class='average'>Inoperable engine configuration.</span>"
+		.+= SPAN_CLASS("average", "Insufficient fuel for a burn.")
+	if(MACHINE_IS_BROKEN(src))
+		.+= SPAN_CLASS("average", "Inoperable engine configuration.")
 	if(blockage)
-		.+= "<span class='average'>Obstruction of airflow detected.</span>"
+		.+= SPAN_CLASS("average", "Obstruction of airflow detected.")
 
 	.+= "Propellant total mass: [round(air_contents.get_mass(),0.01)] kg."
 	.+= "Propellant used per burn: [round(air_contents.specific_mass() * moles_per_burn * thrust_limit,0.01)] kg."
@@ -126,7 +126,7 @@
 
 /obj/machinery/atmospherics/unary/engine/power_change()
 	. = ..()
-	if(stat & NOPOWER)
+	if(!is_powered())
 		update_use_power(POWER_USE_OFF)
 
 /obj/machinery/atmospherics/unary/engine/update_use_power()
@@ -163,7 +163,7 @@
 	if(!is_on())
 		return 0
 	if(!check_fuel() || (0 < use_power_oneoff(charge_per_burn)) || check_blockage())
-		audible_message("<span class='warning'>[src] coughs once and goes silent!</span>")
+		audible_message(SPAN_WARNING("[src] coughs once and goes silent!"))
 		update_use_power(POWER_USE_OFF)
 		return 0
 
@@ -225,5 +225,5 @@
 
 /obj/machinery/atmospherics/unary/engine/terminal
 	base_type = /obj/machinery/atmospherics/unary/engine
-	stock_part_presets = list(/decl/stock_part_preset/terminal_setup)
+	stock_part_presets = list(/singleton/stock_part_preset/terminal_setup)
 	uncreated_component_parts = list(/obj/item/stock_parts/power/terminal/buildable = 1)

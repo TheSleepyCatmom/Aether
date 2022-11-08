@@ -63,7 +63,7 @@ GLOBAL_DATUM_INIT(wizards, /datum/antagonist/wizard, new)
 
 /datum/antagonist/wizard/update_antag_mob(datum/mind/wizard)
 	..()
-	wizard.StoreMemory("<B>Remember:</B> do not forget to prepare your spells.", /decl/memory_options/system)
+	wizard.StoreMemory("<B>Remember:</B> do not forget to prepare your spells.", /singleton/memory_options/system)
 	wizard.current.real_name = "[pick(GLOB.wizard_first)] [pick(GLOB.wizard_second)]"
 	wizard.current.SetName(wizard.current.real_name)
 
@@ -72,8 +72,8 @@ GLOBAL_DATUM_INIT(wizards, /datum/antagonist/wizard, new)
 	if(!..())
 		return 0
 
-	var/outfit_type = pick(subtypesof(/decl/hierarchy/outfit/wizard))
-	var/decl/hierarchy/outfit/wizard_outfit = outfit_by_type(outfit_type)
+	var/outfit_type = pick(subtypesof(/singleton/hierarchy/outfit/wizard))
+	var/singleton/hierarchy/outfit/wizard_outfit = outfit_by_type(outfit_type)
 	wizard_outfit.equip(wizard_mob)
 
 	return 1
@@ -116,12 +116,12 @@ Made a proc so this is not repeated 14 (or more) times.*/
 // Humans can wear clothes.
 /mob/living/carbon/human/wearing_wiz_garb()
 	if(!is_wiz_garb(src.wear_suit) && (!src.species.hud || (slot_wear_suit in src.species.hud.equip_slots)))
-		to_chat(src, "<span class='warning'>I don't feel strong enough without my robe.</span>")
+		to_chat(src, SPAN_WARNING("I don't feel strong enough without my robe."))
 		return 0
 	if(!is_wiz_garb(src.shoes) && (!species.hud || (slot_shoes in src.species.hud.equip_slots)))
-		to_chat(src, "<span class='warning'>I don't feel strong enough without my sandals.</span>")
+		to_chat(src, SPAN_WARNING("I don't feel strong enough without my sandals."))
 		return 0
 	if(!is_wiz_garb(src.head) && (!species.hud || (slot_head in src.species.hud.equip_slots)))
-		to_chat(src, "<span class='warning'>I don't feel strong enough without my hat.</span>")
+		to_chat(src, SPAN_WARNING("I don't feel strong enough without my hat."))
 		return 0
 	return 1

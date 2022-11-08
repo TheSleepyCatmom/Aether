@@ -58,7 +58,7 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 
 // attack by item places it in to disposal
 /obj/machinery/disposal/attackby(obj/item/I, mob/user)
-	if(stat & BROKEN || !I || !user)
+	if(MACHINE_IS_BROKEN(src) || !I || !user)
 		return
 
 	add_fingerprint(user, 0, I)
@@ -104,7 +104,7 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 
 	if(istype(I, /obj/item/storage/bag/trash))
 		var/obj/item/storage/bag/trash/T = I
-		to_chat(user, "<span class='notice'>You empty the bag.</span>")
+		to_chat(user, SPAN_NOTICE("You empty the bag."))
 		for(var/obj/item/O in T.contents)
 			T.remove_from_storage(O,src, 1)
 		T.finish_bulk_removal()
@@ -145,7 +145,7 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 	if(AM == user)
 		incapacitation_flags &= ~INCAPACITATION_RESTRAINED
 
-	if(stat & BROKEN || !CanMouseDrop(AM, user, incapacitation_flags) || AM.anchored || !isturf(user.loc))
+	if(MACHINE_IS_BROKEN(src) || !CanMouseDrop(AM, user, incapacitation_flags) || AM.anchored || !isturf(user.loc))
 		return
 
 	// Animals can only put themself in
@@ -169,17 +169,17 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 	src.add_fingerprint(user)
 	var/old_loc = AM.loc
 	if(AM == user)
-		user.visible_message("<span class='warning'>[user] starts climbing into [src].</span>", \
-							 "<span class='notice'>You start climbing into [src].</span>")
+		user.visible_message(SPAN_WARNING("[user] starts climbing into [src]."), \
+							 SPAN_NOTICE("You start climbing into [src]."))
 	else
-		user.visible_message("<span class='[is_dangerous ? "warning" : "notice"]'>[user] starts stuffing [AM] into [src].</span>", \
-							 "<span class='notice'>You start stuffing [AM] into [src].</span>")
+		user.visible_message(SPAN_CLASS("[is_dangerous ? "warning" : "notice"]", "[user] starts stuffing [AM] into [src]."), \
+							 SPAN_NOTICE("You start stuffing [AM] into [src]."))
 
 	if(!do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
 		return
 
 	// Repeat checks
-	if(stat & BROKEN || user.incapacitated(incapacitation_flags))
+	if(MACHINE_IS_BROKEN(src) || user.incapacitated(incapacitation_flags))
 		return
 	if(!AM || old_loc != AM.loc || AM.anchored)
 		return
@@ -188,12 +188,12 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 
 	// Messages and logging
 	if(AM == user)
-		user.visible_message("<span class='danger'>[user] climbs into [src].</span>", \
-							 "<span class='notice'>You climb into [src].</span>")
+		user.visible_message(SPAN_DANGER("[user] climbs into [src]."), \
+							 SPAN_NOTICE("You climb into [src]."))
 		admin_attack_log(user, null, "Stuffed themselves into \the [src].", null, "stuffed themselves into \the [src].")
 	else
-		user.visible_message("<span class='[is_dangerous ? "danger" : "notice"]'>[user] stuffs [AM] into [src][is_dangerous ? "!" : "."]</span>", \
-							 "<span class='notice'>You stuff [AM] into [src].</span>")
+		user.visible_message(SPAN_CLASS("[is_dangerous ? "danger" : "notice"]", "[user] stuffs [AM] into [src][is_dangerous ? "!" : "."]"), \
+							 SPAN_NOTICE("You stuff [AM] into [src]."))
 		if(ismob(M))
 			admin_attack_log(user, M, "Placed the victim into \the [src].", "Was placed into \the [src] by the attacker.", "stuffed \the [src] with")
 			if (M.client)
@@ -241,7 +241,7 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 /obj/machinery/disposal/interact(mob/user)
 
 	src.add_fingerprint(user)
-	if(stat & BROKEN)
+	if(MACHINE_IS_BROKEN(src))
 		user.unset_machine()
 		return
 
@@ -276,12 +276,12 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 
 /obj/machinery/disposal/CanUseTopic(mob/user, state, href_list)
 	if(user.loc == src)
-		to_chat(user, "<span class='warning'>You cannot reach the controls from inside.</span>")
+		to_chat(user, SPAN_WARNING("You cannot reach the controls from inside."))
 		return STATUS_CLOSE
 	if(isAI(user) && href_list && (href_list["handle"] || href_list["eject"]))
 		return min(STATUS_UPDATE, ..())
 	if(mode==-1 && href_list && !href_list["eject"]) // only allow ejecting if mode is -1
-		to_chat(user, "<span class='warning'>The disposal units power is disabled.</span>")
+		to_chat(user, SPAN_WARNING("The disposal units power is disabled."))
 		return min(STATUS_UPDATE, ..())
 	if(flushing)
 		return min(STATUS_UPDATE, ..())
@@ -344,7 +344,7 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 // update the icon & overlays to reflect mode & status
 /obj/machinery/disposal/on_update_icon()
 	overlays.Cut()
-	if(stat & BROKEN)
+	if(MACHINE_IS_BROKEN(src))
 		mode = 0
 		flush = 0
 		return
@@ -354,7 +354,7 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 		overlays += image('icons/obj/pipes/disposal.dmi', "dispover-handle")
 
 	// only handle is shown if no power
-	if(stat & NOPOWER || mode == -1)
+	if(!is_powered() || mode == -1)
 		return
 
 	// 	check for items/vomit in disposal - occupied light
@@ -370,7 +370,7 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 // timed process
 // charge the gas reservoir and perform flush if ready
 /obj/machinery/disposal/Process()
-	if(!air_contents || (stat & BROKEN))			// nothing can happen if broken
+	if(!air_contents || MACHINE_IS_BROKEN(src))			// nothing can happen if broken
 		update_use_power(POWER_USE_OFF)
 		return
 
@@ -396,7 +396,7 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 		src.pressurize() //otherwise charge
 
 /obj/machinery/disposal/proc/pressurize()
-	if(stat & NOPOWER)			// won't charge if no power
+	if(!is_powered())			// won't charge if no power
 		update_use_power(POWER_USE_OFF)
 		return
 
@@ -525,7 +525,7 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 	if(isCrowbar(I))
 		var/obj/item/disposal_switch_construct/C = new/obj/item/disposal_switch_construct(src.loc, id_tag)
 		transfer_fingerprints_to(C)
-		user.visible_message("<span class='notice'>\The [user] deattaches \the [src]</span>")
+		user.visible_message(SPAN_NOTICE("\The [user] deattaches \the [src]"))
 		qdel(src)
 	else
 		. = ..()
@@ -567,7 +567,7 @@ GLOBAL_LIST_EMPTY(diversion_junctions)
 			found = 1
 			break
 	if(!found)
-		to_chat(user, "[icon2html(src, user)]<span class=notice>\The [src] is not linked to any junctions!</span>")
+		to_chat(user, "[icon2html(src, user)][SPAN_NOTICE("\The [src] is not linked to any junctions!")]")
 		return
 	var/obj/machinery/disposal_switch/NC = new/obj/machinery/disposal_switch(A, id_tag)
 	transfer_fingerprints_to(NC)

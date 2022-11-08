@@ -55,7 +55,7 @@
 	synth_modifier = 0
 	stasis_power = 0
 	interact_offline = TRUE
-	stat_immune = NOPOWER
+	stat_immune = MACHINE_STAT_NOPOWER
 
 /obj/machinery/sleeper/mounted/ui_interact(mob/user, ui_key = "main", datum/nanoui/ui = null, force_open = 1, datum/topic_state/state = GLOB.mech_state)
 	. = ..()
@@ -74,9 +74,9 @@
 
 		if(beaker)
 			beaker.forceMove(get_turf(src))
-			user.visible_message("<span class='notice'>\The [user] removes \the [beaker] from \the [src].</span>", "<span class='notice'>You remove \the [beaker] from \the [src].</span>")
+			user.visible_message(SPAN_NOTICE("\The [user] removes \the [beaker] from \the [src]."), SPAN_NOTICE("You remove \the [beaker] from \the [src]."))
 		beaker = I
-		user.visible_message("<span class='notice'>\The [user] adds \a [I] to \the [src].</span>", "<span class='notice'>You add \a [I] to \the [src].</span>")
+		user.visible_message(SPAN_NOTICE("\The [user] adds \a [I] to \the [src]."), SPAN_NOTICE("You add \a [I] to \the [src]."))
 
 /obj/item/mech_equipment/mender
 	name = "exosuit medigel spray"

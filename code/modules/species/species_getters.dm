@@ -65,7 +65,7 @@
 
 	var/covered = 0 // Basic coverage can help.
 	for(var/obj/item/clothing/clothes in H)
-		if(H.l_hand == clothes || H.r_hand == clothes)
+		if (H.IsHolding(clothes))
 			continue
 		if((clothes.body_parts_covered & UPPER_TORSO) && (clothes.body_parts_covered & LOWER_TORSO))
 			covered = 1
@@ -74,10 +74,10 @@
 	switch(msg_type)
 		if("cold")
 			if(!covered)
-				to_chat(H, "<span class='danger'>[pick(cold_discomfort_strings)]</span>")
+				to_chat(H, SPAN_DANGER("[pick(cold_discomfort_strings)]"))
 		if("heat")
 			if(covered)
-				to_chat(H, "<span class='danger'>[pick(heat_discomfort_strings)]</span>")
+				to_chat(H, SPAN_DANGER("[pick(heat_discomfort_strings)]"))
 
 /datum/species/proc/get_vision_flags(mob/living/carbon/human/H)
 	return vision_flags

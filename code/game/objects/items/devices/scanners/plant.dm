@@ -76,12 +76,12 @@
 	dat += "<h2>Other Data</h2>"
 
 	if(grown_seed.get_trait(TRAIT_HARVEST_REPEAT))
-		dat += "This plant can be harvested repeatedly.<br>"
+		dat += "This species can be harvested repeatedly.<br>"
 
 	if(grown_seed.get_trait(TRAIT_IMMUTABLE) == -1)
-		dat += "This plant is highly mutable.<br>"
+		dat += "This species is highly mutable.<br>"
 	else if(grown_seed.get_trait(TRAIT_IMMUTABLE) > 0)
-		dat += "This plant does not possess genetics that are alterable.<br>"
+		dat += "This species does not possess genetics that are alterable.<br>"
 
 	if(grown_seed.get_trait(TRAIT_REQUIRES_NUTRIENTS))
 		if(grown_seed.get_trait(TRAIT_NUTRIENT_CONSUMPTION) < 0.05)
@@ -154,7 +154,7 @@
 		dat += "<br>It will periodically alter the local temperature by [grown_seed.get_trait(TRAIT_ALTER_TEMP)] degrees Kelvin."
 
 	if(grown_seed.get_trait(TRAIT_BIOLUM))
-		dat += "<br>It is [grown_seed.get_trait(TRAIT_BIOLUM_COLOUR)  ? "<font color='[grown_seed.get_trait(TRAIT_BIOLUM_COLOUR)]'>bio-luminescent</font>" : "bio-luminescent"]."
+		dat += "<br>It is [grown_seed.get_trait(TRAIT_BIOLUM_COLOUR)  ? SPAN_COLOR("[grown_seed.get_trait(TRAIT_BIOLUM_COLOUR)]", "bio-luminescent") : "bio-luminescent"]."
 
 	if(grown_seed.get_trait(TRAIT_PRODUCES_POWER))
 		dat += "<br>The fruit will function as a battery if prepared appropriately."

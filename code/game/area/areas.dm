@@ -85,7 +85,7 @@
 
 	//Check all the alarms before lowering atmosalm. Raising is perfectly fine.
 	for (var/obj/machinery/alarm/AA in src)
-		if (!(AA.stat & (NOPOWER|BROKEN)) && !AA.shorted && AA.report_danger_level)
+		if (AA.operable() && !AA.shorted && AA.report_danger_level)
 			danger_level = max(danger_level, AA.danger_level)
 
 	if(danger_level != atmosalm)
@@ -288,7 +288,7 @@
 			sound_to(living, sound(null, channel = GLOB.ambience_channel_forced))
 
 	var/time = world.time
-	if (ambience && time > client.next_ambience_time)
+	if (ambience?.len && time > client.next_ambience_time)
 		var/sound = sound(pick(ambience), repeat = FALSE, wait = 0, volume = 15, channel = GLOB.ambience_channel_common)
 		living.playsound_local(turf, sound)
 		client.next_ambience_time = time + rand(3, 5) MINUTES
@@ -325,7 +325,7 @@
 			else
 				H.AdjustStunned(3)
 				H.AdjustWeakened(3)
-			to_chat(mob, "<span class='notice'>The sudden appearance of gravity makes you fall to the floor!</span>")
+			to_chat(mob, SPAN_NOTICE("The sudden appearance of gravity makes you fall to the floor!"))
 
 /// Trigger for the prison break event. Causes lighting to overload and dooes to open. Has no effect if the area lacks an APC or the APC is turned off.
 /area/proc/prison_break()

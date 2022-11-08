@@ -20,6 +20,12 @@
 	var/husk_icon =    'icons/mob/human_races/species/default_husk.dmi'
 	var/bandages_icon
 
+	/// The width of this species' icons.
+	var/icon_width = 32
+
+	/// The height of this species' icons.
+	var/icon_height = 32
+
 	// Damage overlay and masks.
 	var/damage_overlays = 'icons/mob/human_races/species/human/damage_overlay.dmi'
 	var/damage_mask =     'icons/mob/human_races/species/human/damage_mask.dmi'
@@ -114,7 +120,6 @@
 	var/limbs_are_nonsolid
 	var/spawns_with_stack = 0
 	// Environment tolerance/life processes vars.
-	var/reagent_tag                                             // Used for metabolizing reagents.
 	var/breath_pressure = 16                                    // Minimum partial pressure safe for breathing, kPa
 	var/breath_type = GAS_OXYGEN                                  // Non-oxygen gas breathed, if any.
 	var/poison_types = list(GAS_PHORON = TRUE, GAS_CHLORINE = TRUE) // Noticeably poisonous air - ie. updates the toxins indicator on the HUD.
@@ -166,7 +171,7 @@
 	var/spawn_flags = 0           // Flags that specify who can spawn as this species
 	var/slowdown = 0              // Passive movement speed malus (or boost, if negative)
 	// Move intents. Earlier in list == default for that type of movement.
-	var/list/move_intents = list(/decl/move_intent/walk, /decl/move_intent/run, /decl/move_intent/creep)
+	var/list/move_intents = list(/singleton/move_intent/walk, /singleton/move_intent/run, /singleton/move_intent/creep)
 
 	var/primitive_form            // Lesser form, if any (ie. monkey for humans)
 	var/greater_form              // Greater form, if any, ie. human for monkeys.
@@ -237,7 +242,7 @@
 	)
 
 	var/standing_jump_range = 2
-	var/list/maneuvers = list(/decl/maneuver/leap)
+	var/list/maneuvers = list(/singleton/maneuver/leap)
 
 	var/list/available_cultural_info = list(
 		TAG_CULTURE =   list(CULTURE_OTHER),
@@ -250,11 +255,13 @@
 	var/list/additional_available_cultural_info = list()
 	var/max_players
 
+	var/list/default_emotes = list()
+
 	// Order matters, higher pain level should be higher up
 	var/list/pain_emotes_with_pain_level = list(
-		list(/decl/emote/audible/scream, /decl/emote/audible/whimper, /decl/emote/audible/moan, /decl/emote/audible/cry) = 70,
-		list(/decl/emote/audible/grunt, /decl/emote/audible/groan, /decl/emote/audible/moan) = 40,
-		list(/decl/emote/audible/grunt, /decl/emote/audible/groan) = 10,
+		list(/singleton/emote/audible/scream, /singleton/emote/audible/whimper, /singleton/emote/audible/moan, /singleton/emote/audible/cry) = 70,
+		list(/singleton/emote/audible/grunt, /singleton/emote/audible/groan, /singleton/emote/audible/moan) = 40,
+		list(/singleton/emote/audible/grunt, /singleton/emote/audible/groan) = 10,
 	)
 
 
@@ -270,6 +277,8 @@
 	/// When being fed a reagent item, the amount this species eats per bite on help intent.
 	var/ingest_amount = 10
 
+	/// An associative list of /singleton/trait and trait level - See individual traits for valid levels
+	var/list/traits = list()
 /*
 These are all the things that can be adjusted for equipping stuff and
 each one can be in the NORTH, SOUTH, EAST, and WEST direction. Specify
@@ -415,8 +424,8 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 		if(FEMALE)
 			t_him = "her"
 
-	H.visible_message("<span class='notice'>[H] hugs [target] to make [t_him] feel better!</span>", \
-					"<span class='notice'>You hug [target] to make [t_him] feel better!</span>")
+	H.visible_message(SPAN_NOTICE("[H] hugs [target] to make [t_him] feel better!"), \
+					SPAN_NOTICE("You hug [target] to make [t_him] feel better!"))
 
 	if(H != target)
 		H.update_personal_goal(/datum/goal/achievement/givehug, TRUE)
@@ -450,6 +459,8 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 	return
 
 /datum/species/proc/handle_post_spawn(mob/living/carbon/human/H) //Handles anything not already covered by basic species assignment.
+	H.icon_width = icon_width
+	H.icon_height = icon_height
 	add_inherent_verbs(H)
 	add_base_auras(H)
 	H.mob_bump_flag = bump_flag
@@ -654,9 +665,9 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 		target.apply_effect(2, EFFECT_WEAKEN, armor_check)
 		playsound(target.loc, 'sound/weapons/thudswoosh.ogg', 50, 1, -1)
 		if(armor_check < 100)
-			target.visible_message("<span class='danger'>[attacker] has pushed [target]!</span>")
+			target.visible_message(SPAN_DANGER("[attacker] has pushed [target]!"))
 		else
-			target.visible_message("<span class='warning'>[attacker] attempted to push [target]!</span>")
+			target.visible_message(SPAN_WARNING("[attacker] attempted to push [target]!"))
 		return
 
 	if(randn <= disarm_threshold)
@@ -668,23 +679,23 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 		//Actually disarm them
 		for(var/obj/item/I in holding)
 			if(I && target.unEquip(I))
-				target.visible_message("<span class='danger'>[attacker] has disarmed [target]!</span>")
+				target.visible_message(SPAN_DANGER("[attacker] has disarmed [target]!"))
 				playsound(target.loc, 'sound/weapons/thudswoosh.ogg', 50, 1, -1)
 				return
 
 	playsound(target.loc, 'sound/weapons/punchmiss.ogg', 25, 1, -1)
-	target.visible_message("<span class='danger'>[attacker] attempted to disarm \the [target]!</span>")
+	target.visible_message(SPAN_DANGER("[attacker] attempted to disarm \the [target]!"))
 
 /datum/species/proc/disfigure_msg(mob/living/carbon/human/H) //Used for determining the message a disfigured face has on examine. To add a unique message, just add this onto a specific species and change the "return" message.
 	var/datum/gender/T = gender_datums[H.get_gender()]
-	return "<span class='danger'>[T.His] face is horribly mangled!</span>\n"
+	return "[SPAN_DANGER("[T.His] face is horribly mangled!")]\n"
 
 /datum/species/proc/max_skin_tone()
-	if(appearance_flags & HAS_SKIN_TONE_GRAV)
+	if(appearance_flags & SPECIES_APPEARANCE_HAS_SKIN_TONE_GRAV)
 		return 100
-	if(appearance_flags & HAS_SKIN_TONE_SPCR)
+	if(appearance_flags & SPECIES_APPEARANCE_HAS_SKIN_TONE_SPCR)
 		return 165
-	if(appearance_flags & HAS_SKIN_TONE_TRITON)
+	if(appearance_flags & SPECIES_APPEARANCE_HAS_SKIN_TONE_TRITON)
 		return 80
 	return 220
 
@@ -775,11 +786,11 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 				dat += "</br><b>Has excellent traction.</b>"
 			if(species_flags & SPECIES_FLAG_NO_POISON)
 				dat += "</br><b>Immune to most poisons.</b>"
-			if(appearance_flags & HAS_A_SKIN_TONE)
+			if(appearance_flags & SPECIES_APPEARANCE_HAS_A_SKIN_TONE)
 				dat += "</br><b>Has a variety of skin tones.</b>"
-			if(appearance_flags & HAS_SKIN_COLOR)
+			if(appearance_flags & SPECIES_APPEARANCE_HAS_SKIN_COLOR)
 				dat += "</br><b>Has a variety of skin colours.</b>"
-			if(appearance_flags & HAS_EYE_COLOR)
+			if(appearance_flags & SPECIES_APPEARANCE_HAS_EYE_COLOR)
 				dat += "</br><b>Has a variety of eye colours.</b>"
 			if(species_flags & SPECIES_FLAG_IS_PLANT)
 				dat += "</br><b>Has a plantlike physiology.</b>"
@@ -830,7 +841,7 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 		var/pain_level = pain_emotes_with_pain_level[pain_emotes]
 		if(pain_level >= pain_power)
 			// This assumes that if a pain-level has been defined it also has a list of emotes to go with it
-			var/decl/emote/E = decls_repository.get_decl(pick(pain_emotes))
+			var/singleton/emote/E = GET_SINGLETON(pick(pain_emotes))
 			return E.key
 
 /datum/species/proc/handle_exertion(mob/living/carbon/human/H)
@@ -853,6 +864,6 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 				H.make_reagent(REM * exertion_reagent_scale, exertion_reagent_path)
 		if (prob(10))
 			var/list/active_emotes = synthetic ? exertion_emotes_synthetic : exertion_emotes_biological
-			var/decl/emote/exertion_emote = decls_repository.get_decl(pick(active_emotes))
+			var/singleton/emote/exertion_emote = GET_SINGLETON(pick(active_emotes))
 			if (exertion_emote)
 				exertion_emote.do_emote(H)

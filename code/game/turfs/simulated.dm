@@ -165,7 +165,7 @@
 /turf/simulated/attackby(obj/item/thing, mob/user)
 	if(isCoil(thing) && can_build_cable(user))
 		var/obj/item/stack/cable_coil/coil = thing
-		coil.turf_place(src, user)
+		coil.PlaceCableOnTurf(src, user)
 		return
 	return ..()
 
@@ -174,7 +174,7 @@
 		fluid_update()
 	. = ..()
 
-/turf/simulated/damage_health(damage, damage_type, damage_flags, severity)
+/turf/simulated/damage_health(damage, damage_type, damage_flags, severity, skip_can_damage_check = FALSE)
 	if (HAS_FLAGS(damage_flags, DAMAGE_FLAG_TURF_BREAKER))
 		damage *= 4
 	. = ..()

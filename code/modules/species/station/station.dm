@@ -15,7 +15,7 @@
 	bandages_icon = 'icons/mob/bandage.dmi'
 
 	spawn_flags = SPECIES_CAN_JOIN
-	appearance_flags = HAS_HAIR_COLOR | HAS_SKIN_TONE_NORMAL | HAS_LIPS | HAS_UNDERWEAR | HAS_EYE_COLOR
+	appearance_flags = SPECIES_APPEARANCE_HAS_HAIR_COLOR | SPECIES_APPEARANCE_HAS_SKIN_TONE_NORMAL | SPECIES_APPEARANCE_HAS_LIPS | SPECIES_APPEARANCE_HAS_UNDERWEAR | SPECIES_APPEARANCE_HAS_EYE_COLOR
 
 	sexybits_location = BP_GROIN
 
@@ -47,13 +47,13 @@
 	exertion_reagent_scale = 5
 	exertion_reagent_path = /datum/reagent/lactate
 	exertion_emotes_biological = list(
-		/decl/emote/exertion/biological,
-		/decl/emote/exertion/biological/breath,
-		/decl/emote/exertion/biological/pant
+		/singleton/emote/exertion/biological,
+		/singleton/emote/exertion/biological/breath,
+		/singleton/emote/exertion/biological/pant
 	)
 	exertion_emotes_synthetic = list(
-		/decl/emote/exertion/synthetic,
-		/decl/emote/exertion/synthetic/creak
+		/singleton/emote/exertion/synthetic,
+		/singleton/emote/exertion/synthetic/creak
 	)
 
 /datum/species/human/get_bodytype(mob/living/carbon/human/H)
@@ -151,7 +151,7 @@
 	darksight_tint = DARKTINT_MODERATE
 
 	spawn_flags = SPECIES_CAN_JOIN | SPECIES_IS_WHITELISTED
-	appearance_flags = HAS_HAIR_COLOR | HAS_LIPS | HAS_UNDERWEAR | HAS_SKIN_COLOR
+	appearance_flags = SPECIES_APPEARANCE_HAS_HAIR_COLOR | SPECIES_APPEARANCE_HAS_STATIC_HAIR | SPECIES_APPEARANCE_HAS_LIPS | SPECIES_APPEARANCE_HAS_UNDERWEAR | SPECIES_APPEARANCE_HAS_SKIN_COLOR
 
 	flesh_color = "#8cd7a3"
 	blood_color = "#1d2cbf"
@@ -169,13 +169,18 @@
 	cold_discomfort_level = 292 //Higher than perhaps it should be, to avoid big speed reduction at normal room temp
 	heat_discomfort_level = 368
 
-	reagent_tag = IS_SKRELL
-
 	descriptors = list(
 		/datum/mob_descriptor/height = 1,
 		/datum/mob_descriptor/build = 0,
 		/datum/mob_descriptor/headtail_length = 0
 	)
+
+	speech_sounds = list(
+		'sound/skrell/warble1.ogg',
+		'sound/skrell/warble2.ogg',
+		'sound/skrell/warble3.ogg'
+	)
+	speech_chance = 10
 
 	available_cultural_info = list(
 		TAG_CULTURE = list(
@@ -234,27 +239,23 @@
 	exertion_reagent_scale = 5
 	exertion_reagent_path = /datum/reagent/lactate
 	exertion_emotes_biological = list(
-		/decl/emote/exertion/biological,
-		/decl/emote/exertion/biological/breath,
-		/decl/emote/exertion/biological/pant
+		/singleton/emote/exertion/biological,
+		/singleton/emote/exertion/biological/breath,
+		/singleton/emote/exertion/biological/pant
 	)
 	exertion_emotes_synthetic = list(
-		/decl/emote/exertion/synthetic,
-		/decl/emote/exertion/synthetic/creak
+		/singleton/emote/exertion/synthetic,
+		/singleton/emote/exertion/synthetic/creak
 	)
 
 	ingest_amount = 15
 
-
-/datum/species/skrell/proc/handle_protein(mob/living/carbon/human/M, datum/reagent/protein)
-	var/effective_dose = M.chem_doses[protein.type] * protein.protein_amount
-	if (effective_dose > 20)
-		M.adjustToxLoss(clamp((effective_dose - 20) / 4, 2, 10))
-		M.vomit(8, 3, rand(1 SECONDS, 5 SECONDS))
-	else if (effective_dose > 10)
-		M.vomit(4, 2, rand(3 SECONDS, 10 SECONDS))
-	else
-		M.vomit(1, 1, rand(5 SECONDS, 15 SECONDS))
+	traits = list(
+		/singleton/trait/boon/clear_mind = TRAIT_LEVEL_MINOR,
+		/singleton/trait/malus/animal_protein = TRAIT_LEVEL_MAJOR,
+		/singleton/trait/malus/ethanol = TRAIT_LEVEL_MODERATE,
+		/singleton/trait/general/permeable_skin = TRAIT_LEVEL_MINOR
+	)
 
 /datum/species/skrell/get_sex(mob/living/carbon/human/H)
 	return istype(H) && (H.descriptors["headtail length"] == 1 ? MALE : FEMALE)
@@ -275,7 +276,7 @@
 	deform = 'icons/mob/human_races/species/diona/deformed_body.dmi'
 	preview_icon = 'icons/mob/human_races/species/diona/preview.dmi'
 	hidden_from_codex = FALSE
-	move_intents = list(/decl/move_intent/walk, /decl/move_intent/creep)
+	move_intents = list(/singleton/move_intent/walk, /singleton/move_intent/creep)
 	unarmed_types = list(/datum/unarmed_attack/stomp, /datum/unarmed_attack/kick, /datum/unarmed_attack/diona)
 	//primitive_form = "Nymph"
 	slowdown = 5
@@ -354,7 +355,6 @@
 	blood_color = "#004400"
 	flesh_color = "#907e4a"
 
-	reagent_tag = IS_DIONA
 	genders = list(PLURAL)
 
 	available_cultural_info = list(
@@ -362,6 +362,12 @@
 		TAG_HOMEWORLD = list(HOME_SYSTEM_DIONAEA),
 		TAG_FACTION =   list(FACTION_OTHER),
 		TAG_RELIGION =  list(RELIGION_OTHER)
+	)
+
+	traits = list(
+		/singleton/trait/boon/clear_mind = TRAIT_LEVEL_MAJOR,
+		/singleton/trait/general/metabolically_inert = TRAIT_LEVEL_MODERATE,
+		/singleton/trait/general/nonpermeable_skin = TRAIT_LEVEL_EXISTS
 	)
 
 /proc/spawn_diona_nymph(turf/target)
@@ -435,7 +441,7 @@
 
 		if(H.mind)
 			H.mind.transfer_to(S)
-		H.visible_message("<span class='danger'>\The [H] collapses into parts, revealing a solitary diona nymph at the core.</span>")
+		H.visible_message(SPAN_DANGER("\The [H] collapses into parts, revealing a solitary diona nymph at the core."))
 		return
 	else
 		split_into_nymphs(H, TRUE)

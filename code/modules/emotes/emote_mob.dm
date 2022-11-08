@@ -10,7 +10,7 @@
 		return
 	if(usr == src) //client-called emote
 		if (client && (client.prefs.muted & MUTE_IC))
-			to_chat(src, "<span class='warning'>You cannot send IC messages (muted).</span>")
+			to_chat(src, SPAN_WARNING("You cannot send IC messages (muted)."))
 			return
 
 		if(act == "help")
@@ -18,7 +18,7 @@
 			return
 
 		if(!can_emote(m_type))
-			to_chat(src, "<span class='warning'>You cannot currently [m_type == AUDIBLE_MESSAGE ? "audibly" : "visually"] emote!</span>")
+			to_chat(src, SPAN_WARNING("You cannot currently [m_type == AUDIBLE_MESSAGE ? "audibly" : "visually"] emote!"))
 			return
 
 		if(act == "me")
@@ -42,9 +42,9 @@
 		act = copytext(tempstr,1,splitpoint)
 		message = copytext(tempstr,splitpoint+1,0)
 
-	var/decl/emote/use_emote = usable_emotes[act]
+	var/singleton/emote/use_emote = usable_emotes[act]
 	if(!use_emote)
-		to_chat(src, "<span class='warning'>Unknown emote '[act]'. Type <b>say *help</b> for a list of usable emotes.</span>")
+		to_chat(src, SPAN_WARNING("Unknown emote '[act]'. Type <b>say *help</b> for a list of usable emotes."))
 		return
 
 	if(m_type != use_emote.message_type && use_emote.conscious && stat != CONSCIOUS)
@@ -67,7 +67,7 @@
 	var/end_char
 	var/start_char
 	var/name_anchor
-	var/anchor_char = get_prefix_key(/decl/prefix/visible_emote)
+	var/anchor_char = get_prefix_key(/singleton/prefix/visible_emote)
 
 	if(!message || !emoter)
 		return
@@ -85,7 +85,7 @@
 	// Oh shit, we got this far! Let's see... did the user attempt to use more than one token?
 	if(findtext(subtext, anchor_char))
 		// abort abort!
-		to_chat(emoter, "<span class='warning'>You may use only one \"[anchor_char]\" symbol in your emote.</span>")
+		to_chat(emoter, SPAN_WARNING("You may use only one \"[anchor_char]\" symbol in your emote."))
 		return
 
 	if(pretext)
@@ -154,4 +154,4 @@
 
 /mob/observer/ghost/emote(act, type, message)
 	if(message && act == "me")
-		communicate(/decl/communication_channel/dsay, client, message, /decl/dsay_communication/emote)
+		communicate(/singleton/communication_channel/dsay, client, message, /singleton/dsay_communication/emote)

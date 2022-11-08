@@ -86,7 +86,7 @@
 		var/obj/machinery/alarm/alarm = locate() in A // Only test areas with functional alarms
 		if(!alarm)
 			continue
-		if(alarm.stat & (NOPOWER | BROKEN))
+		if(alarm.inoperable())
 			continue
 
 		for(var/tag in A.air_vent_names) // The point of this test is that while the names list is registered at init, the info is transmitted by radio.
@@ -242,12 +242,12 @@
 /datum/unit_test/map_image_map_test/start_test()
 	var/failed = FALSE
 
-	for(var/z in GLOB.using_map.map_levels)
-		var/file_name = map_image_file_name(z)
+	for (var/i = 1 to length(GLOB.using_map.map_levels))
+		var/file_name = map_image_file_name(i)
 		var/file_path = MAP_IMAGE_PATH + file_name
 		if(!fexists(file_path))
 			failed = TRUE
-			log_unit_test("[GLOB.using_map.path]-[z] is missing its map image [file_name].")
+			log_unit_test("[GLOB.using_map.path]-[i] is missing its map image [file_name].")
 
 	if(failed)
 		fail("One or more map levels were missing a corresponding map image.")
@@ -428,7 +428,7 @@
 		checked_cameras++
 		group_by(cameras_by_ctag, C.c_tag, C)
 
-	var/number_of_issues = number_of_issues(cameras_by_ctag, "Camera c_tags", /decl/noi_feedback/detailed)
+	var/number_of_issues = number_of_issues(cameras_by_ctag, "Camera c_tags", /singleton/noi_feedback/detailed)
 	if(number_of_issues)
 		fail("[number_of_issues] issue\s with camera c_tags found.")
 	else

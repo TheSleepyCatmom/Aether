@@ -30,13 +30,13 @@
 		/obj/item/stock_parts/power/apc
 	)
 	public_variables = list(
-		/decl/public_access/public_variable/emitter_active,
-		/decl/public_access/public_variable/emitter_locked
+		/singleton/public_access/public_variable/emitter_active,
+		/singleton/public_access/public_variable/emitter_locked
 	)
 	public_methods = list(
-		/decl/public_access/public_method/toggle_emitter
+		/singleton/public_access/public_method/toggle_emitter
 	)
-	stock_part_presets = list(/decl/stock_part_preset/radio/receiver/emitter = 1)
+	stock_part_presets = list(/singleton/stock_part_preset/radio/receiver/emitter = 1)
 
 /obj/machinery/power/emitter/anchored
 	anchored = TRUE
@@ -53,7 +53,7 @@
 
 /obj/machinery/power/emitter/Destroy()
 	log_and_message_admins("deleted \the [src]")
-	investigate_log("<font color='red'>deleted</font> at ([x],[y],[z])","singulo")
+	investigate_log("[SPAN_COLOR("red", "deleted")] at ([x],[y],[z])","singulo")
 	return ..()
 
 /obj/machinery/power/emitter/examine(mob/user)
@@ -104,7 +104,7 @@
 					visible_message(SPAN_NOTICE("\The [src] turns off."))
 				playsound(src, "switch", 50)
 				log_and_message_admins("turned off \the [src] in [A.name]", user, src)
-				investigate_log("turned <font color='red'>off</font> by [key_name_admin(user || usr)] in [A.name]","singulo")
+				investigate_log("turned [SPAN_COLOR("red", "off")] by [key_name_admin(user || usr)] in [A.name]","singulo")
 			else
 				active = TRUE
 				if (user)
@@ -122,7 +122,7 @@
 				shot_number = 0
 				fire_delay = get_initial_fire_delay()
 				log_and_message_admins("turned on \the [src] in [A.name]", user, src)
-				investigate_log("turned <font color='green'>on</font> by [key_name_admin(user || usr)] in [A.name]","singulo")
+				investigate_log("turned [SPAN_COLOR("green", "on")] by [key_name_admin(user || usr)] in [A.name]","singulo")
 			update_icon()
 		else
 			to_chat(user, SPAN_WARNING("The controls are locked!"))
@@ -141,7 +141,7 @@
 	return
 
 /obj/machinery/power/emitter/Process()
-	if (stat & (BROKEN))
+	if (MACHINE_IS_BROKEN(src))
 		return
 	if (state != EMITTER_WELDED || (!powernet && active_power_usage))
 		active = FALSE
@@ -155,13 +155,13 @@
 				powered = TRUE
 				update_icon()
 				visible_message(SPAN_WARNING("\The [src] powers up!"))
-				investigate_log("regained power and turned <font color='green'>on</font>","singulo")
+				investigate_log("regained power and turned [SPAN_COLOR("green", "on")]","singulo")
 		else
 			if (powered)
 				powered = FALSE
 				update_icon()
 				visible_message(SPAN_WARNING("\The [src] powers down!"))
-				investigate_log("lost power and turned <font color='red'>off</font>","singulo")
+				investigate_log("lost power and turned [SPAN_COLOR("red", "off")]","singulo")
 			return
 
 		last_shot = world.time
@@ -305,31 +305,31 @@
 /obj/machinery/power/emitter/proc/get_emitter_beam()
 	return new /obj/item/projectile/beam/emitter(get_turf(src))
 
-/decl/public_access/public_method/toggle_emitter
+/singleton/public_access/public_method/toggle_emitter
 	name = "toggle emitter"
 	desc = "Toggles whether or not the emitter is active. It must be unlocked to work."
 	call_proc = /obj/machinery/power/emitter/proc/activate
 
-/decl/public_access/public_variable/emitter_active
+/singleton/public_access/public_variable/emitter_active
 	expected_type = /obj/machinery/power/emitter
 	name = "emitter active"
 	desc = "Whether or not the emitter is firing."
 	can_write = FALSE
 	has_updates = FALSE
 
-/decl/public_access/public_variable/emitter_active/access_var(obj/machinery/power/emitter/emitter)
+/singleton/public_access/public_variable/emitter_active/access_var(obj/machinery/power/emitter/emitter)
 	return emitter.active
 
-/decl/public_access/public_variable/emitter_locked
+/singleton/public_access/public_variable/emitter_locked
 	expected_type = /obj/machinery/power/emitter
 	name = "emitter locked"
 	desc = "Whether or not the emitter is locked. Being locked prevents one from changing the active state."
 	can_write = FALSE
 	has_updates = FALSE
 
-/decl/public_access/public_variable/emitter_locked/access_var(obj/machinery/power/emitter/emitter)
+/singleton/public_access/public_variable/emitter_locked/access_var(obj/machinery/power/emitter/emitter)
 	return emitter.locked
 
-/decl/stock_part_preset/radio/receiver/emitter
+/singleton/stock_part_preset/radio/receiver/emitter
 	frequency = BUTTON_FREQ
-	receive_and_call = list("button_active" = /decl/public_access/public_method/toggle_emitter)
+	receive_and_call = list("button_active" = /singleton/public_access/public_method/toggle_emitter)

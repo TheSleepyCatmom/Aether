@@ -11,7 +11,7 @@
 	if(screen == 1)
 		dat += "Select an event to trigger:<br>"
 
-		var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
+		var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
 		if(security_state.current_security_level == security_state.severe_security_level)
 			dat += "Cannot modify the alert level at this time: [security_state.severe_security_level.name] engaged.<br>"
 		else
@@ -39,11 +39,11 @@
 /obj/machinery/keycard_auth/torch/trigger_event()
 	switch(event)
 		if("Red alert")
-			var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
+			var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
 			security_state.stored_security_level = security_state.current_security_level
 			security_state.set_security_level(security_state.high_security_level)
 		if("Revert alert")
-			var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
+			var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
 			security_state.set_security_level(security_state.stored_security_level)
 		if("Grant Emergency Maintenance Access")
 			GLOB.using_map.make_maint_all_access()
@@ -51,7 +51,7 @@
 			GLOB.using_map.revoke_maint_all_access()
 		if("Emergency Response Team")
 			if(is_ert_blocked())
-				to_chat(usr, "<span class='warning'>All emergency response teams are dispatched and can not be called at this time.</span>")
+				to_chat(usr, SPAN_WARNING("All emergency response teams are dispatched and can not be called at this time."))
 				return
 
 			trigger_armed_response_team(1)
@@ -67,7 +67,7 @@
 			GLOB.using_map.unbolt_saferooms()
 		if("Evacuate")
 			if(!evacuation_controller)
-				to_chat(usr, "<span class='danger'>Unable to initiate evacuation!</span>")
+				to_chat(usr, SPAN_DANGER("Unable to initiate evacuation!"))
 				return
 			for (var/datum/evacuation_option/EO in evacuation_controller.available_evac_options())
 				if(EO.abandon_ship)

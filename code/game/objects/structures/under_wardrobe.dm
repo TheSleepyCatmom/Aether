@@ -13,7 +13,7 @@
 		if(!user.unEquip(underwear))
 			return
 		qdel(underwear)
-		user.visible_message("<span class='notice'>\The [user] inserts \their [underwear.name] into \the [src].</span>", "<span class='notice'>You insert your [underwear.name] into \the [src].</span>")
+		user.visible_message(SPAN_NOTICE("\The [user] inserts \their [underwear.name] into \the [src]."), SPAN_NOTICE("You insert your [underwear.name] into \the [src]."))
 
 		var/id = user.GetIdCard()
 		var/message
@@ -40,7 +40,7 @@
 
 /obj/structure/undies_wardrobe/attack_hand(mob/user)
 	if(!human_who_can_use_underwear(user))
-		to_chat(user, "<span class='warning'>Sadly there's nothing in here for you to wear.</span>")
+		to_chat(user, SPAN_WARNING("Sadly there's nothing in here for you to wear."))
 		return
 	interact(user)
 
@@ -57,7 +57,7 @@
 	show_browser(H, dat, "window=wardrobe;size=400x250")
 
 /obj/structure/undies_wardrobe/proc/human_who_can_use_underwear(mob/living/carbon/human/H)
-	if(!istype(H) || !H.species || !(H.species.appearance_flags & HAS_UNDERWEAR))
+	if(!istype(H) || !H.species || !(H.species.appearance_flags & SPECIES_APPEARANCE_HAS_UNDERWEAR))
 		return FALSE
 	return TRUE
 

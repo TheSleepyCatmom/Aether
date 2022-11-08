@@ -136,7 +136,7 @@
 		var/obj/item/weldingtool/WT = W
 		if(WT.isOn() && WT.get_fuel() > 2 && use(2))
 			WT.remove_fuel(2, user)
-			to_chat(user,"<span class='notice'>You recover some [reinf_material.use_name] from the [src].</span>")
+			to_chat(user,SPAN_NOTICE("You recover some [reinf_material.use_name] from the [src]."))
 			reinf_material.place_sheet(get_turf(user), 1)
 			return
 	return ..()
@@ -245,6 +245,16 @@
 	default_type = MATERIAL_SILVER
 
 /obj/item/stack/material/silver/ten
+	amount = 10
+
+/obj/item/stack/material/electrum
+	name = "electrum"
+	icon_state = "ingot"
+	plural_icon_state = "ingot-mult"
+	max_icon_state = "ingot-max"
+	default_type = MATERIAL_ELECTRUM
+
+/obj/item/stack/material/electrum/ten
 	amount = 10
 
 //Valuable resource, cargo can sell it.

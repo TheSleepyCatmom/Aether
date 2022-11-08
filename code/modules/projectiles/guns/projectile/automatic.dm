@@ -53,12 +53,11 @@
 
 	if(!ammo_magazine || !LAZYLEN(ammo_magazine.stored_ammo))
 		icon_state = "mpistolen-empty"
-		overlays += image(icon, "ammo_bad")
+		overlays += image(icon, "[initial(icon_state)]-ammo0")
 	else if(LAZYLEN(ammo_magazine.stored_ammo) <= 0.5 * ammo_magazine.max_ammo)
-		overlays += image(icon, "ammo_warn")
-		return
+		overlays += image(icon, "[initial(icon_state)]-ammo1")
 	else
-		overlays += image(icon, "ammo_ok")
+		overlays += image(icon, "[initial(icon_state)]-ammo2")
 
 /obj/item/gun/projectile/automatic/merc_smg
 	name = "submachine gun"
@@ -242,6 +241,25 @@
 	else
 		to_chat(user, "\The [launcher] is empty.")
 
+/obj/item/gun/projectile/automatic/bullpup_rifle/light
+	name = "light bullpup assault rifle"
+	desc = "The standard-issue rifle of the SCGDF. The Z9 Pitbull is the modern answer to violence's question. It has been given a blued finish with a Sol yellow stripe on its stock for easy identification of its owner."
+	icon = 'icons/obj/guns/bullpup_rifle_light.dmi'
+	item_state = "z9carbine"
+	caliber = CALIBER_RIFLE
+	ammo_type = /obj/item/ammo_casing/rifle
+	magazine_type = /obj/item/ammo_magazine/rifle
+	allowed_magazines = /obj/item/ammo_magazine/rifle
+	one_hand_penalty = 6 //Slightly lighter than the Z8. Still don't try it.
+	wielded_item_state = "z9carbine-wielded"
+	firemodes = list( //Two round bursts. More accurate than the Z8 due to less maximum dispersion. More delay between shots, however, so slower.
+		list(mode_name="semi auto",       burst=1,    fire_delay=null,    move_delay=null, use_launcher=null, one_hand_penalty=6, burst_accuracy=null, dispersion=null),
+		list(mode_name="2-round bursts", burst=2,    fire_delay=null, move_delay=6,    use_launcher=null, one_hand_penalty=7, burst_accuracy=list(0,-1), dispersion=list(0.0, 0.6)),
+		list(mode_name="fire grenades",  burst=null, fire_delay=null, move_delay=null, use_launcher=1,    one_hand_penalty=10, burst_accuracy=null, dispersion=null)
+		)
+
+
+
 /obj/item/gun/projectile/automatic/l6_saw
 	name = "light machine gun"
 	desc = "A rather traditionally made L6 SAW with a pleasantly lacquered wooden pistol grip. Has 'Aussec Armoury- 2281' engraved on the reciever." //probably should refluff this
@@ -281,13 +299,13 @@
 
 /obj/item/gun/projectile/automatic/l6_saw/special_check(mob/user)
 	if(cover_open)
-		to_chat(user, "<span class='warning'>[src]'s cover is open! Close it before firing!</span>")
+		to_chat(user, SPAN_WARNING("[src]'s cover is open! Close it before firing!"))
 		return 0
 	return ..()
 
 /obj/item/gun/projectile/automatic/l6_saw/proc/toggle_cover(mob/user)
 	cover_open = !cover_open
-	to_chat(user, "<span class='notice'>You [cover_open ? "open" : "close"] [src]'s cover.</span>")
+	to_chat(user, SPAN_NOTICE("You [cover_open ? "open" : "close"] [src]'s cover."))
 	update_icon()
 
 /obj/item/gun/projectile/automatic/l6_saw/attack_self(mob/user as mob)
@@ -316,13 +334,13 @@
 
 /obj/item/gun/projectile/automatic/l6_saw/load_ammo(obj/item/A, mob/user)
 	if(!cover_open)
-		to_chat(user, "<span class='warning'>You need to open the cover to load that into [src].</span>")
+		to_chat(user, SPAN_WARNING("You need to open the cover to load that into [src]."))
 		return
 	..()
 
 /obj/item/gun/projectile/automatic/l6_saw/unload_ammo(mob/user, allow_dump=1)
 	if(!cover_open)
-		to_chat(user, "<span class='warning'>You need to open the cover to unload [src].</span>")
+		to_chat(user, SPAN_WARNING("You need to open the cover to unload [src]."))
 		return
 	..()
 

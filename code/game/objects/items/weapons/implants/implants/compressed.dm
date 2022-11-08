@@ -25,9 +25,9 @@
 	qdel(src)
 
 /obj/item/implant/compressed/implanted(mob/source)
-	src.activation_emote = input("Choose activation emote:") in list("blink", "blink_r", "eyebrow", "chuckle", "twitch_v", "frown", "nod", "blush", "giggle", "grin", "groan", "shrug", "smile", "pale", "sniff", "whimper", "wink")
+	src.activation_emote = input("Choose activation emote:") in list("blink", "blink_r", "eyebrow", "chuckle", "twitch_v", "frown", "nod", "blush", "giggle", "grin", "groan", "shrug", "slowclap", "smile", "pale", "sniff", "whimper", "wink")
 	if (source.mind)
-		source.StoreMemory("Compressed matter implant can be activated by using the [src.activation_emote] emote, <B>say *[src.activation_emote]</B> to attempt to activate.", /decl/memory_options/system)
+		source.StoreMemory("Compressed matter implant can be activated by using the [src.activation_emote] emote, <B>say *[src.activation_emote]</B> to attempt to activate.", /singleton/memory_options/system)
 	to_chat(source, "The implanted compressed matter implant can be activated by using the [src.activation_emote] emote, <B>say *[src.activation_emote]</B> to attempt to activate.")
 	return TRUE
 
@@ -64,11 +64,11 @@
 		var/obj/item/implant/compressed/c = imp
 		if (c.scanned)
 			if (!istype(A,/obj/item/storage))
-				to_chat(user, "<span class='warning'>Something is already compressed inside the implant!</span>")
+				to_chat(user, SPAN_WARNING("Something is already compressed inside the implant!"))
 			return
 		else if(safe)
 			if (!istype(A,/obj/item/storage))
-				to_chat(user, "<span class='warning'>The matter compressor safeties prevent you from doing that.</span>")
+				to_chat(user, SPAN_WARNING("The matter compressor safeties prevent you from doing that."))
 			return
 		if(istype(A.loc,/mob/living/carbon/human))
 			var/mob/living/carbon/human/H = A.loc
@@ -88,5 +88,5 @@
 		return ..()
 
 	safe = !safe
-	to_chat(user, "<span class='notice'>You [safe ? "enable" : "disable"] the matter compressor safety.</span>")
+	to_chat(user, SPAN_NOTICE("You [safe ? "enable" : "disable"] the matter compressor safety."))
 	src.desc = "The matter compressor safety is [safe ? "on" : "off"]."

@@ -36,14 +36,14 @@
 
 /obj/machinery/drone_fabricator/power_change()
 	. = ..()
-	if (stat & NOPOWER)
+	if (!is_powered())
 		icon_state = "drone_fab_nopower"
 
 /obj/machinery/drone_fabricator/Process()
 	if(GAME_STATE < RUNLEVEL_GAME)
 		return
 
-	if(stat & NOPOWER || !produce_drones)
+	if(!is_powered() || !produce_drones)
 		if(icon_state != "drone_fab_nopower") icon_state = "drone_fab_nopower"
 		return
 
@@ -65,7 +65,7 @@
 
 /obj/machinery/drone_fabricator/proc/create_drone(client/player)
 
-	if(stat & NOPOWER)
+	if(!is_powered())
 		return
 
 	if(!produce_drones || !config.allow_drone_spawn || count_drones() >= config.max_maint_drones)
@@ -96,20 +96,20 @@
 /proc/try_drone_spawn(mob/user, obj/machinery/drone_fabricator/fabricator)
 
 	if(GAME_STATE < RUNLEVEL_GAME)
-		to_chat(user, "<span class='danger'>The game hasn't started yet!</span>")
+		to_chat(user, SPAN_DANGER("The game hasn't started yet!"))
 		return
 
 	if(!(config.allow_drone_spawn))
-		to_chat(user, "<span class='danger'>That verb is not currently permitted.</span>")
+		to_chat(user, SPAN_DANGER("That verb is not currently permitted."))
 		return
 
 	if(jobban_isbanned(user,"Robot"))
-		to_chat(user, "<span class='danger'>You are banned from playing synthetics and cannot spawn as a drone.</span>")
+		to_chat(user, SPAN_DANGER("You are banned from playing synthetics and cannot spawn as a drone."))
 		return
 
 	if(config.use_age_restriction_for_jobs && isnum(user.client.player_age))
 		if(user.client.player_age <= 3)
-			to_chat(user, "<span class='danger'> Your account is not old enough to play as a maintenance drone.</span>")
+			to_chat(user, SPAN_DANGER(" Your account is not old enough to play as a maintenance drone."))
 			return
 
 	if(!user.MayRespawn(1, DRONE_SPAWN_DELAY))
@@ -119,12 +119,12 @@
 
 		var/list/all_fabricators = list()
 		for(var/obj/machinery/drone_fabricator/DF in SSmachines.machinery)
-			if((DF.stat & NOPOWER) || !DF.produce_drones || DF.drone_progress < 100)
+			if(!DF.is_powered() || !DF.produce_drones || DF.drone_progress < 100)
 				continue
 			all_fabricators[DF.fabricator_tag] = DF
 
 		if(!all_fabricators.len)
-			to_chat(user, "<span class='danger'>There are no available drone spawn points, sorry.</span>")
+			to_chat(user, SPAN_DANGER("There are no available drone spawn points, sorry."))
 			return
 
 		var/choice = input(user,"Which fabricator do you wish to use?") as null|anything in all_fabricators
@@ -132,7 +132,7 @@
 			return
 		fabricator = all_fabricators[choice]
 
-	if(user && fabricator && !((fabricator.stat & NOPOWER) || !fabricator.produce_drones || fabricator.drone_progress < 100))
+	if(user && fabricator && !(!fabricator.is_powered() || !fabricator.produce_drones || fabricator.drone_progress < 100))
 		log_and_message_admins("has joined the round as a maintenance drone.")
 		var/mob/drone = fabricator.create_drone(user.client)
 		if(drone)

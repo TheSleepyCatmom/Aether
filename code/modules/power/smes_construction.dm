@@ -126,7 +126,7 @@
 	if(RCon)
 		..()
 	else // RCON wire cut
-		to_chat(user, "<span class='warning'>Connection error: Destination Unreachable.</span>")
+		to_chat(user, SPAN_WARNING("Connection error: Destination Unreachable."))
 
 // Proc: recalc_coils()
 // Parameters: None
@@ -236,7 +236,7 @@
 			// Sparks, Near - instantkill shock, Strong EMP, 25% light overload, 5% APC failure. 50% of SMES explosion. This is bad.
 			s.set_up(10,1,src)
 			s.start()
-			to_chat(h_user, SPAN_WARNING("Massive electrical arc sparks between you and [src].<br>Last thing you can think about is <span class='danger'>\"Oh shit...\"</span>"))
+			to_chat(h_user, SPAN_WARNING("Massive electrical arc sparks between you and [src].<br>Last thing you can think about is [SPAN_CLASS("danger", "\"Oh shit...\"")]"))
 			// Remember, we have few gigajoules of electricity here.. Turn them into crispy toast.
 			h_user.electrocute_act(rand(170,210), src, def_zone = ran_zone(null))
 			h_user.Paralyse(8)
@@ -290,12 +290,12 @@
 	if(failing)
 		return SPAN_WARNING("\The [src]'s screen is flashing with alerts. It seems to be overloaded! Touching it now is probably not a good idea.")
 
-	if(state_path == /decl/machine_construction/default/deconstructed)
+	if(state_path == /singleton/machine_construction/default/deconstructed)
 		if(charge > (capacity/100) && safeties_enabled)
 			return SPAN_WARNING("\The [src]'s safety circuit is preventing modifications while it's charged!")
 		if(output_attempt || input_attempt)
 			return SPAN_WARNING("Turn \the [src] off first!")
-		if(!(stat & BROKEN))
+		if(!MACHINE_IS_BROKEN(src))
 			return SPAN_WARNING("You have to disassemble the terminal[num_terminals > 1 ? "s" : ""] first!")
 		if(user)
 			if(!do_after(user, 5 SECONDS * number_of_components(/obj/item/stock_parts/smes_coil), src, DO_REPAIR_CONSTRUCT) && isCrowbar(user.get_active_hand()))
@@ -336,7 +336,7 @@
 /obj/machinery/power/smes/buildable/attackby(obj/item/W as obj, mob/user as mob)
 	// No more disassembling of overloaded SMESs. You broke it, now enjoy the consequences.
 	if (failing)
-		to_chat(user, "<span class='warning'>\The [src]'s screen is flashing with alerts. It seems to be overloaded! Touching it now is probably not a good idea.</span>")
+		to_chat(user, SPAN_WARNING("\The [src]'s screen is flashing with alerts. It seems to be overloaded! Touching it now is probably not a good idea."))
 		return
 
 	if (!..())
@@ -346,7 +346,7 @@
 			var/newtag = input(user, "Enter new RCON tag. Use \"NO_TAG\" to disable RCON or leave empty to cancel.", "SMES RCON system") as text
 			if(newtag)
 				RCon_tag = newtag
-				to_chat(user, "<span class='notice'>You changed the RCON tag to: [newtag]</span>")
+				to_chat(user, SPAN_NOTICE("You changed the RCON tag to: [newtag]"))
 
 // Proc: toggle_input()
 // Parameters: None

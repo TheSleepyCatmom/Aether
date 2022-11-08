@@ -46,7 +46,7 @@
 	var/const/STATUS_DISPLAY_TIME = 4
 	var/const/STATUS_DISPLAY_IMAGE = 5
 	var/const/STATUS_DISPLAY_CUSTOM = 99
-	
+
 	var/status_display_show_alert_border = FALSE
 
 /obj/machinery/status_display/Destroy()
@@ -62,13 +62,13 @@
 
 // timed process
 /obj/machinery/status_display/Process()
-	if(stat & NOPOWER)
+	if(!is_powered())
 		remove_display()
 		return
 	update()
 
 /obj/machinery/status_display/emp_act(severity)
-	if(stat & (BROKEN|NOPOWER))
+	if(inoperable())
 		..(severity)
 		return
 	set_picture("ai_bsod")
@@ -78,7 +78,7 @@
 /obj/machinery/status_display/proc/update()
 	remove_display()
 	if(friendc && !ignore_friendc)
-		set_picture("ai_friend")		
+		set_picture("ai_friend")
 		if(status_display_show_alert_border)
 			add_alert_border_to_display()
 		return 1
@@ -154,7 +154,7 @@
 	if(mode != STATUS_DISPLAY_BLANK && mode != STATUS_DISPLAY_ALERT)
 		to_chat(user, "The display says:<br>\t[sanitize(message1)]<br>\t[sanitize(message2)]")
 	if(mode == STATUS_DISPLAY_ALERT || status_display_show_alert_border)
-		var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
+		var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
 		to_chat(user, "The current alert level is [security_state.current_security_level.name].")
 
 /obj/machinery/status_display/proc/set_message(m1, m2)
@@ -176,18 +176,18 @@
 	status_display_show_alert_border = !status_display_show_alert_border
 
 /obj/machinery/status_display/proc/add_alert_border_to_display()
-	var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
-	var/decl/security_level/sl = security_state.current_security_level	
+	var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
+	var/singleton/security_level/sl = security_state.current_security_level
 
 	var/border = image(sl.icon,sl.alert_border)
 
 	overlays |= border
 
-/obj/machinery/status_display/proc/display_alert()	
+/obj/machinery/status_display/proc/display_alert()
 	remove_display()
 
-	var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
-	var/decl/security_level/sl = security_state.current_security_level
+	var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
+	var/singleton/security_level/sl = security_state.current_security_level
 
 	var/image/alert = image(sl.icon, sl.overlay_status_display)
 

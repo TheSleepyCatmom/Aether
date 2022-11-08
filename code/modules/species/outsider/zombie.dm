@@ -71,7 +71,7 @@ GLOBAL_LIST_INIT(zombie_species, list(\
 	hidden_from_codex = TRUE
 	has_fine_manipulation = FALSE
 	unarmed_types = list(/datum/unarmed_attack/bite/sharp/zombie)
-	move_intents = list(/decl/move_intent/creep)
+	move_intents = list(/singleton/move_intent/creep)
 	var/heal_rate = 1 // Regen.
 	var/mob/living/carbon/human/target = null
 	var/list/obstacles = list(
@@ -94,9 +94,9 @@ GLOBAL_LIST_INIT(zombie_species, list(\
 	H.mutations |= MUTATION_FERAL
 	H.mutations |= mNobreath //Byond doesn't like adding them all in one OR statement :(
 	H.verbs += /mob/living/carbon/proc/consume
-	H.move_intents = list(/decl/move_intent/creep) //Zooming days are over
+	H.move_intents = list(/singleton/move_intent/creep) //Zooming days are over
 	H.a_intent = "harm"
-	H.move_intent = new /decl/move_intent/creep
+	H.move_intent = new /singleton/move_intent/creep
 	H.default_run_intent = H.move_intent
 	H.default_walk_intent = H.move_intent
 
@@ -289,7 +289,7 @@ GLOBAL_LIST_INIT(zombie_species, list(\
 	heating_point = null
 	should_admin_log = TRUE
 
-/datum/reagent/zombie/affect_blood(mob/living/carbon/M, alien, removed)
+/datum/reagent/zombie/affect_blood(mob/living/carbon/M, removed)
 	if (!ishuman(M))
 		return
 	var/mob/living/carbon/human/H = M
@@ -303,12 +303,12 @@ GLOBAL_LIST_INIT(zombie_species, list(\
 		if (M.getBrainLoss() > 140)
 			H.zombify()
 		if (prob(1))
-			to_chat(M, SPAN_WARNING("<font style='font-size:[rand(1,2)]'>[pick(GLOB.zombie_messages["stage1"])]</font>"))
+			to_chat(M, SPAN_WARNING(SPAN_SIZE(rand(1,2), pick(GLOB.zombie_messages["stage1"]))))
 
 	if (true_dose >= 60)
 		M.bodytemperature += 7.5
 		if (prob(3))
-			to_chat(M, SPAN_WARNING("<font style='font-size:2'>[pick(GLOB.zombie_messages["stage1"])]</font>"))
+			to_chat(M, SPAN_WARNING(FONT_NORMAL(pick(GLOB.zombie_messages["stage1"]))))
 		if (M.getBrainLoss() < 20)
 			M.adjustBrainLoss(rand(1, 2))
 
@@ -321,14 +321,14 @@ GLOBAL_LIST_INIT(zombie_species, list(\
 			H.seizure()
 			H.adjustBrainLoss(rand(12, 24))
 		if (prob(5))
-			to_chat(M, SPAN_DANGER("<font style='font-size:[rand(2,3)]'>[pick(GLOB.zombie_messages["stage2"])]</font>"))
+			to_chat(M, SPAN_DANGER(SPAN_SIZE(rand(2,3), pick(GLOB.zombie_messages["stage2"]))))
 		M.bodytemperature += 9
 
 	if (true_dose >= 110)
 		M.adjustHalLoss(5)
 		M.make_dizzy(10)
 		if (prob(8))
-			to_chat(M, SPAN_DANGER("<font style='font-size:[rand(3,4)]'>[pick(GLOB.zombie_messages["stage3"])]</font>"))
+			to_chat(M, SPAN_DANGER(SPAN_SIZE(rand(3,4), pick(GLOB.zombie_messages["stage3"]))))
 
 	if (true_dose >= 135)
 		if (prob(3))
@@ -336,8 +336,8 @@ GLOBAL_LIST_INIT(zombie_species, list(\
 
 	M.reagents.add_reagent(/datum/reagent/zombie, Frand(0.1, 1))
 
-/datum/reagent/zombie/affect_touch(mob/living/carbon/M, alien, removed)
-	affect_blood(M, alien, removed * 0.5)
+/datum/reagent/zombie/affect_touch(mob/living/carbon/M, removed)
+	affect_blood(M, removed * 0.5)
 
 
 //// Zombie Procs
@@ -393,7 +393,7 @@ GLOBAL_LIST_INIT(zombie_species, list(\
 
 	if (skillset && skillset.skill_list)
 		skillset.skill_list = list()
-		for(var/decl/hierarchy/skill/S in GLOB.skills) //Only want trained CQC and athletics
+		for(var/singleton/hierarchy/skill/S in GLOB.skills) //Only want trained CQC and athletics
 			skillset.skill_list[S.type] = SKILL_NONE
 		skillset.skill_list[SKILL_HAULING] = SKILL_ADEPT
 		skillset.skill_list[SKILL_COMBAT] = SKILL_ADEPT
@@ -513,15 +513,15 @@ GLOBAL_LIST_INIT(zombie_species, list(\
 /mob/living/carbon/human/zombie/New(new_loc)
 	..(new_loc, SPECIES_ZOMBIE)
 
-	var/decl/cultural_info/culture = get_cultural_value(TAG_CULTURE)
+	var/singleton/cultural_info/culture = get_cultural_value(TAG_CULTURE)
 	SetName(culture.get_random_name(gender))
 	real_name = name
 
-	var/decl/hierarchy/outfit/outfit = pick(
-		/decl/hierarchy/outfit/job/science/scientist,\
-		/decl/hierarchy/outfit/job/engineering/engineer,\
-		/decl/hierarchy/outfit/job/cargo/mining,\
-		/decl/hierarchy/outfit/job/medical/chemist\
+	var/singleton/hierarchy/outfit/outfit = pick(
+		/singleton/hierarchy/outfit/job/science/scientist,\
+		/singleton/hierarchy/outfit/job/engineering/engineer,\
+		/singleton/hierarchy/outfit/job/cargo/mining,\
+		/singleton/hierarchy/outfit/job/medical/chemist\
 	)
 	outfit = outfit_by_type(outfit)
 	outfit.equip(src, OUTFIT_ADJUSTMENT_SKIP_SURVIVAL_GEAR)

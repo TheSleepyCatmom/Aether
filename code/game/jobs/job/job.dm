@@ -35,7 +35,7 @@
 
 	var/hud_icon						  //icon used for Sec HUD overlay
 
-	var/min_skill = list()				  //Minimum skills allowed for the job. List should contain skill (as in /decl/hierarchy/skill path), with values which are numbers.
+	var/min_skill = list()				  //Minimum skills allowed for the job. List should contain skill (as in /singleton/hierarchy/skill path), with values which are numbers.
 	var/max_skill = list()				  //Maximum skills allowed for the job.
 	var/skill_points = 16				  //The number of unassigned skill points the job comes with (on top of the minimum skills).
 	var/no_skill_buffs = FALSE			  //Whether skills can be buffed by age/species modifiers.
@@ -98,7 +98,7 @@
 				imp.part = affected
 			to_chat(H, SPAN_DANGER("As a registered psionic, you are fitted with a psi-dampening control implant. Using psi-power while the implant is active will result in neural shocks and your violation being reported."))
 
-	var/decl/hierarchy/outfit/outfit = get_outfit(H, alt_title, branch, grade)
+	var/singleton/hierarchy/outfit/outfit = get_outfit(H, alt_title, branch, grade)
 	if(outfit) . = outfit.equip(H, title, alt_title)
 
 /datum/job/proc/get_outfit(mob/living/carbon/human/H, alt_title, datum/mil_branch/branch, datum/mil_rank/grade)
@@ -122,7 +122,7 @@
 	var/culture_mod =   0
 	var/culture_count = 0
 	for(var/token in H.cultural_info)
-		var/decl/cultural_info/culture = H.get_cultural_value(token)
+		var/singleton/cultural_info/culture = H.get_cultural_value(token)
 		if(culture && !isnull(culture.economic_power))
 			culture_count++
 			culture_mod += culture.economic_power
@@ -149,12 +149,12 @@
 		if(M.transaction_log.len)
 			var/datum/transaction/T = M.transaction_log[1]
 			remembered_info += "<b>Your account was created:</b> [T.time], [T.date] at [T.get_source_name()]<br>"
-		H.StoreMemory(remembered_info, /decl/memory_options/system)
+		H.StoreMemory(remembered_info, /singleton/memory_options/system)
 		H.mind.initial_account = M
 
 // overrideable separately so AIs/borgs can have cardborg hats without unneccessary new()/qdel()
 /datum/job/proc/equip_preview(mob/living/carbon/human/H, alt_title, datum/mil_branch/branch, datum/mil_rank/grade, additional_skips)
-	var/decl/hierarchy/outfit/outfit = get_outfit(H, alt_title, branch, grade)
+	var/singleton/hierarchy/outfit/outfit = get_outfit(H, alt_title, branch, grade)
 	if(!outfit)
 		return FALSE
 	. = outfit.equip(H, title, alt_title, OUTFIT_ADJUSTMENT_SKIP_POST_EQUIP|OUTFIT_ADJUSTMENT_SKIP_ID_PDA|additional_skips)
@@ -195,28 +195,28 @@
 
 	if (!is_species_whitelist_allowed(prefs.client, use_species_whitelist))
 		S = all_species[use_species_whitelist]
-		to_chat(feedback, "<span class='boldannounce'>\An [S] species whitelist is required for [title].</span>")
+		to_chat(feedback, SPAN_CLASS("boldannounce", "\An [S] species whitelist is required for [title]."))
 		return TRUE
 
 	if(!isnull(allowed_branches) && (!prefs.branches[title] || !is_branch_allowed(prefs.branches[title])))
-		to_chat(feedback, "<span class='boldannounce'>Wrong branch of service for [title]. Valid branches are: [get_branches()].</span>")
+		to_chat(feedback, SPAN_CLASS("boldannounce", "Wrong branch of service for [title]. Valid branches are: [get_branches()]."))
 		return TRUE
 
 	if(!isnull(allowed_ranks) && (!prefs.ranks[title] || !is_rank_allowed(prefs.branches[title], prefs.ranks[title])))
-		to_chat(feedback, "<span class='boldannounce'>Wrong rank for [title]. Valid ranks in [prefs.branches[title]] are: [get_ranks(prefs.branches[title])].</span>")
+		to_chat(feedback, SPAN_CLASS("boldannounce", "Wrong rank for [title]. Valid ranks in [prefs.branches[title]] are: [get_ranks(prefs.branches[title])]."))
 		return TRUE
 
 	S = all_species[prefs.species]
 	if(!is_species_allowed(S))
-		to_chat(feedback, "<span class='boldannounce'>Restricted species, [S], for [title].</span>")
+		to_chat(feedback, SPAN_CLASS("boldannounce", "Restricted species, [S], for [title]."))
 		return TRUE
 
 	if(LAZYACCESS(minimum_character_age, S.get_bodytype()) && (prefs.age < minimum_character_age[S.get_bodytype()]))
-		to_chat(feedback, "<span class='boldannounce'>Not old enough. Minimum character age is [minimum_character_age[S.get_bodytype()]].</span>")
+		to_chat(feedback, SPAN_CLASS("boldannounce", "Not old enough. Minimum character age is [minimum_character_age[S.get_bodytype()]]."))
 		return TRUE
 
 	if(!S.check_background(src, prefs))
-		to_chat(feedback, "<span class='boldannounce'>Incompatible background for [title].</span>")
+		to_chat(feedback, SPAN_CLASS("boldannounce", "Incompatible background for [title]."))
 		return TRUE
 
 	return FALSE
@@ -439,14 +439,14 @@
 	if(spawnpoint)
 		if(!(spawnpoint in GLOB.using_map.allowed_spawns))
 			if(H)
-				to_chat(H, "<span class='warning'>Your chosen spawnpoint ([C.prefs.spawnpoint]) is unavailable for the current map. Spawning you at one of the enabled spawn points instead. To resolve this error head to your character's setup and choose a different spawn point.</span>")
+				to_chat(H, SPAN_WARNING("Your chosen spawnpoint ([C.prefs.spawnpoint]) is unavailable for the current map. Spawning you at one of the enabled spawn points instead. To resolve this error head to your character's setup and choose a different spawn point."))
 			spawnpos = null
 		else
 			spawnpos = spawntypes()[spawnpoint]
 
 	if(spawnpos && !spawnpos.check_job_spawning(title))
 		if(H)
-			to_chat(H, "<span class='warning'>Your chosen spawnpoint ([spawnpos.display_name]) is unavailable for your chosen job ([title]). Spawning you at another spawn point instead.</span>")
+			to_chat(H, SPAN_WARNING("Your chosen spawnpoint ([spawnpos.display_name]) is unavailable for your chosen job ([title]). Spawning you at another spawn point instead."))
 		spawnpos = null
 
 	if(!spawnpos)
@@ -480,7 +480,7 @@
 /datum/job/proc/handle_variant_join(mob/living/carbon/human/H, alt_title)
 	return
 
-/datum/job/proc/get_min_skill(decl/hierarchy/skill/S)
+/datum/job/proc/get_min_skill(singleton/hierarchy/skill/S)
 	if(min_skill)
 		. = min_skill[S.type]
 	if(!.)

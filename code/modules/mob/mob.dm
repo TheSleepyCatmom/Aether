@@ -51,7 +51,7 @@
 	if(!move_intent)
 		move_intent = move_intents[1]
 	if(ispath(move_intent))
-		move_intent = decls_repository.get_decl(move_intent)
+		move_intent = GET_SINGLETON(move_intent)
 	if (!isliving(src))
 		status_flags |= NOTARGET
 	START_PROCESSING_MOB(src)
@@ -222,10 +222,11 @@
 /mob/proc/size_strength_mod()
 	return log(2, mob_size / MOB_MEDIUM)
 
+
 /mob/proc/Life()
-//	if(organStructure)
-//		organStructure.ProcessOrgans()
-	return
+	if(ability_master)
+		ability_master.update_spells(0)
+
 
 #define UNBUCKLED 0
 #define PARTIALLY_BUCKLED 1
@@ -305,27 +306,24 @@
 /mob/proc/show_inv(mob/user as mob)
 	return
 
-//mob verbs are faster than object verbs. See http://www.byond.com/forum/?post=1326139&page=2#comment8198716 for why this isn't atom/verb/examine()
+
 /mob/verb/examinate(atom/A as mob|obj|turf in view())
 	set name = "Examine"
 	set category = "IC"
 
 	if((is_blind(src) || usr && usr.stat) && !isobserver(src))
-		to_chat(src, "<span class='notice'>Something is there but you can't see it.</span>")
+		to_chat(src, SPAN_NOTICE("Something is there but you can't see it."))
 		return 1
-
 	face_atom(A)
-
 	if(!isghost(src))
-		if(A.loc != src || A == l_hand || A == r_hand)
+		if(A.loc != src || IsHolding(A))
 			for(var/mob/M in viewers(4, src))
 				if(M == src)
 					continue
 				if(M.client && M.client.get_preference_value(/datum/client_preference/examine_messages) == GLOB.PREF_SHOW)
 					if(M.is_blind() || is_invisible_to(M))
 						continue
-					to_chat(M, "<span class='subtle'><b>\The [src]</b> looks at \the [A].</span>")
-
+					to_chat(M, SPAN_SUBTLE("<b>\The [src]</b> looks at \the [A]."))
 	var/distance = INFINITY
 	if(isghost(src) || stat == DEAD)
 		distance = 0
@@ -334,9 +332,35 @@
 		var/turf/target_turf = get_turf(A)
 		if(source_turf && source_turf.z == target_turf?.z)
 			distance = get_dist(source_turf, target_turf)
-
 	if(!A.examine(src, distance))
 		crash_with("Improper /examine() override: [log_info_line(A)]")
+	if(get_skill_value(SKILL_FORENSICS) >= SKILL_EXPERT && get_dist(src, A) <= (get_skill_value(SKILL_FORENSICS) - SKILL_ADEPT))
+		var/clue
+		if(LAZYLEN(A.suit_fibers))
+			to_chat(src, SPAN_NOTICE("You notice some fibers embedded in \the [A]."))
+			clue = 1
+		if(LAZYLEN(A.fingerprints))
+			to_chat(src, SPAN_NOTICE("You notice a partial print on \the [A]."))
+			clue = 1
+		if(LAZYLEN(A.gunshot_residue))
+			if(isliving(src))
+				var/mob/living/M = src
+				if(M.isSynthetic())
+					to_chat(src, SPAN_NOTICE("You notice faint black residue on \the [A]."))
+				else
+					to_chat(src, SPAN_NOTICE("You notice a faint acrid smell coming from \the [A]."))
+			else if(isrobot(src))
+				to_chat(src, SPAN_NOTICE("You notice faint black residue on \the [A]."))
+			else
+				to_chat(src, SPAN_NOTICE("You notice a faint acrid smell coming from \the [A]."))
+			clue = 1
+		//Noticing wiped blood is a bit harder
+		if((get_skill_value(SKILL_FORENSICS) >= SKILL_PROF) && LAZYLEN(A.blood_DNA))
+			to_chat(src, SPAN_WARNING("You notice faint blood traces on \The [A]."))
+			clue = 1
+		if(clue && has_client_color(/datum/client_color/noir))
+			playsound_local(null, pick('sound/effects/clue1.ogg','sound/effects/clue2.ogg'), 60, is_global = TRUE)
+
 
 /mob/verb/pointed(atom/A as mob|obj|turf in view())
 	set name = "Point To"
@@ -358,17 +382,15 @@
 
 //Gets the mob grab conga line.
 /mob/proc/ret_grab(list/L)
-	if (!istype(l_hand, /obj/item/grab) && !istype(r_hand, /obj/item/grab))
+	if (!IsHolding(/obj/item/grab))
 		return L
 	if (!L)
 		L = list(src)
-	for(var/A in list(l_hand,r_hand))
-		if (istype(A, /obj/item/grab))
-			var/obj/item/grab/G = A
-			if (!(G.affecting in L))
-				L += G.affecting
-				if (G.affecting)
-					G.affecting.ret_grab(L)
+	for (var/obj/item/grab/grab as anything in GetAllHeld(/obj/item/grab))
+		if (!(grab.affecting in L))
+			L += grab.affecting
+			if (grab.affecting)
+				grab.affecting.ret_grab(L)
 	return L
 
 /mob/verb/mode()
@@ -401,15 +423,15 @@
 /mob/proc/warn_flavor_changed()
 	if(flavor_text && flavor_text != "") // don't spam people that don't use it!
 		to_chat(src, "<h2 class='alert'>OOC Warning:</h2>")
-		to_chat(src, "<span class='alert'>Your flavor text is likely out of date! <a href='byond://?src=\ref[src];flavor_change=1'>Change</a></span>")
+		to_chat(src, SPAN_CLASS("alert", "Your flavor text is likely out of date! <a href='byond://?src=\ref[src];flavor_change=1'>Change</a>"))
 
 /mob/proc/print_flavor_text()
 	if (flavor_text && flavor_text != "")
 		var/msg = replacetext(flavor_text, "\n", " ")
 		if(length(msg) <= 40)
-			return "<span class='notice'>[msg]</span>"
+			return SPAN_NOTICE("[msg]")
 		else
-			return "<span class='notice'>[copytext_preserve_html(msg, 1, 37)]... <a href='byond://?src=\ref[src];flavor_more=1'>More...</a></span>"
+			return SPAN_NOTICE("[copytext_preserve_html(msg, 1, 37)]... <a href='byond://?src=\ref[src];flavor_more=1'>More...</a>")
 
 /client/verb/changes()
 	set name = "Changelog"
@@ -532,7 +554,7 @@
 		return
 
 	if (AM.anchored)
-		to_chat(src, "<span class='warning'>It won't budge!</span>")
+		to_chat(src, SPAN_WARNING("It won't budge!"))
 		return
 
 	var/mob/M = AM
@@ -549,15 +571,15 @@
 			qdel(G) // Makes sure dragging the assailant away from their victim makes them release the grab instead of holding it at long range forever.
 
 		if(!can_pull_mobs || !can_pull_size)
-			to_chat(src, "<span class='warning'>It won't budge!</span>")
+			to_chat(src, SPAN_WARNING("It won't budge!"))
 			return
 
 		if((mob_size < M.mob_size) && (can_pull_mobs != MOB_PULL_LARGER))
-			to_chat(src, "<span class='warning'>It won't budge!</span>")
+			to_chat(src, SPAN_WARNING("It won't budge!"))
 			return
 
 		if((mob_size == M.mob_size) && (can_pull_mobs == MOB_PULL_SMALLER))
-			to_chat(src, "<span class='warning'>It won't budge!</span>")
+			to_chat(src, SPAN_WARNING("It won't budge!"))
 			return
 
 		// If your size is larger than theirs and you have some
@@ -572,7 +594,7 @@
 	else if(isobj(AM))
 		var/obj/I = AM
 		if(!can_pull_size || can_pull_size < I.w_class)
-			to_chat(src, "<span class='warning'>It won't budge!</span>")
+			to_chat(src, SPAN_WARNING("It won't budge!"))
 			return
 
 	if(pulling)
@@ -616,7 +638,7 @@
 		playsound(src.loc, 'sound/weapons/thudswoosh.ogg', 15) //Quieter than hugging/grabbing but we still want some audio feedback
 
 		if(H.pull_damage())
-			to_chat(src, "<span class='danger'>Pulling \the [H] in their current condition would probably be a bad idea.</span>")
+			to_chat(src, SPAN_DANGER("Pulling \the [H] in their current condition would probably be a bad idea."))
 
 		var/obj/item/clothing/C = H.get_covering_equipped_item_by_zone(BP_CHEST)
 		if(istype(C))
@@ -737,8 +759,8 @@
 
 	if(lying)
 		set_density(0)
-		if(l_hand) unEquip(l_hand)
-		if(r_hand) unEquip(r_hand)
+		for (var/obj/item/item as anything in GetAllHeld())
+			unEquip(item)
 	else
 		set_density(initial(density))
 	reset_layer()
@@ -961,21 +983,21 @@
 		return
 	var/obj/item/selection = input("What do you want to yank out?", "Embedded objects") in valid_objects
 	if(self)
-		to_chat(src, "<span class='warning'>You attempt to get a good grip on [selection] in your body.</span>")
+		to_chat(src, SPAN_WARNING("You attempt to get a good grip on [selection] in your body."))
 	else
-		to_chat(U, "<span class='warning'>You attempt to get a good grip on [selection] in [S]'s body.</span>")
+		to_chat(U, SPAN_WARNING("You attempt to get a good grip on [selection] in [S]'s body."))
 	if(!do_after(U, 3 SECONDS, S, DO_DEFAULT | DO_USER_UNIQUE_ACT | DO_PUBLIC_PROGRESS, INCAPACITATION_DEFAULT & ~INCAPACITATION_FORCELYING)) //let people pinned to stuff yank it out, otherwise they're stuck... forever!!!
 		return
 	if(!selection || !S || !U)
 		return
 
 	if(self)
-		visible_message("<span class='warning'><b>[src] rips [selection] out of their body.</b></span>","<span class='warning'><b>You rip [selection] out of your body.</b></span>")
+		visible_message(SPAN_WARNING("<b>[src] rips [selection] out of their body.</b>"),SPAN_WARNING("<b>You rip [selection] out of your body.</b>"))
 	else
-		visible_message("<span class='warning'><b>[usr] rips [selection] out of [src]'s body.</b></span>","<span class='warning'><b>[usr] rips [selection] out of your body.</b></span>")
+		visible_message(SPAN_WARNING("<b>[usr] rips [selection] out of [src]'s body.</b>"),SPAN_WARNING("<b>[usr] rips [selection] out of your body.</b>"))
 	remove_implant(selection)
 	selection.forceMove(get_turf(src))
-	if(!(U.l_hand && U.r_hand))
+	if (U.HasFreeHand())
 		U.put_in_hands(selection)
 	if(ishuman(U))
 		var/mob/living/carbon/human/human_user = U
@@ -1158,7 +1180,7 @@
 		if(!lying)
 			Weaken(1)
 			if(lying && prob(10))
-				to_chat(src, "<span class='danger'>You are pushed down by the flood!</span>")
+				to_chat(src, SPAN_DANGER("You are pushed down by the flood!"))
 		return TRUE
 	return FALSE
 

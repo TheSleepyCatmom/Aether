@@ -17,33 +17,11 @@
 			icon_state = "[initial(icon_state)]-e"
 	if(ammo_indicator)
 		if(!ammo_magazine || !LAZYLEN(ammo_magazine.stored_ammo))
-			overlays += image(icon, "ammo_bad")
+			overlays += image(icon, "[initial(icon_state)]-ammo0")
 		else if(LAZYLEN(ammo_magazine.stored_ammo) <= 0.5 * ammo_magazine.max_ammo)
-			overlays += image(icon, "ammo_warn")
-			return
+			overlays += image(icon, "[initial(icon_state)]-ammo1")
 		else
-			overlays += image(icon, "ammo_ok")
-
-/obj/item/gun/projectile/pistol/military
-	name = "military pistol"
-	desc = "The Hephaestus Industries P20 - a mass produced kinetic sidearm in widespread service with the SCGDF."
-	magazine_type = /obj/item/ammo_magazine/pistol/double
-	allowed_magazines = /obj/item/ammo_magazine/pistol/double
-	icon = 'icons/obj/guns/military_pistol.dmi'
-	icon_state = "military"
-	item_state = "secgundark"
-	safety_icon = "safety"
-	origin_tech = list(TECH_COMBAT = 3, TECH_MATERIAL = 2)
-	fire_delay = 7
-	ammo_indicator = TRUE
-
-/obj/item/gun/projectile/pistol/military/alt
-	desc = "The HelTek Optimus, best known as the standard-issue sidearm for the ICCG Navy."
-	icon = 'icons/obj/guns/military_pistol2.dmi'
-	icon_state = "military-alt"
-	safety_icon = "safety"
-	origin_tech = list(TECH_COMBAT = 4, TECH_MATERIAL = 2, TECH_ESOTERIC = 8)
-	fire_delay = 8
+			overlays += image(icon, "[initial(icon_state)]-ammo2")
 
 /obj/item/gun/projectile/pistol/sec
 	name = "pistol"
@@ -146,7 +124,7 @@
 /obj/item/gun/projectile/pistol/holdout/attack_hand(mob/user)
 	if(user.get_inactive_hand() == src)
 		if(silenced)
-			if(user.l_hand != src && user.r_hand != src)
+			if (!user.IsHolding(src))
 				..()
 				return
 			if (silencer)
@@ -161,7 +139,7 @@
 
 /obj/item/gun/projectile/pistol/holdout/attackby(obj/item/I, mob/user)
 	if(istype(I, /obj/item/silencer))
-		if(user.l_hand != src && user.r_hand != src)	//if we're not in his hands
+		if (!user.IsHolding())
 			to_chat(user, SPAN_WARNING("You'll need \the [src] in your hands to do that."))
 			return
 		if (silenced)

@@ -15,12 +15,6 @@ medals
 
 //medals ranked from least to greatest
 
-//Universal medals
-/obj/item/clothing/accessory/medal/solgov/medical
-	name = "\improper Combat Medical Award"
-	desc = "An electrum heart medal with a Staff of Hermes and sanguine cross, awarded by the SCG to individuals who have served as medical personnel in an active combat zone."
-	icon_state = "medal_medical"
-
 //Military medals
 /obj/item/clothing/accessory/medal/solgov/mil/bronze_heart
 	name = "\improper Bronze Heart medal"
@@ -36,6 +30,11 @@ medals
 	name = "\improper Iron Star medal"
 	desc = "An iron star awarded by the SCG to members of the SCG Defense Forces who have performed acts of 'meritorious achievements or service.'"
 	icon_state = "medal_iron_star"
+
+/obj/item/clothing/accessory/medal/solgov/mil/medical
+	name = "\improper Combat Medical Award"
+	desc = "An electrum heart medal with a Staff of Hermes and sanguine cross, awarded by the SCG to individuals who have served as medical personnel in an active combat zone."
+	icon_state = "medal_medical"
 
 /obj/item/clothing/accessory/medal/solgov/mil/armed_forces
 	name = "\improper Armed Forces Medal"
@@ -364,7 +363,7 @@ badges
 	owner_rank = H.char_rank && H.char_rank.name
 	owner_name = H.real_name
 	owner_branch = H.char_branch && H.char_branch.name
-	var/decl/cultural_info/culture = H.get_cultural_value(TAG_RELIGION)
+	var/singleton/cultural_info/culture = H.get_cultural_value(TAG_RELIGION)
 	var/religion = culture ? culture.name : "Unset"
 	desc = "[initial(desc)]\nName: [H.real_name] ([H.get_species()])[H.char_branch ? "\nBranch: [H.char_branch.name]" : ""]\nReligion: [religion]\nBlood type: [H.b_type]"
 

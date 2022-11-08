@@ -109,7 +109,7 @@
 	return 1
 
 /mob/living/carbon/human/proc/change_skin_color(red, green, blue)
-	if (!(species.appearance_flags & HAS_SKIN_COLOR))
+	if (!(species.appearance_flags & SPECIES_APPEARANCE_HAS_SKIN_COLOR))
 		return
 	var/new_skin_color = rgb(red, green, blue)
 	if (skin_color == new_skin_color)
@@ -120,7 +120,7 @@
 	return 1
 
 /mob/living/carbon/human/proc/change_skin_tone(new_skin_tone)
-	if(skin_tone == new_skin_tone || !(species.appearance_flags & HAS_A_SKIN_TONE))
+	if(skin_tone == new_skin_tone || !(species.appearance_flags & SPECIES_APPEARANCE_HAS_A_SKIN_TONE))
 		return
 	skin_tone = new_skin_tone
 	force_update_limbs()
@@ -134,7 +134,7 @@
 /mob/living/carbon/human/proc/generate_valid_languages()
 	var/list/result = list()
 	for (var/cult_key in cultural_info)
-		var/decl/cultural_info/culture = cultural_info[cult_key]
+		var/singleton/cultural_info/culture = cultural_info[cult_key]
 		if (!istype(culture))
 			continue
 		if (culture.language)

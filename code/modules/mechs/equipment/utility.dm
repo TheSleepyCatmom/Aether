@@ -130,16 +130,16 @@
 								return
 						else
 							AD.visible_message(SPAN_DANGER("\The [owner] begins forcing \the [AD]!"))
-							if((AD.is_broken(NOPOWER) || do_after(owner, 5 SECONDS, AD, DO_DEFAULT | DO_USER_UNIQUE_ACT | DO_PUBLIC_PROGRESS)) && !(AD.operating || AD.welded || AD.locked))
+							if((MACHINE_IS_BROKEN(AD) || !AD.is_powered() || do_after(owner, 5 SECONDS, AD, DO_DEFAULT | DO_USER_UNIQUE_ACT | DO_PUBLIC_PROGRESS)) && !(AD.operating || AD.welded || AD.locked))
 								playsound(AD, 'sound/machines/airlock_creaking.ogg', 100, 1)
 								if(AD.density)
 									addtimer(CALLBACK(AD, /obj/machinery/door/airlock/.proc/open, TRUE), 0)
-									if(!AD.is_broken(NOPOWER))
+									if(!MACHINE_IS_BROKEN(AD) && AD.is_powered())
 										AD.set_broken(TRUE)
 									AD.visible_message(SPAN_DANGER("\The [owner] forces \the [AD] open!"))
 								else
 									addtimer(CALLBACK(AD, /obj/machinery/door/airlock/.proc/close, TRUE), 0)
-									if(!AD.is_broken(NOPOWER))
+									if(!MACHINE_IS_BROKEN(AD) && AD.is_powered())
 										AD.set_broken(TRUE)
 									AD.visible_message(SPAN_DANGER("\The [owner] forces \the [AD] closed!"))
 					if(AD.locked)
@@ -176,7 +176,7 @@
 					return
 				M.attack_generic(owner, (owner.arms ? owner.arms.melee_damage * 1.5 : 0), "slammed") //Honestly you should not be able to do this without hands, but still
 				M.throw_at(get_edge_target_turf(owner ,owner.dir),5, 2)
-				to_chat(user, "<span class='warning'>You slam [target] with [src.name].</span>")
+				to_chat(user, SPAN_WARNING("You slam [target] with [src.name]."))
 				owner.visible_message(SPAN_DANGER("[owner] slams [target] with the hydraulic clamp."))
 			else
 				step_away(M, owner)

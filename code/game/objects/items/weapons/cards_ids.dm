@@ -44,6 +44,56 @@
 		return
 	..()
 
+/obj/item/card/operant_card
+	name = "operant registration card"
+	icon_state = "warrantcard_civ"
+	desc = "A registration card in a faux-leather case. It marks the named individual as a registered, law-abiding psionic."
+	w_class = ITEM_SIZE_SMALL
+	attack_verb = list("whipped")
+	hitsound = 'sound/weapons/towelwhip.ogg'
+	var/info
+	var/potential
+	var/use_rating
+
+
+/obj/item/card/operant_card/proc/set_info(mob/living/carbon/human/human)
+	if(!istype(human))
+		return
+	switch(human.psi?.rating)
+		if(0)
+			use_rating = "[human.psi.rating]-Lambda"
+		if(1)
+			use_rating = "[human.psi.rating]-Epsilon"
+		if(2)
+			use_rating = "[human.psi.rating]-Gamma"
+		if(3)
+			use_rating = "[human.psi.rating]-Delta"
+		if(4)
+			use_rating = "[human.psi.rating]-Beta"
+		if(5)
+			use_rating = "[human.psi.rating]-Alpha"
+		if (6 to INFINITY)
+			use_rating = "[human.psi.rating]-Omega"
+		else
+			use_rating = "Non-Psionic"
+
+	potential = "This individual has an overall psi rating of [use_rating]."
+	info = {"\
+		Name: [human.real_name]\n\
+		Species: [human.get_species()]\n\
+		Fingerprint: [human.dna?.uni_identity ? md5(human.dna.uni_identity) : "N/A"]\n\
+		Assessed Potential: [potential]\
+	"}
+
+
+/obj/item/card/operant_card/attack_self(mob/living/user)
+	user.visible_message(
+		SPAN_ITALIC("\The [user] examines \a [src]."),
+		SPAN_ITALIC("You examine \the [src]."),
+		3
+	)
+	to_chat(user, info || SPAN_WARNING("\The [src] is completely blank!"))
+
 /obj/item/card/data
 	name = "data card"
 	desc = "A plastic magstripe card for simple and speedy data storage and transfer. This one has a stripe running down the middle."
@@ -120,7 +170,7 @@ var/global/const/NO_EMAG_ACT = -50
 		log_and_message_admins("emagged \an [A].")
 
 	if(uses<1)
-		user.visible_message("<span class='warning'>\The [src] fizzles and sparks - it seems it's been used once too often, and is now spent.</span>")
+		user.visible_message(SPAN_WARNING("\The [src] fizzles and sparks - it seems it's been used once too often, and is now spent."))
 		var/obj/item/card/emag_broken/junk = new(user.loc)
 		junk.add_fingerprint(user)
 		qdel(src)
@@ -243,7 +293,7 @@ var/global/const/NO_EMAG_ACT = -50
 	id_card.formal_name_suffix = initial(id_card.formal_name_suffix)
 	if(client && client.prefs)
 		for(var/culturetag in client.prefs.cultural_info)
-			var/decl/cultural_info/culture = SSculture.get_culture(client.prefs.cultural_info[culturetag])
+			var/singleton/cultural_info/culture = SSculture.get_culture(client.prefs.cultural_info[culturetag])
 			if(culture)
 				id_card.formal_name_prefix = "[culture.get_formal_name_prefix()][id_card.formal_name_prefix]"
 				id_card.formal_name_suffix = "[id_card.formal_name_suffix][culture.get_formal_name_suffix()]"
@@ -314,11 +364,11 @@ var/global/const/NO_EMAG_ACT = -50
 	to_chat(usr, "The fingerprint hash on the card is [fingerprint_hash].")
 	return
 
-/decl/vv_set_handler/id_card_military_branch
+/singleton/vv_set_handler/id_card_military_branch
 	handled_type = /obj/item/card/id
 	handled_vars = list("military_branch")
 
-/decl/vv_set_handler/id_card_military_branch/handle_set_var(obj/item/card/id/id, variable, var_value, client)
+/singleton/vv_set_handler/id_card_military_branch/handle_set_var(obj/item/card/id/id, variable, var_value, client)
 	if(!var_value)
 		id.military_branch = null
 		id.military_rank = null
@@ -340,11 +390,11 @@ var/global/const/NO_EMAG_ACT = -50
 
 	to_chat(client, SPAN_WARNING("Input, must be an existing branch - [var_value] is invalid"))
 
-/decl/vv_set_handler/id_card_military_rank
+/singleton/vv_set_handler/id_card_military_rank
 	handled_type = /obj/item/card/id
 	handled_vars = list("military_rank")
 
-/decl/vv_set_handler/id_card_military_rank/handle_set_var(obj/item/card/id/id, variable, var_value, client)
+/singleton/vv_set_handler/id_card_military_rank/handle_set_var(obj/item/card/id/id, variable, var_value, client)
 	if(!var_value)
 		id.military_rank = null
 		return

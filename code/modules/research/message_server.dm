@@ -64,12 +64,12 @@ var/global/list/obj/machinery/message_server/message_servers = list()
 
 /obj/machinery/message_server/Process()
 	..()
-	if(active && (stat & (BROKEN|NOPOWER)))
+	if(active && (inoperable()))
 		active = 0
 		power_failure = 10
 		update_icon()
 		return
-	else if(stat & (BROKEN|NOPOWER))
+	else if(inoperable())
 		return
 	else if(power_failure > 0)
 		if(!(--power_failure))
@@ -98,12 +98,12 @@ var/global/list/obj/machinery/message_server/message_servers = list()
 				Console.icon_state = "req_comp[priority]"
 			if(priority > 1)
 				playsound(Console.loc, 'sound/machines/chime.ogg', 80, 1)
-				Console.audible_message("[icon2html(Console, viewers(get_turf(Console)))]<span class='warning'>\The [Console] announces: 'High priority message received from [sender]!'</span>", hearing_distance = 8)
-				Console.message_log += "<FONT color='red'>High Priority message from <A href='?src=\ref[Console];write=[sender]'>[sender]</A></FONT><BR>[authmsg]"
+				Console.audible_message("[icon2html(Console, viewers(get_turf(Console)))][SPAN_WARNING("\The [Console] announces: 'High priority message received from [sender]!'")]", hearing_distance = 8)
+				Console.message_log += "[SPAN_COLOR("red", "High Priority message from <A href='?src=\ref[Console];write=[sender]'>[sender]</A>")]<BR>[authmsg]"
 			else
 				if(!Console.silent)
 					playsound(Console.loc, 'sound/machines/twobeep.ogg', 50, 1)
-					Console.audible_message("[icon2html(Console, viewers(get_turf(Console)))]<span class='notice'>\The [Console] announces: 'Message received from [sender].'</span>", hearing_distance = 5)
+					Console.audible_message("[icon2html(Console, viewers(get_turf(Console)))][SPAN_NOTICE("\The [Console] announces: 'Message received from [sender].'")]", hearing_distance = 5)
 				Console.message_log += "<B>Message from <A href='?src=\ref[Console];write=[sender]'>[sender]</A></B><BR>[authmsg]"
 			Console.set_light(0.3, 0.1, 2)
 
@@ -118,7 +118,7 @@ var/global/list/obj/machinery/message_server/message_servers = list()
 	return TRUE
 
 /obj/machinery/message_server/attackby(obj/item/O as obj, mob/living/user as mob)
-	if (active && !(stat & (BROKEN|NOPOWER)) && (spamfilter_limit < MESSAGE_SERVER_DEFAULT_SPAM_LIMIT*2) && \
+	if (active && operable() && (spamfilter_limit < MESSAGE_SERVER_DEFAULT_SPAM_LIMIT*2) && \
 		istype(O,/obj/item/stock_parts/circuitboard/message_monitor))
 		spamfilter_limit += round(MESSAGE_SERVER_DEFAULT_SPAM_LIMIT / 2)
 		qdel(O)
@@ -127,7 +127,7 @@ var/global/list/obj/machinery/message_server/message_servers = list()
 		..(O, user)
 
 /obj/machinery/message_server/on_update_icon()
-	if((stat & (BROKEN|NOPOWER)))
+	if((inoperable()))
 		icon_state = "server-nopower"
 	else if (!active)
 		icon_state = "server-off"
@@ -149,7 +149,7 @@ var/global/list/obj/machinery/message_server/message_servers = list()
 			continue
 
 		if(J.department_flag & department)
-			to_chat(H, "<span class='notice'>Your [device.name] alerts you to the fact that somebody is requesting your presence at your department.</span>")
+			to_chat(H, SPAN_NOTICE("Your [device.name] alerts you to the fact that somebody is requesting your presence at your department."))
 			reached++
 
 	return reached

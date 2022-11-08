@@ -19,7 +19,7 @@
 
 /obj/item/device/flash/proc/clown_check(mob/user)
 	if(user && (MUTATION_CLUMSY in user.mutations) && prob(50))
-		to_chat(user, "<span class='warning'>\The [src] slips out of your hand.</span>")
+		to_chat(user, SPAN_WARNING("\The [src] slips out of your hand."))
 		user.unequip_item()
 		return 0
 	return 1
@@ -41,7 +41,7 @@
 
 	if(!clown_check(user))	return 0
 	if(broken)
-		to_chat(user, "<span class='warning'>\The [src] is broken.</span>")
+		to_chat(user, SPAN_WARNING("\The [src] is broken."))
 		return 0
 
 	flash_recharge()
@@ -53,19 +53,51 @@
 			last_used = world.time
 			if(prob(times_used))	//if you use it 5 times in a minute it has a 10% chance to break!
 				broken = 1
-				to_chat(user, "<span class='warning'>The bulb has burnt out!</span>")
+				to_chat(user, SPAN_WARNING("The bulb has burnt out!"))
 				icon_state = "[initial(icon_state)]_burnt"
 				return 0
 			times_used++
 		else	//can only use it 5 times a minute
-			to_chat(user, "<span class='warning'>*click* *click*</span>")
+			to_chat(user, SPAN_WARNING("*click* *click*"))
 			return 0
 
 	user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
 	user.do_attack_animation(M)
 
 	playsound(src.loc, 'sound/weapons/flash.ogg', 100, 1)
-	var/flashfail = 0
+	var/flashfail = do_flash(M)
+
+	if(isrobot(user))
+		spawn(0)
+			var/atom/movable/overlay/animation = new(user)
+			animation.plane = user.plane
+			animation.layer = user.layer + 0.01
+			animation.icon_state = "blank"
+			animation.icon = 'icons/mob/mob.dmi'
+			flick("blspell", animation)
+			sleep(5)
+			qdel(animation)
+
+	if(!flashfail)
+		flick("[initial(icon_state)]_on", src)
+		if(!issilicon(M))
+			user.visible_message(SPAN_CLASS("disarm", "[user] blinds [M] with \the [src]!"))
+		else
+			user.visible_message(SPAN_NOTICE("[user] overloads [M]'s sensors with \the [src]!"))
+	else
+		user.visible_message(SPAN_NOTICE("[user] fails to blind [M] with \the [src]!"))
+	return 1
+
+
+/**
+ * Handles applying flash effects to the targeted mob.
+ *
+ * **Parameters**:
+ * - `M` - The targeted mob to apply the flash effects to.
+ *
+ * Returns boolean. Whether or not the flash failed.
+ */
+/obj/item/device/flash/proc/do_flash(mob/living/M)
 	var/flash_strength = (rand(str_min,str_max))
 
 	if(iscarbon(M))
@@ -89,7 +121,7 @@
 					if(flash_strength > 5)
 						M.Weaken(2)
 			else
-				flashfail = 1
+				return TRUE
 
 	else if(isanimal(M))
 		var/mob/living/simple_animal/SA = M
@@ -101,46 +133,25 @@
 				SA.eye_blurry = max(SA.eye_blurry, flash_strength)
 				SA.confused = max(SA.confused, (flash_strength))
 		else
-			flashfail = 1
+			return TRUE
 
 	else if(issilicon(M))
 		if (M.status_flags & CANWEAKEN)
 			M.Weaken(rand(str_min,6))
 		else
-			flashfail = TRUE
+			return TRUE
 
 	else
-		flashfail = 1
+		return TRUE
 
-	if(isrobot(user))
-		spawn(0)
-			var/atom/movable/overlay/animation = new(user)
-			animation.plane = user.plane
-			animation.layer = user.layer + 0.01
-			animation.icon_state = "blank"
-			animation.icon = 'icons/mob/mob.dmi'
-			flick("blspell", animation)
-			sleep(5)
-			qdel(animation)
-
-	if(!flashfail)
-		flick("[initial(icon_state)]_on", src)
-		if(!issilicon(M))
-			user.visible_message("<span class='disarm'>[user] blinds [M] with \the [src]!</span>")
-		else
-			user.visible_message("<span class='notice'>[user] overloads [M]'s sensors with \the [src]!</span>")
-	else
-		user.visible_message("<span class='notice'>[user] fails to blind [M] with \the [src]!</span>")
-	return 1
-
-
+	return FALSE
 
 
 /obj/item/device/flash/attack_self(mob/living/carbon/user as mob, flag = 0, emp = 0)
 	if(!user || !clown_check(user)) 	return 0
 
 	if(broken)
-		user.show_message("<span class='warning'>The [src.name] is broken</span>", 2)
+		user.show_message(SPAN_WARNING("The [src.name] is broken"), 2)
 		return 0
 
 	flash_recharge()
@@ -151,12 +162,12 @@
 		if(0 to 5)
 			if(prob(2*times_used))	//if you use it 5 times in a minute it has a 10% chance to break!
 				broken = 1
-				to_chat(user, "<span class='warning'>The bulb has burnt out!</span>")
+				to_chat(user, SPAN_WARNING("The bulb has burnt out!"))
 				icon_state = "[initial(icon_state)]_burnt"
 				return 0
 			times_used++
 		else	//can only use it  5 times a minute
-			user.show_message("<span class='warning'>*click* *click*</span>", 2)
+			user.show_message(SPAN_WARNING("*click* *click*"), 2)
 			return 0
 	user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
 	playsound(src.loc, 'sound/weapons/flash.ogg', 100, 1)
@@ -199,7 +210,7 @@
 					M.Weaken(10)
 					M.flash_eyes()
 					for(var/mob/O in viewers(M, null))
-						O.show_message("<span class='disarm'>[M] is blinded by the [name]!</span>")
+						O.show_message(SPAN_CLASS("disarm", "[M] is blinded by the [name]!"))
 	..()
 
 /obj/item/device/flash/synthetic //not for regular use, weaker effects

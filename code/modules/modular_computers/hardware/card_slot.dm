@@ -18,7 +18,7 @@
 	. += "[name] status: [stored_card ? "Card Inserted" : "Card Not Present"]\n"
 	if(stored_card)
 		. += "Testing card read...\n"
-		if( damage >= damage_failure )
+		if( is_failing() )
 			. += "...FAILURE!\n"
 		else
 			var/read_string_stability
@@ -53,7 +53,7 @@
 	set src in view(1)
 
 	if(!CanPhysicallyInteract(usr))
-		to_chat(usr, "<span class='warning'>You can't reach it.</span>")
+		to_chat(usr, SPAN_WARNING("You can't reach it."))
 		return
 
 	var/obj/item/stock_parts/computer/card_slot/device = src

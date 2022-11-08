@@ -1,7 +1,7 @@
 // Movement relayed to self handling
 /datum/movement_handler/mob/relayed_movement
-	var/prevent_host_move = FALSE
-	var/list/allowed_movers
+	VAR_PROTECTED/prevent_host_move = FALSE
+	VAR_PROTECTED/list/allowed_movers
 
 /datum/movement_handler/mob/relayed_movement/MayMove(mob/mover, is_external)
 	if(is_external)
@@ -126,7 +126,7 @@
 
 // Movement delay
 /datum/movement_handler/mob/delay
-	var/next_move
+	VAR_PROTECTED/next_move
 
 /datum/movement_handler/mob/delay/DoMove(direction, mover, is_external)
 	if(is_external)
@@ -172,23 +172,23 @@
 /datum/movement_handler/mob/physically_restrained/MayMove(mob/mover)
 	if(mob.anchored)
 		if(mover == mob)
-			to_chat(mob, "<span class='notice'>You're anchored down!</span>")
+			to_chat(mob, SPAN_NOTICE("You're anchored down!"))
 		return MOVEMENT_STOP
 
 	if(istype(mob.buckled) && !mob.buckled.buckle_movable)
 		if(mover == mob)
-			to_chat(mob, "<span class='notice'>You're buckled to \the [mob.buckled]!</span>")
+			to_chat(mob, SPAN_NOTICE("You're buckled to \the [mob.buckled]!"))
 		return MOVEMENT_STOP
 
 	if(LAZYLEN(mob.pinned))
 		if(mover == mob)
-			to_chat(mob, "<span class='notice'>You're pinned down by \a [mob.pinned[1]]!</span>")
+			to_chat(mob, SPAN_NOTICE("You're pinned down by \a [mob.pinned[1]]!"))
 		return MOVEMENT_STOP
 
 	for(var/obj/item/grab/G in mob.grabbed_by)
 		if(G.assailant != mob && G.stop_move())
 			if(mover == mob)
-				to_chat(mob, "<span class='notice'>You're stuck in a grab!</span>")
+				to_chat(mob, SPAN_NOTICE("You're stuck in a grab!"))
 			mob.ProcessGrabs()
 			return MOVEMENT_STOP
 
@@ -197,7 +197,7 @@
 			if(M.pulling == mob)
 				if(!M.incapacitated() && mob.Adjacent(M))
 					if(mover == mob)
-						to_chat(mob, "<span class='notice'>You're restrained! You can't move!</span>")
+						to_chat(mob, SPAN_NOTICE("You're restrained! You can't move!"))
 					return MOVEMENT_STOP
 				else
 					M.stop_pulling()

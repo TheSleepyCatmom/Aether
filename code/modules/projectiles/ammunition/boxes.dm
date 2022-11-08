@@ -83,7 +83,7 @@
 		var/obj/item/ammo_casing/C = stored_ammo[stored_ammo.len]
 		stored_ammo-=C
 		user.put_in_hands(C)
-		user.visible_message("\The [user] removes \a [C] from [src].", "<span class='notice'>You remove \a [C] from [src].</span>")
+		user.visible_message("\The [user] removes \a [C] from [src].", SPAN_NOTICE("You remove \a [C] from [src]."))
 		update_icon()
 	else
 		..()
@@ -177,7 +177,7 @@
 	caliber = CALIBER_PISTOL
 	matter = list(MATERIAL_STEEL = 750)
 	ammo_type = /obj/item/ammo_casing/pistol
-	max_ammo = 10
+	max_ammo = 8
 	multiple_sprites = 1
 
 /obj/item/ammo_magazine/pistol/empty

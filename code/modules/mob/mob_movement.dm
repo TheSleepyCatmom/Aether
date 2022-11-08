@@ -56,18 +56,18 @@
 				var/mob/living/carbon/C = usr
 				C.toggle_throw_mode()
 			else
-				to_chat(usr, "<span class='warning'>This mob type cannot throw items.</span>")
+				to_chat(usr, SPAN_WARNING("This mob type cannot throw items."))
 			return
 		if(NORTHWEST)
 			mob.hotkey_drop()
 
 /mob/proc/hotkey_drop()
-	to_chat(src, "<span class='warning'>This mob type cannot drop items.</span>")
+	to_chat(src, SPAN_WARNING("This mob type cannot drop items."))
 
 /mob/living/carbon/hotkey_drop()
 	var/obj/item/hand = get_active_hand()
 	if(!hand)
-		to_chat(src, "<span class='warning'>You have nothing to drop in your hand.</span>")
+		to_chat(src, SPAN_WARNING("You have nothing to drop in your hand."))
 	else if(hand.can_be_dropped_by_client(src))
 		drop_item()
 
@@ -76,7 +76,7 @@
 	set hidden = 1
 
 	if(!usr.pulling)
-		to_chat(usr, "<span class='notice'>You are not pulling anything.</span>")
+		to_chat(usr, SPAN_NOTICE("You are not pulling anything."))
 		return
 	usr.stop_pulling()
 
@@ -223,7 +223,7 @@
 //return 1 if slipped, 0 otherwise
 /mob/proc/handle_spaceslipping()
 	if(prob(skill_fail_chance(SKILL_EVA, slip_chance(10), SKILL_EXPERT)))
-		to_chat(src, "<span class='warning'>You slipped!</span>")
+		to_chat(src, SPAN_WARNING("You slipped!"))
 		src.inertia_dir = src.last_move
 		step(src, src.inertia_dir)
 		return 1
@@ -268,10 +268,10 @@
 	var/checking_intent = (istype(move_intent) ? move_intent.type : move_intents[1])
 	for(var/i = 1 to length(move_intents)) // One full iteration of the move set.
 		checking_intent = next_in_list(checking_intent, move_intents)
-		if(set_move_intent(decls_repository.get_decl(checking_intent)))
+		if(set_move_intent(GET_SINGLETON(checking_intent)))
 			return
 
-/mob/proc/set_move_intent(decl/move_intent/next_intent)
+/mob/proc/set_move_intent(singleton/move_intent/next_intent)
 	if(next_intent && move_intent != next_intent && next_intent.can_be_used_by(src))
 		move_intent = next_intent
 		if(hud_used)
@@ -281,27 +281,27 @@
 
 /mob/proc/get_movement_datum_by_flag(move_flag = MOVE_INTENT_DELIBERATE)
 	for(var/m_intent in move_intents)
-		var/decl/move_intent/check_move_intent = decls_repository.get_decl(m_intent)
+		var/singleton/move_intent/check_move_intent = GET_SINGLETON(m_intent)
 		if(check_move_intent.flags & move_flag)
 			return check_move_intent
 
 /mob/proc/get_movement_datum_by_missing_flag(move_flag = MOVE_INTENT_DELIBERATE)
 	for(var/m_intent in move_intents)
-		var/decl/move_intent/check_move_intent = decls_repository.get_decl(m_intent)
+		var/singleton/move_intent/check_move_intent = GET_SINGLETON(m_intent)
 		if(!(check_move_intent.flags & move_flag))
 			return check_move_intent
 
 /mob/proc/get_movement_datums_by_flag(move_flag = MOVE_INTENT_DELIBERATE)
 	. = list()
 	for(var/m_intent in move_intents)
-		var/decl/move_intent/check_move_intent = decls_repository.get_decl(m_intent)
+		var/singleton/move_intent/check_move_intent = GET_SINGLETON(m_intent)
 		if(check_move_intent.flags & move_flag)
 			. += check_move_intent
 
 /mob/proc/get_movement_datums_by_missing_flag(move_flag = MOVE_INTENT_DELIBERATE)
 	. = list()
 	for(var/m_intent in move_intents)
-		var/decl/move_intent/check_move_intent = decls_repository.get_decl(m_intent)
+		var/singleton/move_intent/check_move_intent = GET_SINGLETON(m_intent)
 		if(!(check_move_intent.flags & move_flag))
 			. += check_move_intent
 

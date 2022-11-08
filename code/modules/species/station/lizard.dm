@@ -49,11 +49,10 @@
 	heat_level_3 = 1100 //Default 1000
 
 	spawn_flags = SPECIES_CAN_JOIN | SPECIES_IS_WHITELISTED | SPECIES_NO_FBP_CONSTRUCTION | SPECIES_NO_FBP_CHARGEN | SPECIES_NO_ROBOTIC_INTERNAL_ORGANS
-	appearance_flags = HAS_HAIR_COLOR | HAS_LIPS | HAS_UNDERWEAR | HAS_SKIN_COLOR | HAS_EYE_COLOR
+	appearance_flags = SPECIES_APPEARANCE_HAS_HAIR_COLOR | SPECIES_APPEARANCE_HAS_LIPS | SPECIES_APPEARANCE_HAS_UNDERWEAR | SPECIES_APPEARANCE_HAS_SKIN_COLOR | SPECIES_APPEARANCE_HAS_EYE_COLOR
 
 	flesh_color = "#34af10"
 
-	reagent_tag = IS_UNATHI
 	base_color = "#066000"
 	blood_color = "#f24b2e"
 	organs_icon = 'icons/mob/human_races/species/unathi/organs.dmi'
@@ -137,9 +136,9 @@
 		TAG_RELIGION  = RELIGION_OTHER
 	)
 	pain_emotes_with_pain_level = list(
-			list(/decl/emote/audible/wheeze, /decl/emote/audible/roar, /decl/emote/audible/bellow, /decl/emote/audible/howl) = 80,
-			list(/decl/emote/audible/grunt, /decl/emote/audible/groan, /decl/emote/audible/wheeze, /decl/emote/audible/hiss) = 50,
-			list(/decl/emote/audible/grunt, /decl/emote/audible/groan, /decl/emote/audible/hiss) = 20,
+			list(/singleton/emote/audible/wheeze, /singleton/emote/audible/roar, /singleton/emote/audible/bellow, /singleton/emote/audible/howl) = 80,
+			list(/singleton/emote/audible/grunt, /singleton/emote/audible/groan, /singleton/emote/audible/wheeze, /singleton/emote/audible/hiss) = 50,
+			list(/singleton/emote/audible/grunt, /singleton/emote/audible/groan, /singleton/emote/audible/hiss) = 20,
 		)
 
 	exertion_effect_chance = 10
@@ -147,27 +146,22 @@
 	exertion_reagent_scale = 5
 	exertion_reagent_path = /datum/reagent/lactate
 	exertion_emotes_biological = list(
-		/decl/emote/exertion/biological,
-		/decl/emote/exertion/biological/breath,
-		/decl/emote/exertion/biological/pant
+		/singleton/emote/exertion/biological,
+		/singleton/emote/exertion/biological/breath,
+		/singleton/emote/exertion/biological/pant
 	)
 
 	ingest_amount = 20
 
+	traits = list(
+		/singleton/trait/boon/filtered_blood = TRAIT_LEVEL_EXISTS,
+		/singleton/trait/boon/cast_iron_stomach = TRAIT_LEVEL_EXISTS,
+		/singleton/trait/malus/sugar = TRAIT_LEVEL_MAJOR
+	)
+
 /datum/species/unathi/equip_survival_gear(mob/living/carbon/human/H)
 	..()
 	H.equip_to_slot_or_del(new /obj/item/clothing/shoes/sandal(H),slot_shoes)
-
-/datum/species/unathi/proc/handle_sugar(mob/living/carbon/human/M, datum/reagent/sugar, efficiency = 1)
-	var/effective_dose = efficiency * M.chem_doses[sugar.type]
-	if(effective_dose < 5)
-		return
-	M.druggy = max(M.druggy, 10)
-	M.add_chemical_effect(CE_PULSE, -1)
-	if(effective_dose > 15 && prob(7))
-		M.emote(pick("twitch", "drool"))
-	if(effective_dose > 20 && prob(10))
-		M.SelfMove(pick(GLOB.cardinal))
 
 /datum/species/unathi/get_bodytype(mob/living/carbon/human/H)
 	return SPECIES_UNATHI

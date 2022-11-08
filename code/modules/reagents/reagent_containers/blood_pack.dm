@@ -12,6 +12,7 @@
 	w_class = ITEM_SIZE_TINY
 	volume = 120
 	possible_transfer_amounts = "0.2;1;2"
+	matter = list(MATERIAL_PLASTIC = 4000)
 	amount_per_transfer_from_this = REM
 	atom_flags = ATOM_FLAG_OPEN_CONTAINER
 
@@ -36,7 +37,6 @@
 		var/image/filling = image('icons/obj/bloodpack.dmi', "[round(percent,25)]")
 		filling.color = reagents.get_color()
 		overlays += filling
-	overlays += image('icons/obj/bloodpack.dmi', "top")
 	if(attached)
 		overlays += image('icons/obj/bloodpack.dmi', "dongle")
 
@@ -68,7 +68,7 @@
 		return PROCESS_KILL
 
 	var/mob/M = loc
-	if(M.l_hand != src && M.r_hand != src)
+	if (!M.IsHolding(src))
 		return
 
 	if(!reagents.total_volume)
@@ -84,12 +84,21 @@
 /obj/item/reagent_containers/ivbag/blood
 	name = "blood pack"
 	var/blood_type = null
+	var/blood_species = SPECIES_HUMAN
 
 /obj/item/reagent_containers/ivbag/blood/New()
 	..()
 	if(blood_type)
-		name = "blood pack [blood_type]"
-		reagents.add_reagent(/datum/reagent/blood, volume, list("donor" = null, "blood_DNA" = null, "blood_type" = blood_type, "trace_chem" = null))
+		var/datum/species/species = all_species[blood_species]
+		name = "blood pack [blood_type] ([blood_species])"
+		reagents.add_reagent(/datum/reagent/blood, volume, list(
+			"donor" = null,
+			"blood_DNA" = null,
+			"blood_type" = blood_type,
+			"trace_chem" = null,
+			"blood_species" = blood_species,
+			"blood_colour" = species.blood_color
+		))
 
 /obj/item/reagent_containers/ivbag/blood/APlus
 	blood_type = "A+"
@@ -108,3 +117,9 @@
 
 /obj/item/reagent_containers/ivbag/blood/OMinus
 	blood_type = "O-"
+
+/obj/item/reagent_containers/ivbag/blood/OMinus/skrell
+	blood_species = SPECIES_SKRELL
+
+/obj/item/reagent_containers/ivbag/blood/OMinus/unathi
+	blood_species = SPECIES_UNATHI

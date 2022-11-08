@@ -66,14 +66,14 @@ var/global/solar_gen_rate = 1500
 
 	if(isCrowbar(W))
 		playsound(src.loc, 'sound/machines/click.ogg', 50, 1)
-		user.visible_message("<span class='notice'>[user] begins to take the glass off the solar panel.</span>")
+		user.visible_message(SPAN_NOTICE("[user] begins to take the glass off the solar panel."))
 		if(do_after(user, 5 SECONDS, src, DO_REPAIR_CONSTRUCT))
 			var/obj/item/solar_assembly/S = locate() in src
 			if(S)
 				S.dropInto(loc)
 				S.give_glass()
 			playsound(src.loc, 'sound/items/Deconstruct.ogg', 50, 1)
-			user.visible_message("<span class='notice'>[user] takes the glass off the solar panel.</span>")
+			user.visible_message(SPAN_NOTICE("[user] takes the glass off the solar panel."))
 			qdel(src)
 		return
 	else if (W)
@@ -84,13 +84,13 @@ var/global/solar_gen_rate = 1500
 
 /obj/machinery/power/solar/proc/healthcheck()
 	if (src.health <= 0)
-		if(!(stat & BROKEN))
+		if(!MACHINE_IS_BROKEN(src))
 			set_broken(TRUE)
 
 /obj/machinery/power/solar/on_update_icon()
 	..()
 	overlays.Cut()
-	if(stat & BROKEN)
+	if(MACHINE_IS_BROKEN(src))
 		overlays += image('icons/obj/power.dmi', icon_state = "solar_panel-b", layer = ABOVE_HUMAN_LAYER)
 	else
 		overlays += image('icons/obj/power.dmi', icon_state = "solar_panel", layer = ABOVE_HUMAN_LAYER)
@@ -114,7 +114,7 @@ var/global/solar_gen_rate = 1500
 	//isn't the power received from the incoming light proportional to cos(p_angle) (Lambert's cosine law) rather than cos(p_angle)^2 ?
 
 /obj/machinery/power/solar/Process()
-	if(stat & BROKEN)
+	if(MACHINE_IS_BROKEN(src))
 		return
 	if(!control) //if there's no sun or the panel is not linked to a solar control computer, no need to proceed
 		return
@@ -235,13 +235,13 @@ var/global/solar_gen_rate = 1500
 			pixel_x = 0
 			pixel_y = 0
 			pixel_z = 0
-			user.visible_message("<span class='notice'>[user] wrenches the solar assembly into place.</span>")
+			user.visible_message(SPAN_NOTICE("[user] wrenches the solar assembly into place."))
 			playsound(src.loc, 'sound/items/Ratchet.ogg', 75, 1)
 			return 1
 	else
 		if(isWrench(W))
 			anchored = FALSE
-			user.visible_message("<span class='notice'>[user] unwrenches the solar assembly from it's place.</span>")
+			user.visible_message(SPAN_NOTICE("[user] unwrenches the solar assembly from it's place."))
 			playsound(src.loc, 'sound/items/Ratchet.ogg', 75, 1)
 			return 1
 
@@ -250,13 +250,13 @@ var/global/solar_gen_rate = 1500
 			if(S.use(2))
 				glass_type = W.type
 				playsound(src.loc, 'sound/machines/click.ogg', 50, 1)
-				user.visible_message("<span class='notice'>[user] places the glass on the solar assembly.</span>")
+				user.visible_message(SPAN_NOTICE("[user] places the glass on the solar assembly."))
 				if(tracker)
 					new /obj/machinery/power/tracker(get_turf(src), src)
 				else
 					new /obj/machinery/power/solar(get_turf(src), src)
 			else
-				to_chat(user, "<span class='warning'>You need two sheets of glass to put them into a solar panel.</span>")
+				to_chat(user, SPAN_WARNING("You need two sheets of glass to put them into a solar panel."))
 				return
 			return 1
 
@@ -264,13 +264,13 @@ var/global/solar_gen_rate = 1500
 		if(istype(W, /obj/item/tracker_electronics))
 			tracker = 1
 			qdel(W)
-			user.visible_message("<span class='notice'>[user] inserts the electronics into the solar assembly.</span>")
+			user.visible_message(SPAN_NOTICE("[user] inserts the electronics into the solar assembly."))
 			return 1
 	else
 		if(isCrowbar(W))
 			new /obj/item/tracker_electronics(src.loc)
 			tracker = 0
-			user.visible_message("<span class='notice'>[user] takes out the electronics from the solar assembly.</span>")
+			user.visible_message(SPAN_NOTICE("[user] takes out the electronics from the solar assembly."))
 			return 1
 	..()
 
@@ -287,7 +287,7 @@ var/global/solar_gen_rate = 1500
 	density = TRUE
 	use_power = POWER_USE_IDLE
 	idle_power_usage = 250
-	construct_state = /decl/machine_construction/default/panel_closed/computer
+	construct_state = /singleton/machine_construction/default/panel_closed/computer
 	base_type = /obj/machinery/power/solar_control
 	frame_type = /obj/machinery/constructable_frame/computerframe
 	machine_name = "solar control console"
@@ -341,7 +341,7 @@ var/global/solar_gen_rate = 1500
 
 //called by the sun controller, update the facing angle (either manually or via tracking) and rotates the panels accordingly
 /obj/machinery/power/solar_control/proc/update()
-	if(stat & (NOPOWER | BROKEN))
+	if(inoperable())
 		return
 
 	switch(track)
@@ -361,11 +361,11 @@ var/global/solar_gen_rate = 1500
 	set_panels(cdir)
 
 /obj/machinery/power/solar_control/on_update_icon()
-	if(stat & BROKEN)
+	if(MACHINE_IS_BROKEN(src))
 		icon_state = "broken"
 		overlays.Cut()
 		return
-	if(stat & NOPOWER)
+	if(!is_powered())
 		icon_state = "c_unpowered"
 		overlays.Cut()
 		return
@@ -381,25 +381,25 @@ var/global/solar_gen_rate = 1500
 
 /obj/machinery/power/solar_control/interact(mob/user)
 
-	var/t = "<B><span class='highlight'>Generated power</span></B> : [round(lastgen)] W<BR>"
-	t += "<B><span class='highlight'>Star Orientation</span></B>: [GLOB.sun_angle]&deg ([angle2text(GLOB.sun_angle)])<BR>"
-	t += "<B><span class='highlight'>Array Orientation</span></B>: [rate_control(src,"cdir","[cdir]&deg",1,15)] ([angle2text(cdir)])<BR>"
-	t += "<B><span class='highlight'>Tracking:</span></B><div class='statusDisplay'>"
+	var/t = "<B>[SPAN_CLASS("highlight", "Generated power")]</B> : [round(lastgen)] W<BR>"
+	t += "<B>[SPAN_CLASS("highlight", "Star Orientation")]</B>: [GLOB.sun_angle]&deg ([angle2text(GLOB.sun_angle)])<BR>"
+	t += "<B>[SPAN_CLASS("highlight", "Array Orientation")]</B>: [rate_control(src,"cdir","[cdir]&deg",1,15)] ([angle2text(cdir)])<BR>"
+	t += "<B>[SPAN_CLASS("highlight", "Tracking:")]</B><div class='statusDisplay'>"
 	switch(track)
 		if(0)
-			t += "<span class='linkOn'>Off</span> <A href='?src=\ref[src];track=1'>Timed</A> <A href='?src=\ref[src];track=2'>Auto</A><BR>"
+			t += "[SPAN_CLASS("linkOn", "Off")] <A href='?src=\ref[src];track=1'>Timed</A> <A href='?src=\ref[src];track=2'>Auto</A><BR>"
 		if(1)
-			t += "<A href='?src=\ref[src];track=0'>Off</A> <span class='linkOn'>Timed</span> <A href='?src=\ref[src];track=2'>Auto</A><BR>"
+			t += "<A href='?src=\ref[src];track=0'>Off</A> [SPAN_CLASS("linkOn", "Timed")] <A href='?src=\ref[src];track=2'>Auto</A><BR>"
 		if(2)
-			t += "<A href='?src=\ref[src];track=0'>Off</A> <A href='?src=\ref[src];track=1'>Timed</A> <span class='linkOn'>Auto</span><BR>"
+			t += "<A href='?src=\ref[src];track=0'>Off</A> <A href='?src=\ref[src];track=1'>Timed</A> [SPAN_CLASS("linkOn", "Auto")]<BR>"
 
 	t += "Tracking Rate: [rate_control(src,"tdir","[trackrate] deg/h ([trackrate<0 ? "CCW" : "CW"])",1,30,180)]</div><BR>"
 
-	t += "<B><span class='highlight'>Connected devices:</span></B><div class='statusDisplay'>"
+	t += "<B>[SPAN_CLASS("highlight", "Connected devices:")]</B><div class='statusDisplay'>"
 
 	t += "<A href='?src=\ref[src];search_connected=1'>Search for devices</A><BR>"
 	t += "Solar panels : [connected_panels.len] connected<BR>"
-	t += "Solar tracker : [connected_tracker ? "<span class='good'>Found</span>" : "<span class='bad'>Not found</span>"]</div><BR>"
+	t += "Solar tracker : [connected_tracker ? SPAN_GOOD("Found") : SPAN_BAD("Not found")]</div><BR>"
 
 	t += "<A href='?src=\ref[src];close=1'>Close</A>"
 
@@ -411,7 +411,7 @@ var/global/solar_gen_rate = 1500
 	lastgen = gen
 	gen = 0
 
-	if(stat & (NOPOWER | BROKEN))
+	if(inoperable())
 		return
 
 	if(connected_tracker) //NOTE : handled here so that we don't add trackers to the processing list

@@ -12,7 +12,7 @@
 	idle_power_usage = 50
 	active_power_usage = 500 //multiplied by field strength
 	anchored = FALSE
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
 	base_type = /obj/machinery/power/fusion_core
@@ -33,7 +33,7 @@
 		fusion.set_tag(null, initial_id_tag)
 
 /obj/machinery/power/fusion_core/Process()
-	if((stat & BROKEN) || !powernet || !owned_field)
+	if(MACHINE_IS_BROKEN(src) || !powernet || !owned_field)
 		Shutdown()
 
 /obj/machinery/power/fusion_core/Topic(href, href_list)
@@ -83,7 +83,7 @@
 		owned_field.ChangeFieldStrength(value)
 
 /obj/machinery/power/fusion_core/physical_attack_hand(mob/user)
-	visible_message("<span class='notice'>\The [user] hugs \the [src] to make it feel better!</span>")
+	visible_message(SPAN_NOTICE("\The [user] hugs \the [src] to make it feel better!"))
 	if(owned_field)
 		Shutdown()
 	return TRUE
@@ -91,7 +91,7 @@
 /obj/machinery/power/fusion_core/attackby(obj/item/W, mob/user)
 
 	if(owned_field)
-		to_chat(user,"<span class='warning'>Shut \the [src] off first!</span>")
+		to_chat(user,SPAN_WARNING("Shut \the [src] off first!"))
 		return
 
 	if(isMultitool(W))
@@ -123,7 +123,7 @@
 	return TRUE
 
 /obj/machinery/power/fusion_core/proc/check_core_status()
-	if(stat & BROKEN)
+	if(MACHINE_IS_BROKEN(src))
 		return FALSE
 	if(idle_power_usage > avail())
 		return FALSE

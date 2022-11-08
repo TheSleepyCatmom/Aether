@@ -25,10 +25,10 @@ AI MODULES
 	if(!istype(comp))
 		return
 
-	if(comp.stat & BROKEN)
+	if(MACHINE_IS_BROKEN(comp))
 		to_chat(user, "\The [comp] is broken!")
 		return
-	if(comp.stat & NOPOWER)
+	if(!comp.is_powered())
 		to_chat(user, "\The [comp] has no power!")
 		return
 	if(!comp.current)
@@ -366,7 +366,7 @@ AI MODULES
 	log_law_changes(target, sender)
 
 	GLOB.lawchanges.Add("The law is '[newFreeFormLaw]'")
-	to_chat(target, "<span class='danger'>BZZZZT</span>")
+	to_chat(target, SPAN_DANGER("BZZZZT"))
 	var/law = "[newFreeFormLaw]"
 	target.add_ion_law(law)
 	target.show_laws()

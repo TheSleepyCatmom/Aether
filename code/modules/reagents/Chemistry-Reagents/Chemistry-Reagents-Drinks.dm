@@ -11,14 +11,15 @@
 	var/adj_temp = 0
 	value = 0.1
 
-/datum/reagent/drink/affect_blood(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/affect_blood(mob/living/carbon/M, removed)
 	M.adjustToxLoss(removed) // Probably not a good idea; not very deadly though
 	return
 
-/datum/reagent/drink/affect_ingest(mob/living/carbon/M, alien, removed)
-	if (alien == IS_SKRELL && protein_amount > 0)
-		var/datum/species/skrell/S = M.species
-		S.handle_protein(M, src)
+/datum/reagent/drink/affect_ingest(mob/living/carbon/M, removed)
+	if (protein_amount)
+		handle_protein(M, src)
+	if (sugar_amount)
+		handle_sugar(M, src)
 	if(nutrition)
 		M.adjust_nutrition(nutrition * removed)
 	if(hydration)
@@ -32,12 +33,12 @@
 		M.bodytemperature = min(310, M.bodytemperature - (adj_temp * TEMPERATURE_DAMAGE_COEFFICIENT))
 
 // Juices
-/datum/reagent/drink/juice/affect_ingest(mob/living/carbon/human/M, alien, removed)
+/datum/reagent/drink/juice
+	sugar_amount = 0.5
+
+/datum/reagent/drink/juice/affect_ingest(mob/living/carbon/human/M, removed)
 	..()
 	M.immunity = min(M.immunity + 0.25, M.immunity_norm*1.5)
-	if(alien == IS_UNATHI)
-		var/datum/species/unathi/S = M.species
-		S.handle_sugar(M,src,0.5)
 
 /datum/reagent/drink/juice/banana
 	name = "Banana Juice"
@@ -66,7 +67,7 @@
 	glass_name = "carrot juice"
 	glass_desc = "It is just like a carrot but without crunching."
 
-/datum/reagent/drink/juice/carrot/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/juice/carrot/affect_ingest(mob/living/carbon/M, removed)
 	..()
 	M.reagents.add_reagent(/datum/reagent/imidazoline, removed * 0.2)
 
@@ -99,9 +100,9 @@
 	glass_name = "lime juice"
 	glass_desc = "A glass of sweet-sour lime juice"
 
-/datum/reagent/drink/juice/lime/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/juice/lime/affect_ingest(mob/living/carbon/M, removed)
 	..()
-	if(alien == IS_DIONA)
+	if (METABOLIC_INERTNESS(M) > TRAIT_LEVEL_MINOR)
 		return
 	M.adjustToxLoss(-0.5 * removed)
 
@@ -114,9 +115,9 @@
 	glass_name = "orange juice"
 	glass_desc = "Vitamins! Yay!"
 
-/datum/reagent/drink/juice/orange/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/juice/orange/affect_ingest(mob/living/carbon/M, removed)
 	..()
-	if(alien == IS_DIONA)
+	if (METABOLIC_INERTNESS(M) > TRAIT_LEVEL_MINOR)
 		return
 	M.adjustOxyLoss(-2 * removed)
 
@@ -130,9 +131,9 @@
 	glass_name = "poison berry juice"
 	glass_desc = "A glass of deadly juice."
 
-/datum/reagent/toxin/poisonberryjuice/affect_blood(mob/living/carbon/M, alien, removed)
-	if(alien == IS_UNATHI)
-		return //unathi are immune!
+/datum/reagent/toxin/poisonberryjuice/affect_blood(mob/living/carbon/M, removed)
+	if(M.HasTrait(/singleton/trait/boon/filtered_blood))
+		return
 	return ..()
 
 /datum/reagent/drink/juice/potato
@@ -174,9 +175,9 @@
 	glass_name = "tomato juice"
 	glass_desc = "Are you sure this is tomato juice?"
 
-/datum/reagent/drink/juice/tomato/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/juice/tomato/affect_ingest(mob/living/carbon/M, removed)
 	..()
-	if(alien == IS_DIONA)
+	if (METABOLIC_INERTNESS(M) > TRAIT_LEVEL_MINOR)
 		return
 	M.heal_organ_damage(0, 0.5 * removed)
 
@@ -235,7 +236,34 @@
 	glass_name = "lettuce juice"
 	glass_desc = "This is just lettuce water. Fresh but boring."
 
-// Everything else
+
+/datum/reagent/drink/thoom
+	name = "Th'oom Juice"
+	description = "A thick off-white fluid expressed from the juice glands of the Skrellian Th'oom."
+	taste_description = "thick, sweet, and savory ... milk?"
+	color = "#baeece"
+	glass_name = "th'oom juice"
+	glass_desc = "sweet and savory goodness!"
+	sugar_amount = 50
+	nutrition = 4
+	hydration = 3
+
+
+/datum/reagent/drink/thoom/affect_ingest(mob/living/carbon/carbon, removed)
+	..()
+	holder.remove_reagent(/datum/reagent/capsaicin, 3 * removed)
+
+	if (IS_METABOLICALLY_INERT(carbon))
+		return
+
+	if (HAS_TRAIT(carbon, /singleton/trait/boon/clear_mind))
+		carbon.heal_organ_damage(1 * removed, 0)
+		carbon.add_chemical_effect(CE_PULSE, 1)
+		carbon.add_chemical_effect(CE_STIMULANT, 2)
+	if (!HAS_TRAIT(carbon, /singleton/trait/boon/cast_iron_stomach))
+		carbon.heal_organ_damage(0.3 * removed, 0)
+
+
 
 /datum/reagent/drink/milk
 	name = "Milk"
@@ -247,12 +275,13 @@
 	glass_desc = "White and nutritious goodness!"
 	protein_amount = 0.75
 
-/datum/reagent/drink/milk/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/milk/affect_ingest(mob/living/carbon/M, removed)
 	..()
-	if (alien == IS_DIONA)
+	holder.remove_reagent(/datum/reagent/capsaicin, 10 * removed)
+
+	if (METABOLIC_INERTNESS(M) > TRAIT_LEVEL_MINOR)
 		return
 	M.heal_organ_damage(0.5 * removed, 0)
-	holder.remove_reagent(/datum/reagent/capsaicin, 10 * removed)
 
 /datum/reagent/drink/milk/chocolate
 	name =  "Chocolate Milk"
@@ -299,24 +328,25 @@
 	glass_name = "coffee"
 	glass_desc = "Don't drop it, or you'll send scalding liquid and glass shards everywhere."
 
-/datum/reagent/drink/coffee/affect_ingest(mob/living/carbon/M, alien, removed)
-	if(alien == IS_DIONA)
+/datum/reagent/drink/coffee/affect_ingest(mob/living/carbon/M, removed)
+	if(adj_temp > 0)
+		holder.remove_reagent(/datum/reagent/frostoil, 10 * removed)
+
+	if (METABOLIC_INERTNESS(M) > TRAIT_LEVEL_MINOR)
 		return
 	..()
 
-	if(adj_temp > 0)
-		holder.remove_reagent(/datum/reagent/frostoil, 10 * removed)
 	if(volume > 15)
 		M.add_chemical_effect(CE_PULSE, 1)
 	if(volume > 45)
 		M.add_chemical_effect(CE_PULSE, 1)
 
-/datum/reagent/nutriment/coffee/affect_blood(mob/living/carbon/M, alien, removed)
+/datum/reagent/nutriment/coffee/affect_blood(mob/living/carbon/M, removed)
 	..()
 	M.add_chemical_effect(CE_PULSE, 2)
 
-/datum/reagent/drink/coffee/overdose(mob/living/carbon/M, alien)
-	if(alien == IS_DIONA)
+/datum/reagent/drink/coffee/overdose(mob/living/carbon/M)
+	if (IS_METABOLICALLY_INERT(M))
 		return
 	M.make_jittery(5)
 	M.add_chemical_effect(CE_PULSE, 1)
@@ -342,7 +372,7 @@
 	glass_name = "soy latte"
 	glass_desc = "A nice and refreshing beverage while you are reading your hippie books."
 
-/datum/reagent/drink/coffee/soy_latte/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/coffee/soy_latte/affect_ingest(mob/living/carbon/M, removed)
 	..()
 	M.heal_organ_damage(0.5 * removed, 0)
 
@@ -355,7 +385,7 @@
 	glass_name = "iced soy latte"
 	glass_desc = "A nice and refreshing beverage while you are reading your hippie books. This one's cold."
 
-/datum/reagent/drink/coffee/icecoffee/soy_latte/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/coffee/icecoffee/soy_latte/affect_ingest(mob/living/carbon/M, removed)
 	..()
 	M.heal_organ_damage(0.5 * removed, 0)
 
@@ -370,7 +400,7 @@
 	glass_name = "cafe latte"
 	glass_desc = "A nice, strong and refreshing beverage while you are reading."
 
-/datum/reagent/drink/coffee/cafe_latte/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/coffee/cafe_latte/affect_ingest(mob/living/carbon/M, removed)
 	..()
 	M.heal_organ_damage(0.5 * removed, 0)
 
@@ -384,7 +414,7 @@
 	glass_name = "iced cafe latte"
 	glass_desc = "A nice, strong and refreshing beverage while you are reading. This one's cold."
 
-/datum/reagent/drink/coffee/icecoffee/cafe_latte/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/coffee/icecoffee/cafe_latte/affect_ingest(mob/living/carbon/M, removed)
 	..()
 	M.heal_organ_damage(0.5 * removed, 0)
 
@@ -599,15 +629,10 @@
 	color = "#aee5e4"
 	adj_temp = -9
 	protein_amount = 0.5
+	sugar_amount = 0.5
 
 	glass_name = "milkshake"
 	glass_desc = "Glorious brainfreezing mixture."
-
-/datum/reagent/milkshake/affect_ingest(mob/living/carbon/human/M, alien, removed)
-	..()
-	if(alien == IS_UNATHI)
-		var/datum/species/unathi/S = M.species
-		S.handle_sugar(M,src,0.5)
 
 /datum/reagent/drink/rewriter
 	name = "Rewriter"
@@ -619,7 +644,7 @@
 	glass_name = "Rewriter"
 	glass_desc = "The secret of the sanctuary of the Libarian..."
 
-/datum/reagent/drink/rewriter/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/rewriter/affect_ingest(mob/living/carbon/M, removed)
 	..()
 	M.make_jittery(5)
 
@@ -635,7 +660,7 @@
 	glass_desc = "Don't cry, Don't raise your eye, It's only nuclear wasteland"
 	glass_special = list(DRINK_FIZZ)
 
-/datum/reagent/drink/nuka_cola/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/nuka_cola/affect_ingest(mob/living/carbon/M, removed)
 	..()
 	M.add_chemical_effect(CE_SPEEDBOOST, 1)
 	M.make_jittery(20)
@@ -657,15 +682,10 @@
 	description = "Canada is still going at it, no one can stop them."
 	taste_description = "nutty, sugary goodness"
 	color = "#b24403"
+	sugar_amount = 2/3 //Maple syrup is about 2/3 sugar in real life
 
 	glass_name = "maple syrup"
 	glass_desc = "Thick and very sweet, the perfect Canadian treat to enjoy under a clear sky."
-
-/datum/reagent/drink/maplesyrup/affect_ingest(mob/living/carbon/M, alien, removed)
-	..()
-	if(alien == IS_UNATHI)
-		var/datum/species/unathi/S = M.species
-		S.handle_sugar(M, src, 0.66)	//Maple syrup is about 2/3 sugar in real life
 
 /datum/reagent/drink/space_cola
 	name = "Space Cola"
@@ -737,9 +757,9 @@
 	glass_name = "The Doctor's Delight"
 	glass_desc = "A healthy mixture of juices, guaranteed to keep you healthy until the next toolboxing takes place."
 
-/datum/reagent/drink/doctor_delight/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/doctor_delight/affect_ingest(mob/living/carbon/M, removed)
 	..()
-	if(alien == IS_DIONA)
+	if (METABOLIC_INERTNESS(M) > TRAIT_LEVEL_MINOR)
 		return
 	M.adjustOxyLoss(-4 * removed)
 	M.heal_organ_damage(2 * removed, 2 * removed)
@@ -774,9 +794,9 @@
 	color = "#302000"
 	nutrition = 5
 
-/datum/reagent/drink/hell_ramen/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/hell_ramen/affect_ingest(mob/living/carbon/M, removed)
 	..()
-	if(alien == IS_DIONA)
+	if (METABOLIC_INERTNESS(M) > TRAIT_LEVEL_MINOR)
 		return
 	M.bodytemperature += 10 * TEMPERATURE_DAMAGE_COEFFICIENT
 
@@ -829,9 +849,9 @@
 	glass_name = "beast energy"
 	glass_desc = "Why would you drink this without mixer?"
 
-/datum/reagent/drink/beastenergy/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/beastenergy/affect_ingest(mob/living/carbon/M, removed)
 	..()
-	if(alien == IS_DIONA)
+	if (METABOLIC_INERTNESS(M) > TRAIT_LEVEL_MINOR)
 		return
 	M.drowsyness = max(0, M.drowsyness - 7)
 	M.make_jittery(2)
@@ -1094,9 +1114,9 @@
 	glass_name = "black tea"
 	glass_desc = "Tasty black tea, it has antioxidants, it's good for you!"
 
-/datum/reagent/drink/tea/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/drink/tea/affect_ingest(mob/living/carbon/M, removed)
 	..()
-	if(alien == IS_DIONA)
+	if (METABOLIC_INERTNESS(M) > TRAIT_LEVEL_MINOR)
 		return
 	M.adjustToxLoss(-0.5 * removed)
 

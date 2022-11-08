@@ -32,7 +32,7 @@
 		if("The Clowns Head")
 			to_chat(user, "A rather catching portrait of what you can only presume to be the idea of a madman... A Clown Queen...")
 		if("The Cranky Goldfish")
-			to_chat(user, "A crankpowered fish! Why hadn't you thought of that...")
+			to_chat(user, "A crank-powered fish! Why hadn't you thought of that...")
 		if("The Cat Caller")
 			to_chat(user, "An adorable neon kitty to brighten up your day.")
 		if("The Diplomatic Resolution")
@@ -45,6 +45,12 @@
 			to_chat(user, "Yippee!")
 		if("We Are Open!")
 			to_chat(user, "Come on in!")
+		if("The Meta Game")
+			to_chat(user, "Big Brain Plays.")
+		if("Bless This Mess")
+			to_chat(user, "It fills you with a snuggly wuggly sense of warmth and comfort.")
+		if("The Redshirt")
+			to_chat(user, "Mmm... Donuts...")
 		else
 			to_chat(user, "It says '[icon_state]'")
 
@@ -63,9 +69,9 @@
 			if(!sign_type)
 				return
 			icon_state = sign_type
-			to_chat(user, "<span class='notice'>You change the barsign.</span>")
+			to_chat(user, SPAN_NOTICE("You change the barsign."))
 		else
-			to_chat(user, "<span class='warning'>Access denied.</span>")
+			to_chat(user, SPAN_WARNING("Access denied."))
 		return
 
 	return ..()

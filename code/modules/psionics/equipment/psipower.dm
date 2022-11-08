@@ -30,13 +30,13 @@
 
 /obj/item/psychic_power/attack(mob/living/M, mob/living/user, target_zone)
 	if(M.do_psionics_check(max(force, maintain_cost), user))
-		to_chat(user, "<span class='danger'>\The [src] flickers violently out of phase!</span>")
+		to_chat(user, SPAN_DANGER("\The [src] flickers violently out of phase!"))
 		return 1
 	. = ..()
 
 /obj/item/psychic_power/afterattack(atom/target, mob/living/user, proximity)
 	if(target.do_psionics_check(max(force, maintain_cost), user))
-		to_chat(user, "<span class='danger'>\The [src] flickers violently out of phase!</span>")
+		to_chat(user, SPAN_DANGER("\The [src] flickers violently out of phase!"))
 		return
 	. = ..(target, user, proximity)
 
@@ -47,7 +47,7 @@
 /obj/item/psychic_power/Process()
 	if(istype(owner))
 		owner.psi.spend_power(maintain_cost)
-	if(!owner || owner.do_psionics_check(maintain_cost, owner) || loc != owner || (owner.l_hand != src && owner.r_hand != src))
+	if(!owner || owner.do_psionics_check(maintain_cost, owner) || !owner.IsHolding(src))
 		if(istype(loc,/mob/living))
 			var/mob/living/carbon/human/host = loc
 			if(istype(host))

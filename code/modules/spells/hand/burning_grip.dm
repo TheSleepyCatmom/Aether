@@ -15,7 +15,7 @@
 /spell/hand/burning_grip/valid_target(mob/living/L, mob/user)
 	if(!..())
 		return 0
-	if(!L.l_hand && !L.r_hand)
+	if (L.HandsEmpty())
 		return 0
 	return 1
 
@@ -36,7 +36,7 @@
 			H.grasp_damage_disarm(E)
 		else
 			E.take_external_damage(burn=6, used_weapon = "hot iron")
-			to_chat(H, "<span class='warning'>You look down to notice that your [E] is burned.</span>")
+			to_chat(H, SPAN_WARNING("You look down to notice that your [E] is burned."))
 
 /spell/hand/burning_grip/tower
 	charge_max = 3

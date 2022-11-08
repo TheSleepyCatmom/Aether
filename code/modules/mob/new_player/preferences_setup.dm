@@ -8,15 +8,15 @@
 	head_hair_style = random_hair_style(gender, species)
 	facial_hair_style = random_facial_hair_style(gender, species)
 	if(current_species)
-		if(current_species.appearance_flags & HAS_A_SKIN_TONE)
+		if(current_species.appearance_flags & SPECIES_APPEARANCE_HAS_A_SKIN_TONE)
 			skin_tone = current_species.get_random_skin_tone() || skin_tone
-		if(current_species.appearance_flags & HAS_EYE_COLOR)
+		if(current_species.appearance_flags & SPECIES_APPEARANCE_HAS_EYE_COLOR)
 			var/list/ergb = current_species.get_random_eye_color()
 			eye_color = rgb(ergb[1], ergb[2], ergb[3])
-		if(current_species.appearance_flags & HAS_SKIN_COLOR)
+		if(current_species.appearance_flags & SPECIES_APPEARANCE_HAS_SKIN_COLOR)
 			var/list/srgb = current_species.get_random_skin_color()
 			skin_color = rgb(srgb[1], srgb[2], srgb[3])
-		if(current_species.appearance_flags & HAS_HAIR_COLOR)
+		if(current_species.appearance_flags & SPECIES_APPEARANCE_HAS_HAIR_COLOR)
 			var/hair_colors = current_species.get_random_hair_color()
 			if(hair_colors)
 				var/list/rgb = hair_colors
@@ -27,14 +27,14 @@
 					var/list/frgb = current_species.get_random_facial_hair_color()
 					facial_hair_color = rgb(frgb[1], frgb[2], frgb[3])
 
-	if(current_species.appearance_flags & HAS_UNDERWEAR)
+	if(current_species.appearance_flags & SPECIES_APPEARANCE_HAS_UNDERWEAR)
 		if(all_underwear)
 			all_underwear.Cut()
 		for(var/datum/category_group/underwear/WRC in GLOB.underwear.categories)
 			var/datum/category_item/underwear/WRI = pick(WRC.items)
 			all_underwear[WRC.name] = WRI.name
 
-	backpack = decls_repository.get_decl(pick(subtypesof(/decl/backpack_outfit)))
+	backpack = GET_SINGLETON(pick(subtypesof(/singleton/backpack_outfit)))
 	age = rand(current_species.min_age, current_species.max_age)
 	b_type = RANDOM_BLOOD_TYPE
 	if(H)

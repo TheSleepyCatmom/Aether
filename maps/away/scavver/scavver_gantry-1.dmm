@@ -808,7 +808,7 @@
 /turf/simulated/floor/tiled/white/monotile,
 /area/scavver/calypso)
 "na" = (
-/obj/structure/anomaly_container,
+/obj/machinery/anomaly_container,
 /turf/simulated/floor/airless,
 /area/scavver/calypso)
 "nb" = (
@@ -1315,7 +1315,7 @@
 	},
 /obj/structure/closet/crate/plastic,
 /obj/item/reagent_containers/glass/paint/random,
-/obj/item/crowbar/brace_jack,
+/obj/item/material/twohanded/jack,
 /obj/item/stack/material/phoron/fifty,
 /obj/item/stack/material/phoron/fifty,
 /obj/item/stack/material/phoron/fifty,

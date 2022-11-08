@@ -44,9 +44,11 @@
 		/obj/item/seeds/cherryseed = 15,
 		/obj/item/seeds/chiliseed = 15,
 		/obj/item/seeds/cinnamon = 15,
+		/obj/item/seeds/clam = 5,
 		/obj/item/seeds/coconutseed = 15,
 		/obj/item/seeds/coffeeseed = 15,
 		/obj/item/seeds/cornseed = 15,
+		/obj/item/seeds/crab = 5,
 		/obj/item/seeds/replicapod = 15,
 		/obj/item/seeds/eggplantseed = 15,
 		/obj/item/seeds/amanitamycelium = 15,
@@ -68,11 +70,13 @@
 		/obj/item/seeds/limeseed = 15,
 		/obj/item/seeds/melonseed = 15,
 		/obj/item/seeds/mtearseed = 15,
+		/obj/item/seeds/mussel = 5,
 		/obj/item/seeds/nettleseed = 15,
 		/obj/item/seeds/okrri = 15,
 		/obj/item/seeds/olives = 15,
 		/obj/item/seeds/onionseed = 15,
 		/obj/item/seeds/orangeseed = 15,
+		/obj/item/seeds/oyster = 5,
 		/obj/item/seeds/peanutseed = 15,
 		/obj/item/seeds/pearseed = 15,
 		/obj/item/seeds/peppercornseed = 15,
@@ -86,6 +90,7 @@
 		/obj/item/seeds/reishimycelium = 15,
 		/obj/item/seeds/riceseed = 15,
 		/obj/item/seeds/shandseed = 15,
+		/obj/item/seeds/shrimp = 5,
 		/obj/item/seeds/soyaseed = 15,
 		/obj/item/seeds/sugarcaneseed = 15,
 		/obj/item/seeds/sunflowerseed = 15,
@@ -103,13 +108,15 @@
 
 /obj/machinery/seed_storage/Initialize(mapload)
 	. = ..()
-	for(var/typepath in starting_seeds)
-		var/amount = starting_seeds[typepath]
-		if(isnull(amount))
-			amount = 1
-		for (var/i = 1 to amount)
-			var/O = new typepath
-			add(O)
+	if (LAZYLEN(starting_seeds))
+		for(var/typepath in starting_seeds)
+			var/amount = starting_seeds[typepath]
+			if(isnull(amount))
+				amount = 1
+			for (var/i = 1 to amount)
+				var/O = new typepath
+				add(O)
+		sort_piles()
 
 /obj/machinery/seed_storage/random // This is mostly for testing, but I guess admins could spawn it
 	name = "Random seed storage"
@@ -136,7 +143,9 @@
 
 /obj/machinery/seed_storage/all/Initialize(mapload)
 	for (var/typepath in subtypesof(/obj/item/seeds))
-		starting_seeds += list(typepath = 5)
+		if (typepath == /obj/item/seeds/random || typepath == /obj/item/seeds/cutting)
+			continue
+		starting_seeds[typepath] = 5
 	. = ..()
 
 /obj/machinery/seed_storage/interface_interact(mob/user)
@@ -148,7 +157,7 @@
 
 	var/dat = "<center><h1>Seed storage contents</h1></center>"
 	if (piles.len == 0)
-		dat += "<font color='red'>No seeds</font>"
+		dat += SPAN_COLOR("red", "No seeds")
 	else
 		dat += "<table style='text-align:center;border-style:solid;border-width:1px;padding:4px'><tr><td>Name</td>"
 		dat += "<td>Variety</td>"
@@ -203,12 +212,12 @@
 				if(1)
 					dat += "CARN "
 				if(2)
-					dat	+= "<font color='red'>CARN </font>"
+					dat	+= SPAN_COLOR("red", "CARN ")
 			switch(seed.get_trait(TRAIT_SPREAD))
 				if(1)
 					dat += "VINE "
 				if(2)
-					dat	+= "<font color='red'>VINE </font>"
+					dat	+= SPAN_COLOR("red", "VINE ")
 			if ("pressure" in scanner)
 				if(seed.get_trait(TRAIT_LOWKPA_TOLERANCE) < 20)
 					dat += "LP "
@@ -286,6 +295,7 @@
 /obj/machinery/seed_storage/attackby(obj/item/O as obj, mob/user as mob)
 	if (istype(O, /obj/item/seeds))
 		add(O)
+		sort_piles()
 		user.visible_message("[user] puts \the [O.name] into \the [src].", "You put \the [O] into \the [src].")
 		return
 	else if (istype(O, /obj/item/storage/plants))
@@ -297,9 +307,10 @@
 			add(G, 1)
 		P.finish_bulk_removal()
 		if (loaded)
+			sort_piles()
 			user.visible_message("[user] puts the seeds from \the [O.name] into \the [src].", "You put the seeds from \the [O.name] into \the [src].")
 		else
-			to_chat(user, "<span class='notice'>There are no seeds in \the [O.name].</span>")
+			to_chat(user, SPAN_NOTICE("There are no seeds in \the [O.name]."))
 		return
 	else if(isWrench(O))
 		playsound(loc, 'sound/items/Ratchet.ogg', 50, 1)
@@ -330,3 +341,8 @@
 	piles += new /datum/seed_pile(O, newID)
 	flick("[initial(icon_state)]-vend", src)
 	return
+
+
+/// Handles sorting of the `piles` list.
+/obj/machinery/seed_storage/proc/sort_piles()
+	piles = sortAtom(piles)

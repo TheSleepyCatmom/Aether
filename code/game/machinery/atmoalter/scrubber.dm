@@ -31,7 +31,7 @@
 
 
 /obj/machinery/portable_atmospherics/powered/scrubber/emp_act(severity)
-	if(stat & (BROKEN|NOPOWER))
+	if(inoperable())
 		..(severity)
 		return
 
@@ -43,7 +43,7 @@
 /obj/machinery/portable_atmospherics/powered/scrubber/on_update_icon()
 	overlays.Cut()
 
-	if((use_power == POWER_USE_ACTIVE) && !(stat & (NOPOWER | BROKEN)))
+	if((use_power == POWER_USE_ACTIVE) && operable())
 		icon_state = "pscrubber:1"
 	else
 		icon_state = "pscrubber:0"
@@ -62,7 +62,7 @@
 /obj/machinery/portable_atmospherics/powered/scrubber/proc/process_scrubber()
 	var/power_draw = -1
 
-	if((use_power == POWER_USE_ACTIVE) && !(stat & NOPOWER))
+	if((use_power == POWER_USE_ACTIVE) && is_powered())
 		var/datum/gas_mixture/environment
 		if(holding)
 			environment = holding.air_contents
@@ -139,7 +139,7 @@
 
 //Broken scrubber Used in hanger atmoshperic storage
 /obj/machinery/portable_atmospherics/powered/scrubber/broken
-	construct_state = /decl/machine_construction/default/panel_open
+	construct_state = /singleton/machine_construction/default/panel_open
 	panel_open = 1
 
 /obj/machinery/portable_atmospherics/powered/scrubber/broken/Initialize()
@@ -179,13 +179,13 @@
 /obj/machinery/portable_atmospherics/powered/scrubber/huge/attack_hand(mob/user)
 	if((. = ..()))
 		return
-	to_chat(user, "<span class='notice'>You can't directly interact with this machine. Use the scrubber control console.</span>")
+	to_chat(user, SPAN_NOTICE("You can't directly interact with this machine. Use the scrubber control console."))
 	return TRUE
 
 /obj/machinery/portable_atmospherics/powered/scrubber/huge/on_update_icon()
 	overlays.Cut()
 
-	if((use_power == POWER_USE_ACTIVE) && !(stat & (NOPOWER|BROKEN)))
+	if((use_power == POWER_USE_ACTIVE) && operable())
 		icon_state = "scrubber:1"
 	else
 		icon_state = "scrubber:0"
@@ -193,12 +193,12 @@
 /obj/machinery/portable_atmospherics/powered/scrubber/huge/attackby(obj/item/I as obj, mob/user as mob)
 	if(isWrench(I))
 		if(use_power == POWER_USE_ACTIVE)
-			to_chat(user, "<span class='warning'>Turn \the [src] off first!</span>")
+			to_chat(user, SPAN_WARNING("Turn \the [src] off first!"))
 			return
 
 		anchored = !anchored
 		playsound(src.loc, 'sound/items/Ratchet.ogg', 50, 1)
-		to_chat(user, "<span class='notice'>You [anchored ? "wrench" : "unwrench"] \the [src].</span>")
+		to_chat(user, SPAN_NOTICE("You [anchored ? "wrench" : "unwrench"] \the [src]."))
 
 		return
 	//doesn't hold tanks
@@ -216,7 +216,7 @@
 
 /obj/machinery/portable_atmospherics/powered/scrubber/huge/stationary/attackby(obj/item/I as obj, mob/user as mob)
 	if(isWrench(I))
-		to_chat(user, "<span class='warning'>The bolts are too tight for you to unscrew!</span>")
+		to_chat(user, SPAN_WARNING("The bolts are too tight for you to unscrew!"))
 		return
 
 	return ..()

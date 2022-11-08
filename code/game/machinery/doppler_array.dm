@@ -14,7 +14,7 @@ var/global/list/doppler_arrays = list()
 	..()
 
 /obj/machinery/doppler_array/proc/sense_explosion(x0,y0,z0,devastation_range,heavy_impact_range,light_impact_range,took)
-	if(stat & NOPOWER)	return
+	if(!is_powered())	return
 	if(z != z0)			return
 
 	var/dx = abs(x0-x)
@@ -36,13 +36,12 @@ var/global/list/doppler_arrays = list()
 
 	var/message = "Explosive disturbance detected - Epicenter at: grid ([x0],[y0]). Epicenter radius: [devastation_range]. Outer radius: [heavy_impact_range]. Shockwave radius: [light_impact_range]. Temporal displacement of tachyons: [took]seconds."
 
-	for(var/mob/O in hearers(src, null))
-		O.show_message("<span class='game say'><span class='name'>[src]</span> states coldly, \"[message]\"</span>",2)
+	audible_message(SPAN_CLASS("game say", "[SPAN_CLASS("name", "\The [src]")] states coldly, \"[message]\""))
 
 /obj/machinery/doppler_array/on_update_icon()
-	if(stat & BROKEN)
+	if(MACHINE_IS_BROKEN(src))
 		icon_state = "[initial(icon_state)]-broken"
-	else if( !(stat & NOPOWER) )
+	else if(is_powered())
 		icon_state = initial(icon_state)
 	else
 		icon_state = "[initial(icon_state)]-off"

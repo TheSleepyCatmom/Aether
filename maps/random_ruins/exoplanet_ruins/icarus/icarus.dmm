@@ -320,7 +320,7 @@
 /turf/simulated/floor/tiled/dark,
 /area/map_template/icarus/bridge)
 "hc" = (
-/obj/structure/anomaly_container,
+/obj/machinery/anomaly_container,
 /turf/simulated/floor/tiled/white,
 /area/map_template/icarus/sci)
 "hf" = (
@@ -672,7 +672,7 @@
 "sM" = (
 /obj/structure/table/glass,
 /obj/effect/decal/cleanable/dirt,
-/obj/item/gun/projectile/pistol/military/icarus,
+/obj/item/gun/projectile/pistol/m22f/icarus,
 /turf/simulated/floor/tiled/dark,
 /area/map_template/icarus/bridge)
 "sO" = (

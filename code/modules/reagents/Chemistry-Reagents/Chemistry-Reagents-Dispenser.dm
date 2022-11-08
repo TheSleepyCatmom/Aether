@@ -10,8 +10,8 @@
 	value = DISPENSER_REAGENT_VALUE
 	accelerant_quality = 3
 
-/datum/reagent/acetone/affect_blood(mob/living/carbon/M, alien, removed)
-	if(alien == IS_NABBER)
+/datum/reagent/acetone/affect_blood(mob/living/carbon/M, removed)
+	if (HAS_TRAIT(M, /singleton/trait/general/serpentid_adapted))
 		return
 
 	M.adjustToxLoss(removed * 3)
@@ -26,11 +26,11 @@
 		if(volume < 5)
 			return
 		if(istype(O, /obj/item/book/tome))
-			to_chat(usr, "<span class='notice'>The solution does nothing. Whatever this is, it isn't normal ink.</span>")
+			to_chat(usr, SPAN_NOTICE("The solution does nothing. Whatever this is, it isn't normal ink."))
 			return
 		var/obj/item/book/affectedbook = O
 		affectedbook.dat = null
-		to_chat(usr, "<span class='notice'>The solution dissolves the ink on the book.</span>")
+		to_chat(usr, SPAN_NOTICE("The solution dissolves the ink on the book."))
 	return
 
 /datum/reagent/aluminium
@@ -53,14 +53,14 @@
 	overdose = 5
 	value = DISPENSER_REAGENT_VALUE
 
-/datum/reagent/ammonia/affect_blood(mob/living/carbon/M, alien, removed)
-	if(alien == IS_VOX)
+/datum/reagent/ammonia/affect_blood(mob/living/carbon/M, removed)
+	if (M.species.breath_type == GAS_AMMONIA)
 		M.add_chemical_effect(CE_OXYGENATED, 2)
-	else if(alien != IS_DIONA)
+	else if (!IS_METABOLICALLY_INERT(M))
 		M.adjustToxLoss(removed * 1.5)
 
-/datum/reagent/ammonia/overdose(mob/living/carbon/M, alien)
-	if(alien != IS_VOX || volume > overdose*6)
+/datum/reagent/ammonia/overdose(mob/living/carbon/M)
+	if (M.species.breath_type != GAS_AMMONIA || volume > overdose*6)
 		..()
 
 /datum/reagent/carbon
@@ -73,11 +73,11 @@
 	ingest_met = REM * 5
 	value = DISPENSER_REAGENT_VALUE
 
-/datum/reagent/carbon/affect_ingest(mob/living/carbon/M, alien, removed)
-	if(alien == IS_DIONA)
+/datum/reagent/carbon/affect_ingest(mob/living/carbon/M, removed)
+	if (METABOLIC_INERTNESS(M) > TRAIT_LEVEL_MINOR)
 		return
 	var/datum/reagents/ingested = M.get_ingested_reagents()
-	if(ingested && ingested.reagent_list.len > 1) // Need to have at least 2 reagents - cabon and something to remove
+	if (ingested && ingested.reagent_list.len > 1) // Need to have at least 2 reagents - cabon and something to remove
 		var/effect = 1 / (ingested.reagent_list.len - 1)
 		for(var/datum/reagent/R in ingested.reagent_list)
 			if(R == src)
@@ -127,17 +127,15 @@
 	if(istype(L))
 		L.adjust_fire_stacks(amount / 15)
 
-/datum/reagent/ethanol/affect_blood(mob/living/carbon/M, alien, removed)
+/datum/reagent/ethanol/affect_blood(mob/living/carbon/M, removed)
 	M.adjustToxLoss(removed * 2 * toxicity)
 	return
 
-/datum/reagent/ethanol/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/ethanol/affect_ingest(mob/living/carbon/M, removed)
 	M.adjust_nutrition(nutriment_factor * removed)
 	M.adjust_hydration(hydration_factor * removed)
-	var/strength_mod = 1
-	if(alien == IS_SKRELL)
-		strength_mod *= 5
-	if(alien == IS_DIONA)
+	var/strength_mod = (M.GetTraitLevel(/singleton/trait/malus/ethanol) * 2.5) || 1
+	if (IS_METABOLICALLY_INERT(M))
 		strength_mod = 0
 
 	M.add_chemical_effect(CE_ALCOHOL, 1)
@@ -184,11 +182,11 @@
 		if(volume < 5)
 			return
 		if(istype(O, /obj/item/book/tome))
-			to_chat(usr, "<span class='notice'>The solution does nothing. Whatever this is, it isn't normal ink.</span>")
+			to_chat(usr, SPAN_NOTICE("The solution does nothing. Whatever this is, it isn't normal ink."))
 			return
 		var/obj/item/book/affectedbook = O
 		affectedbook.dat = null
-		to_chat(usr, "<span class='notice'>The solution dissolves the ink on the book.</span>")
+		to_chat(usr, SPAN_NOTICE("The solution dissolves the ink on the book."))
 	return
 
 /datum/reagent/hydrazine
@@ -201,10 +199,10 @@
 	touch_met = 5
 	value = DISPENSER_REAGENT_VALUE
 
-/datum/reagent/hydrazine/affect_blood(mob/living/carbon/M, alien, removed)
+/datum/reagent/hydrazine/affect_blood(mob/living/carbon/M, removed)
 	M.adjustToxLoss(4 * removed)
 
-/datum/reagent/hydrazine/affect_touch(mob/living/carbon/M, alien, removed) // Hydrazine is both toxic and flammable.
+/datum/reagent/hydrazine/affect_touch(mob/living/carbon/M, removed) // Hydrazine is both toxic and flammable.
 	M.adjust_fire_stacks(removed / 12)
 	M.adjustToxLoss(0.2 * removed)
 
@@ -221,8 +219,8 @@
 	color = "#353535"
 	value = DISPENSER_REAGENT_VALUE
 
-/datum/reagent/iron/affect_ingest(mob/living/carbon/M, alien, removed)
-	if(alien != IS_DIONA)
+/datum/reagent/iron/affect_ingest(mob/living/carbon/M, removed)
+	if (!IS_METABOLICALLY_INERT(M))
 		M.add_chemical_effect(CE_BLOODRESTORE, 8 * removed)
 
 /datum/reagent/lithium
@@ -233,8 +231,8 @@
 	color = "#808080"
 	value = DISPENSER_REAGENT_VALUE
 
-/datum/reagent/lithium/affect_blood(mob/living/carbon/M, alien, removed)
-	if(alien != IS_DIONA)
+/datum/reagent/lithium/affect_blood(mob/living/carbon/M, removed)
+	if (!IS_METABOLICALLY_INERT(M))
 		if(istype(M.loc, /turf/space))
 			M.SelfMove(pick(GLOB.cardinal))
 		if(prob(5))
@@ -248,8 +246,8 @@
 	color = "#484848"
 	value = DISPENSER_REAGENT_VALUE
 
-/datum/reagent/mercury/affect_blood(mob/living/carbon/M, alien, removed)
-	if(alien != IS_DIONA)
+/datum/reagent/mercury/affect_blood(mob/living/carbon/M, removed)
+	if (!IS_METABOLICALLY_INERT(M))
 		if(istype(M.loc, /turf/space))
 			M.SelfMove(pick(GLOB.cardinal))
 		if(prob(5))
@@ -273,7 +271,7 @@
 	value = DISPENSER_REAGENT_VALUE
 	should_admin_log = TRUE
 
-/datum/reagent/potassium/affect_blood(mob/living/carbon/M, alien, removed)
+/datum/reagent/potassium/affect_blood(mob/living/carbon/M, removed)
 	if(volume > 3)
 		M.add_chemical_effect(CE_PULSE, 1)
 	if(volume > 10)
@@ -288,7 +286,7 @@
 	value = DISPENSER_REAGENT_VALUE
 	should_admin_log = TRUE
 
-/datum/reagent/radium/affect_blood(mob/living/carbon/M, alien, removed)
+/datum/reagent/radium/affect_blood(mob/living/carbon/M, removed)
 	M.apply_damage(10 * removed, DAMAGE_RADIATION, armor_pen = 100) // Radium may increase your chances to cure a disease
 
 /datum/reagent/radium/touch_turf(turf/T)
@@ -313,10 +311,10 @@
 	value = DISPENSER_REAGENT_VALUE
 	should_admin_log = TRUE
 
-/datum/reagent/acid/affect_blood(mob/living/carbon/M, alien, removed)
+/datum/reagent/acid/affect_blood(mob/living/carbon/M, removed)
 	M.take_organ_damage(0, removed * power)
 
-/datum/reagent/acid/affect_touch(mob/living/carbon/M, alien, removed) // This is the most interesting
+/datum/reagent/acid/affect_touch(mob/living/carbon/M, removed) // This is the most interesting
 
 	M.visible_message(
 		SPAN_WARNING("\The [M]'s skin sizzles and burns on contact with the liquid!"),
@@ -388,7 +386,7 @@
 		var/obj/effect/decal/cleanable/molten_item/I = new/obj/effect/decal/cleanable/molten_item(O.loc)
 		I.desc = "Looks like this was \an [O] some time ago."
 		for(var/mob/M in viewers(5, O))
-			to_chat(M, "<span class='warning'>\The [O] melts.</span>")
+			to_chat(M, SPAN_WARNING("\The [O] melts."))
 		qdel(O)
 		remove_self(meltdose) // 10 units of acid will not melt EVERYTHING on the tile
 
@@ -426,18 +424,16 @@
 	reagent_state = SOLID
 	color = "#ffffff"
 	scannable = 1
+	sugar_amount = 1
 
 	glass_name = "sugar"
 	glass_desc = "The organic compound commonly known as table sugar and sometimes called saccharose. This white, odorless, crystalline powder has a pleasing, sweet taste."
 	glass_icon = DRINK_ICON_NOISY
 	value = DISPENSER_REAGENT_VALUE
 
-/datum/reagent/sugar/affect_blood(mob/living/carbon/human/M, alien, removed)
+/datum/reagent/sugar/affect_blood(mob/living/carbon/human/M, removed)
+	handle_sugar(M, src)
 	M.adjust_nutrition(removed * 3)
-
-	if(alien == IS_UNATHI)
-		var/datum/species/unathi/S = M.species
-		S.handle_sugar(M,src)
 
 /datum/reagent/sulfur
 	name = "Sulfur"

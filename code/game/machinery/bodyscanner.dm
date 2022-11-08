@@ -10,7 +10,7 @@
 	anchored = TRUE
 	idle_power_usage = 60
 	active_power_usage = 10000	//10 kW. It's a big all-body scanner.
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
 
@@ -85,7 +85,7 @@
 	update_icon()
 	SetName(initial(name))
 
-/obj/machinery/bodyscanner/state_transition(decl/machine_construction/default/new_state)
+/obj/machinery/bodyscanner/state_transition(singleton/machine_construction/default/new_state)
 	. = ..()
 	if(istype(new_state))
 		updateUsrDialog()
@@ -132,7 +132,7 @@
 /obj/machinery/bodyscanner/on_update_icon()
 	if(!occupant)
 		icon_state = "body_scanner_0"
-	else if(stat & (BROKEN|NOPOWER))
+	else if(inoperable())
 		icon_state = "body_scanner_1"
 	else
 		icon_state = "body_scanner_2"

@@ -62,7 +62,7 @@
 		SSticker.mode.check_win()
 
 	if(wearing_rig)
-		wearing_rig.notify_ai("<span class='danger'>Warning: user death event. Mobility control passed to integrated intelligence system.</span>")
+		wearing_rig.notify_ai(SPAN_DANGER("Warning: user death event. Mobility control passed to integrated intelligence system."))
 
 	. = ..(gibbed,"no message")
 	if(!gibbed)
@@ -105,4 +105,5 @@
 	for(var/obj/item/organ/external/E in organs)
 		E.status |= ORGAN_DISFIGURED
 	update_body(1)
+	playsound(src.loc, 'sound/effects/bonerattle.ogg', 50, 1)
 	return

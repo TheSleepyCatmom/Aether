@@ -58,20 +58,20 @@
 		if(B)
 			B.blood_DNA["UNKNOWN DNA STRUCTURE"] = "X*"
 
-/datum/reagent/blood/affect_ingest(mob/living/carbon/M, alien, removed)
+/datum/reagent/blood/affect_ingest(mob/living/carbon/M, removed)
 
 	if(M.chem_doses[type] > 5)
 		M.adjustToxLoss(removed)
 	if(M.chem_doses[type] > 15)
 		M.adjustToxLoss(removed)
 
-/datum/reagent/blood/affect_touch(mob/living/carbon/M, alien, removed)
+/datum/reagent/blood/affect_touch(mob/living/carbon/M, removed)
 	if(ishuman(M))
 		var/mob/living/carbon/human/H = M
 		if(H.isSynthetic())
 			return
 
-/datum/reagent/blood/affect_blood(mob/living/carbon/M, alien, removed)
+/datum/reagent/blood/affect_blood(mob/living/carbon/M, removed)
 	M.inject_blood(src, volume)
 	remove_self(volume)
 
@@ -94,17 +94,16 @@
 	heating_point = T100C
 	value = 0
 
-/datum/reagent/water/affect_blood(mob/living/carbon/M, alien, removed)
-	if(!istype(M, /mob/living/carbon/slime) && alien != IS_SLIME)
-		return
-	M.adjustToxLoss(2 * removed)
+/datum/reagent/water/affect_blood(mob/living/carbon/M, removed)
+	var/malus_level = M.GetTraitLevel(/singleton/trait/malus/water)
+	if (malus_level)
+		M.adjustToxLoss(malus_level * removed)
 
-/datum/reagent/water/affect_ingest(mob/living/carbon/M, alien, removed)
-	if(!istype(M, /mob/living/carbon/slime) && alien != IS_SLIME)
-		return
-	M.adjustToxLoss(2 * removed)
+/datum/reagent/water/affect_ingest(mob/living/carbon/M, removed)
 
-/datum/reagent/water/affect_ingest(mob/living/carbon/M, alien, removed)
+	var/malus_level = M.GetTraitLevel(/singleton/trait/malus/water)
+	if (malus_level)
+		M.adjustToxLoss(malus_level * removed)
 	M.adjust_hydration(removed * 10)
 
 /datum/reagent/water/touch_turf(turf/simulated/T)
@@ -117,16 +116,17 @@
 	var/hotspot = (locate(/obj/hotspot) in T)
 	if(hotspot && !istype(T, /turf/space))
 		var/datum/gas_mixture/lowertemp = T.remove_air(T:air:total_moles)
-		lowertemp.temperature = max(min(lowertemp.temperature-2000, lowertemp.temperature / 2), 0)
-		lowertemp.react()
-		T.assume_air(lowertemp)
+		if (lowertemp)
+			lowertemp.temperature = max(min(lowertemp.temperature-2000, lowertemp.temperature / 2), 0)
+			lowertemp.react()
+			T.assume_air(lowertemp)
 		qdel(hotspot)
 
 	if (environment && environment.temperature > min_temperature) // Abstracted as steam or something
 		var/removed_heat = clamp(volume * WATER_LATENT_HEAT, 0, -environment.get_thermal_energy_change(min_temperature))
 		environment.add_thermal_energy(-removed_heat)
 		if (prob(5) && environment && environment.temperature > T100C)
-			T.visible_message("<span class='warning'>The water sizzles as it lands on \the [T]!</span>")
+			T.visible_message(SPAN_WARNING("The water sizzles as it lands on \the [T]!"))
 
 	else if(volume >= 10)
 		var/turf/simulated/S = T
@@ -162,10 +162,12 @@
 			L.adjust_fire_stacks(-(amount / 10))
 			remove_self(amount)
 
-/datum/reagent/water/affect_touch(mob/living/carbon/M, alien, removed)
-	if(!istype(M, /mob/living/carbon/slime) && alien != IS_SLIME)
+/datum/reagent/water/affect_touch(mob/living/carbon/M, removed)
+	var/trait_level = GET_TRAIT_LEVEL(M, /singleton/trait/malus/water)
+	if (!trait_level)
 		return
-	M.adjustToxLoss(10 * removed)	// Babies have 150 health, adults have 200; So, 15 units and 20
+
+	M.adjustToxLoss(trait_level * 5 * removed)
 	var/mob/living/carbon/slime/S = M
 	if(!S.client && istype(S))
 		if(S.Target) // Like cats
@@ -173,7 +175,7 @@
 		if(S.Victim)
 			S.Feedstop()
 	if(M.chem_doses[type] == removed)
-		M.visible_message("<span class='warning'>[S]'s flesh sizzles where the water touches it!</span>", "<span class='danger'>Your flesh burns in the water!</span>")
+		M.visible_message(SPAN_WARNING("[S]'s flesh sizzles where the water touches it!"), SPAN_DANGER("Your flesh burns in the water!"))
 		M.confused = max(M.confused, 2)
 
 /datum/reagent/water/boiling
@@ -222,7 +224,7 @@
 	remove_self(volume)
 	return
 
-/datum/reagent/fuel/affect_blood(mob/living/carbon/M, alien, removed)
+/datum/reagent/fuel/affect_blood(mob/living/carbon/M, removed)
 	M.adjustToxLoss(2 * removed)
 
 /datum/reagent/fuel/touch_mob(mob/living/L, amount)

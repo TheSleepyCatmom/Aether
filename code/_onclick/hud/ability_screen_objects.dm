@@ -215,7 +215,7 @@
 	if(!mob)
 		return // Paranoid.
 	if(isnull(slot) || !isnum(slot))
-		to_chat(src,"<span class='warning'>.activate_ability requires a number as input, corrisponding to the slot you wish to use.</span>")
+		to_chat(src,SPAN_WARNING(".activate_ability requires a number as input, corrisponding to the slot you wish to use."))
 		return // Bad input.
 	if(!mob.ability_master)
 		return // No abilities.
@@ -351,10 +351,6 @@
 	if(my_mob.client)
 		toggle_open(2) //forces the icons to refresh on screen
 
-/mob/Life()
-	UNLINT(..())
-	if(ability_master)
-		ability_master.update_spells(0)
 
 /obj/screen/movable/ability_master/proc/update_spells(forced = 0)
 	for(var/obj/screen/ability/spell/spell in spell_objects)

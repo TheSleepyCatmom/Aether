@@ -10,7 +10,7 @@
 	var/list/stored =     list()
 	var/list/harvesting = list()
 	var/obj/machinery/power/fusion_core/harvest_from
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
 
@@ -94,7 +94,7 @@
 			harvesting.Cut()
 
 /obj/machinery/kinetic_harvester/on_update_icon()
-	if(stat & (BROKEN|NOPOWER))
+	if(inoperable())
 		icon_state = "broken"
 	else if(use_power >= POWER_USE_ACTIVE)
 		icon_state = "on"

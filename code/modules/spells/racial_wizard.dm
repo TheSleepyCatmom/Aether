@@ -107,10 +107,10 @@
 
 /spell/moghes_blessing/choose_targets(mob/user = usr)
 	var/list/hands = list()
-	for(var/obj/item/I in list(user.l_hand, user.r_hand))
+	for (var/obj/item/item as anything in user.GetAllHeld())
 		//make sure it's not already blessed
-		if(istype(I) && !has_extension(I, /datum/extension/moghes_blessing))
-			hands += I
+		if (!has_extension(item, /datum/extension/moghes_blessing))
+			hands += item
 	return hands
 
 /spell/moghes_blessing/cast(list/targets, mob/user)
@@ -169,14 +169,14 @@
 
 /obj/item/contract/apprentice/skrell/attack_self(mob/user as mob)
 	if(!linked)
-		to_chat(user, "<span class='warning'>This contract requires a link to a spellbook.</span>")
+		to_chat(user, SPAN_WARNING("This contract requires a link to a spellbook."))
 		return
 	..()
 
 /obj/item/contract/apprentice/skrell/afterattack(atom/A, mob/user as mob, proximity)
 	if(!linked && istype(A,/obj/item/spellbook))
 		linked = A
-		to_chat(user, "<span class='notice'>You've linked \the [A] to \the [src]</span>")
+		to_chat(user, SPAN_NOTICE("You've linked \the [A] to \the [src]"))
 		return
 	..()
 
