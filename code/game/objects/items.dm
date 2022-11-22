@@ -360,7 +360,7 @@ var/global/list/slot_flags_enumeration = list(
 //Set disable_warning to 1 if you wish it to not give you outputs.
 //Should probably move the bulk of this into mob code some time, as most of it is related to the definition of slots and not item-specific
 //set force to ignore blocking overwear and occupied slots
-/obj/item/proc/mob_can_equip(M as mob, slot, disable_warning = 0, force = 0)
+/obj/item/proc/mob_can_equip(M as mob, slot, disable_warning = FALSE, force = FALSE)
 	if(!slot) return 0
 	if(!M) return 0
 
@@ -630,7 +630,7 @@ var/global/list/slot_flags_enumeration = list(
 
 /obj/item/reveal_blood()
 	if(was_bloodied && !fluorescent)
-		fluorescent = 1
+		fluorescent = ATOM_FLOURESCENCE_INACTIVE
 		blood_color = COLOR_LUMINOL
 		blood_overlay.color = COLOR_LUMINOL
 		update_icon()

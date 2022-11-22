@@ -895,6 +895,11 @@
 		remoteview_target = null
 		reset_view(0)
 
+/**
+ * Retrieves the atom's visible gender. Generally this is just `gender` but some factors may mask or change this.
+ *
+ * Returns a valid gender value. See DM documentation for `/mob/var/gender`.
+ */
 /atom/proc/get_visible_gender()
 	return gender
 
@@ -1245,9 +1250,9 @@
 
 	//recheck species-restricted clothing
 	for(var/slot in slot_first to slot_last)
-		var/obj/item/clothing/C = get_equipped_item(slot)
+		var/obj/item/C = get_equipped_item(slot)
 		if(istype(C) && !C.mob_can_equip(src, slot, 1))
-			unEquip(C)
+			drop_from_inventory(C)
 	update_emotes()
 	return 1
 
