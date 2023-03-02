@@ -28,6 +28,7 @@
 	var/day_loc = findtext(full_date, time2text(world.timeofday, "DD"))
 
 	var/datum/player_info/P = new
+	P.game_id = game_id
 	if (ismob(user))
 		P.author = user.key
 		P.rank = user.client.holder.rank
@@ -63,7 +64,7 @@
 	var/savefile/info = new("data/player_saves/[copytext_char(target, 1, 2)]/[target]/info.sav")
 	var/list/infos
 	from_save(info, infos)
-	if(!infos || infos.len < index) return
+	if(!infos || length(infos) < index) return
 
 	var/datum/player_info/item = infos[index]
 	infos.Remove(item)
@@ -84,6 +85,6 @@
 		dat = "No information found on the given key."
 	else
 		for(var/datum/player_info/I in infos)
-			dat += "[I.content]\nby [I.author] ([I.rank]) on [I.timestamp]\n\n"
+			dat += "[I.content]\nby [I.author] ([I.rank]) on [I.timestamp] ([I.game_id])\n\n"
 
 	return list2params(list(dat))

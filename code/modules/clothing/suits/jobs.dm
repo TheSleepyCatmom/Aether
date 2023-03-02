@@ -100,7 +100,7 @@
 		/obj/item/ammo_casing,
 		/obj/item/melee/baton,
 		/obj/item/handcuffs,
-		/obj/item/storage/fancy/cigarettes,
+		/obj/item/storage/fancy/smokable,
 		/obj/item/flame/lighter,
 		/obj/item/device/taperecorder
 	)
@@ -288,8 +288,8 @@
 
 /obj/item/clothing/suit/storage/medical_chest_rig
 	name = "\improper MT chest-rig"
-	desc = "A black chest-rig with blue pouches worn by medical first responders, meant to carry their equipment. It has a blue 'Medic' tag on its chest."
-	icon_state = "Med-chest-rig"
+	desc = "A white chest-rig with black pouches worn by medical first responders. It has a 'Medic' tag on its chest."
+	icon_state = "med-chest-rig"
 	blood_overlay_type = "armor"
 	allowed = list(
 		/obj/item/stack/medical,

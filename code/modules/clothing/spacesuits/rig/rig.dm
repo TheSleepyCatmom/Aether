@@ -33,6 +33,7 @@
 	siemens_coefficient = 0.2
 	permeability_coefficient = 0.1
 	unacidable = TRUE
+	equip_delay = 5 SECONDS
 
 	var/equipment_overlay_icon = 'icons/mob/onmob/onmob_rig_modules.dmi'
 	var/hides_uniform = 1 	//used to determinate if uniform should be visible whenever the suit is sealed or not
@@ -127,17 +128,6 @@
 			<li>Click on the HCM with an empty hand to remove it from your back.</li>
 		</ol>
 
-		<h4>TOOL INTERACTIONS</h4>
-		<ul>
-			<li>You can toggle the HCM's access panel lock by using an ID card with the required access on it.</li>
-			<li>You can open or close the HCM's maintenance panel by using a crowbar on it. The panel can only be opened if the HCM's access panel is unlocked.</li>
-			<li>You can remove modules or the oxygen tank by using a wrench on the HCM. You can only do this if the maintenance panel is open.</li>
-			<li>You can insert modules, power cells, oxygen tanks by using them on the HCM while its maintenance panel is open.</li>
-			<li>You can repair the HCM's internals by using nanopaste on it while the maintenance panel is open.</li>
-			<li>You can open or close the HCM's wire panel by using a screwdriver on it. This operates as a standard wire control panel, interactable with a multitool, wirecutters, signallers, etc. once open.</li>
-			<li>You can repair damage to the HCM's chest piece by using a stack of the relevant material or a welder on the HCM or the chest piece while the chest piece is deployed.</li>
-		</ul>
-
 		<h4>HARDSUIT INTERFACE</h4>
 		<p>The HCM's Hardsuit Interface can be accessed by using the <code>Open Hardsuit Interface</code> option under the <code>Hardsuit</code> tab in the top right, or using the <code>open-hardsuit-interface`</code>verb in the chat bar.</p>
 		<ul>
@@ -147,6 +137,18 @@
 			<li><b>Suit Pieces</b> displays the name and status of the major components of the hardsuit, and allows you to toggle the helmet on or off.</li>
 			<li>Additional HCM modules and their controls are displayed in the HCM's interface as well.</li>
 		</ul>
+	"}
+
+/obj/item/rig/get_interactions_info()
+	. = ..()
+	.["Crowbar"] += "<p>Toggles the maintenance panel open and closed if it is unlocked.</p>"
+	.["ID Card"] += "<p>Toggle the maintenance panel's access lock with an ID that has the required access. A locked panel cannot be crowbarred open.</p>"
+	.["Nanopaste"] += "<p>While the maintenance panel is open, repairs the HCM's internal components.</p>"
+	.["Screwdriver"] += "<p>Toggles the wiring panel open and closed.</p>"
+	.["Wrench"] += "<p>While the maintenance panel is open, allows you to remove specific components from the HCM, such as oxygen tanks, power cells, or HCM modules.</p>"
+	.["Miscellaneous"] += {"
+		<p>While the maintenance panel is open, oxygen tanks, power cells, and HCM modules can be inserted.</p>
+		<p>WYou can repair damage to the chest piece by using a stack of the relevant material or a welder on the HCM or the chest piece while the chest piece is deployed.</p>
 	"}
 
 /obj/item/rig/get_cell()
@@ -184,7 +186,7 @@
 
 	START_PROCESSING(SSobj, src)
 
-	if(initial_modules && initial_modules.len)
+	if(initial_modules && length(initial_modules))
 		for(var/path in initial_modules)
 			var/obj/item/rig_module/module = new path(src)
 			if (!module.can_install(src))
@@ -317,7 +319,7 @@
 			SPAN_INFO("[wearer]'s suit emits a quiet hum as it begins to adjust its seals."), \
 			SPAN_INFO("With a quiet hum, the suit begins running checks and adjusting components."))
 
-			if(seal_delay && !do_after(wearer,seal_delay, src))
+			if(seal_delay && !instant && !do_after(wearer,seal_delay, src))
 				failed_to_seal = 1
 
 		if(!wearer)
@@ -583,7 +585,7 @@
 			"damage" =            module.damage
 			)
 
-		if(module.charges && module.charges.len)
+		if(module.charges && length(module.charges))
 
 			module_data["charges"] = list()
 			module_data["chargetype"] = module.charge_selected
@@ -595,7 +597,7 @@
 		module_list += list(module_data)
 		i++
 
-	if(module_list.len)
+	if(length(module_list))
 		data["modules"] = module_list
 
 	ui = SSnano.try_update_ui(user, src, ui_key, ui, data, force_open)
@@ -685,7 +687,7 @@
 
 		var/module_index = text2num(href_list["interact_module"])
 
-		if(module_index > 0 && module_index <= installed_modules.len)
+		if(module_index > 0 && module_index <= length(installed_modules))
 			var/obj/item/rig_module/module = installed_modules[module_index]
 			switch(href_list["module_mode"])
 				if("activate")
@@ -719,29 +721,24 @@
 			to_chat(module.integrated_ai, "[message]")
 			. = 1
 
-/obj/item/rig/equipped(mob/living/carbon/human/M)
-	..()
+/obj/item/rig/equip_delay_before(mob/user, slot, equip_flags)
+	user.setClickCooldown(1 SECOND)
+	user.visible_message(
+		SPAN_ITALIC("\The [user] begins to struggle into \the [src]."),
+		SPAN_ITALIC("You begin to struggle into \the [src]."),
+		SPAN_ITALIC("You can hear metal clicking and fabric rustling."),
+		range = 5
+	)
+	wearer = user
+	wearer.wearing_rig = src
+	update_icon()
 
-	if(seal_delay > 0 && istype(M) && M.back == src)
-		M.visible_message(\
-		SPAN_INFO("[M] starts putting on \the [src]..."), \
-		SPAN_INFO("You start putting on \the [src]..."))
-
-		if(!do_after(M, seal_delay, src, DO_PUBLIC_UNIQUE))
-			if(M && M.back == src)
-				if(!M.unEquip(src))
-					return
-			src.dropInto(loc)
-			return
-
-	if(istype(M) && M.back == src)
-		M.visible_message(\
-		SPAN_INFO("<b>[M] struggles into \the [src].</b>"), \
-		SPAN_INFO("<b>You struggle into \the [src].</b>"))
-
-		wearer = M
-		wearer.wearing_rig = src
-		update_icon()
+/obj/item/rig/space/equip_delay_after(mob/user, slot, equip_flags)
+	user.visible_message(
+		SPAN_ITALIC("\The [user] finishes putting on \the [src]."),
+		SPAN_NOTICE("You finish putting on \the [src]."),
+		range = 5
+	)
 
 /obj/item/rig/proc/toggle_piece(piece, mob/initiator, deploy_mode)
 
@@ -885,7 +882,7 @@
 
 /obj/item/rig/proc/take_hit(damage, source, is_emp=0)
 
-	if(!installed_modules.len)
+	if(!length(installed_modules))
 		return
 
 	var/chance
@@ -897,7 +894,7 @@
 	else
 		//Want this to be roughly independant of the number of modules, meaning that X emp hits will disable Y% of the suit's modules on average.
 		//that way people designing hardsuits don't have to worry (as much) about how adding that extra module will affect emp resiliance by 'soaking' hits for other modules
-		chance = 2*max(0, damage - emp_protection)*min(installed_modules.len/15, 1)
+		chance = 2*max(0, damage - emp_protection)*min(length(installed_modules)/15, 1)
 
 	if(!prob(chance))
 		return
@@ -913,9 +910,9 @@
 				damaged_modules |= module
 
 	var/obj/item/rig_module/dam_module = null
-	if(damaged_modules.len)
+	if(length(damaged_modules))
 		dam_module = pick(damaged_modules)
-	else if(valid_modules.len)
+	else if(length(valid_modules))
 		dam_module = pick(valid_modules)
 
 	if(!dam_module) return

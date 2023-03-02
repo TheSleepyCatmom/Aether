@@ -2079,7 +2079,7 @@
 /turf/unsimulated/beach/sand,
 /area/beach)
 "api" = (
-/mob/living/simple_animal/crab/Coffee,
+/mob/living/simple_animal/passive/crab/Coffee,
 /turf/unsimulated/beach/sand,
 /area/beach)
 "apA" = (
@@ -2226,7 +2226,7 @@
 /turf/simulated/floor/shuttle/red,
 /area/shuttle/administration/centcom)
 "atp" = (
-/obj/item/storage/fancy/cigarettes,
+/obj/item/storage/fancy/smokable/transstellar,
 /obj/structure/table/reinforced,
 /turf/simulated/floor/shuttle/red,
 /area/shuttle/administration/centcom)
@@ -2553,7 +2553,7 @@
 /turf/simulated/floor/shuttle/white,
 /area/shuttle/administration/centcom)
 "auF" = (
-/obj/structure/bed/roller,
+/obj/structure/roller_bed,
 /turf/simulated/floor/shuttle/white,
 /area/shuttle/administration/centcom)
 "auG" = (
@@ -3062,12 +3062,12 @@
 /area/centcom/specops)
 "awl" = (
 /obj/structure/table/rack,
-/obj/item/ammo_magazine/mil_rifle,
-/obj/item/ammo_magazine/mil_rifle,
-/obj/item/ammo_magazine/mil_rifle,
-/obj/item/ammo_magazine/mil_rifle,
-/obj/item/ammo_magazine/mil_rifle,
-/obj/item/ammo_magazine/mil_rifle,
+/obj/item/ammo_magazine/mil_rifle/heavy,
+/obj/item/ammo_magazine/mil_rifle/heavy,
+/obj/item/ammo_magazine/mil_rifle/heavy,
+/obj/item/ammo_magazine/mil_rifle/heavy,
+/obj/item/ammo_magazine/mil_rifle/heavy,
+/obj/item/ammo_magazine/mil_rifle/heavy,
 /obj/item/gun/projectile/automatic/bullpup_rifle,
 /obj/item/gun/projectile/automatic/bullpup_rifle,
 /turf/unsimulated/floor{
@@ -3262,7 +3262,7 @@
 "awN" = (
 /obj/structure/table/rack,
 /obj/item/storage/secure/briefcase,
-/obj/item/storage/fancy/cigarettes,
+/obj/item/storage/fancy/smokable/transstellar,
 /obj/item/flame/lighter/zippo/random,
 /obj/item/storage/belt/utility,
 /obj/item/storage/backpack/satchel,
@@ -3435,7 +3435,7 @@
 	},
 /area/centcom/specops)
 "axl" = (
-/obj/machinery/vending/assist,
+/obj/machinery/vending/generic,
 /turf/unsimulated/floor{
 	dir = 1;
 	icon_state = "vault"
@@ -3560,7 +3560,7 @@
 	},
 /area/centcom/test)
 "axB" = (
-/obj/structure/bed/roller,
+/obj/structure/roller_bed,
 /turf/unsimulated/floor{
 	icon_state = "white"
 	},
@@ -4954,15 +4954,15 @@
 /area/centcom/specops)
 "aCk" = (
 /obj/structure/table/reinforced,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/roller,
-/obj/item/roller,
-/obj/item/roller,
+/obj/item/reagent_containers/ivbag/blood/human/oneg,
+/obj/item/reagent_containers/ivbag/blood/human/oneg,
+/obj/item/reagent_containers/ivbag/blood/human/oneg,
+/obj/item/reagent_containers/ivbag/blood/human/oneg,
+/obj/item/reagent_containers/ivbag/blood/human/oneg,
+/obj/item/reagent_containers/ivbag/blood/human/oneg,
+/obj/item/roller_bed,
+/obj/item/roller_bed,
+/obj/item/roller_bed,
 /obj/item/defibrillator/loaded,
 /turf/unsimulated/floor{
 	dir = 1;
@@ -4970,7 +4970,7 @@
 	},
 /area/centcom/specops)
 "aCl" = (
-/obj/structure/iv_drip,
+/obj/structure/iv_stand,
 /turf/unsimulated/floor{
 	dir = 1;
 	icon_state = "vault"
@@ -5873,7 +5873,7 @@
 	dir = 5
 	},
 /obj/item/flame/lighter/zippo/random,
-/obj/item/storage/fancy/cigarettes,
+/obj/item/storage/fancy/smokable/transstellar,
 /obj/item/material/ashtray/bronze{
 	pixel_x = -1;
 	pixel_y = 1
@@ -5891,7 +5891,7 @@
 	dir = 5
 	},
 /obj/item/flame/lighter/zippo/random,
-/obj/item/storage/fancy/cigarettes,
+/obj/item/storage/fancy/smokable/transstellar,
 /obj/item/material/ashtray/bronze{
 	pixel_x = -1;
 	pixel_y = 1
@@ -6232,7 +6232,7 @@
 	},
 /area/centcom/holding)
 "aHO" = (
-/obj/structure/bed/roller,
+/obj/structure/roller_bed,
 /turf/unsimulated/floor{
 	icon_state = "white"
 	},
@@ -6744,26 +6744,26 @@
 	},
 /area/centcom/holding)
 "aJy" = (
-/obj/structure/iv_drip,
+/obj/structure/iv_stand,
 /turf/unsimulated/floor{
 	icon_state = "white"
 	},
 /area/centcom/holding)
 "aJz" = (
 /obj/structure/table/standard,
-/obj/item/reagent_containers/ivbag/blood/OPlus{
+/obj/item/reagent_containers/ivbag/blood/human/opos{
 	pixel_x = 4;
 	pixel_y = 2
 	},
-/obj/item/reagent_containers/ivbag/blood/OPlus{
+/obj/item/reagent_containers/ivbag/blood/human/opos{
 	pixel_x = 4;
 	pixel_y = 2
 	},
-/obj/item/reagent_containers/ivbag/blood/OMinus{
+/obj/item/reagent_containers/ivbag/blood/human/oneg{
 	pixel_x = -5;
 	pixel_y = -1
 	},
-/obj/item/reagent_containers/ivbag/blood/OMinus{
+/obj/item/reagent_containers/ivbag/blood/human/oneg{
 	pixel_x = -5;
 	pixel_y = -1
 	},
@@ -6939,7 +6939,7 @@
 /obj/item/reagent_containers/food/drinks/bottle/small/beer,
 /obj/item/reagent_containers/food/drinks/bottle/small/beer,
 /obj/item/flame/lighter/zippo/random,
-/obj/item/storage/fancy/cigarettes,
+/obj/item/storage/fancy/smokable/transstellar,
 /turf/unsimulated/floor{
 	icon_state = "lino"
 	},
@@ -7939,7 +7939,7 @@
 /obj/machinery/vending/cigarette{
 	name = "hacked cigarette machine";
 	prices = list();
-	products = list(/obj/item/storage/fancy/cigarettes = 10, /obj/item/storage/box/matches = 10, /obj/item/flame/lighter/zippo/random = 4, /obj/item/clothing/mask/smokable/cigarette/cigar/havana = 2)
+	products = list(/obj/item/storage/fancy/smokable/transstellar = 10, /obj/item/storage/box/matches = 10, /obj/item/flame/lighter/zippo/random = 4, /obj/item/clothing/mask/smokable/cigarette/cigar/havana = 2)
 	},
 /turf/unsimulated/floor{
 	icon_state = "plating";
@@ -8026,7 +8026,7 @@
 /obj/machinery/computer/cryopod{
 	pixel_y = 32
 	},
-/obj/item/roller,
+/obj/item/roller_bed,
 /obj/machinery/atmospherics/unary/vent_scrubber/on,
 /turf/simulated/floor/tiled/white,
 /area/merchant_station)
@@ -8390,7 +8390,7 @@
 /obj/machinery/vending/cigarette{
 	name = "hacked cigarette machine";
 	prices = list();
-	products = list(/obj/item/storage/fancy/cigarettes = 10, /obj/item/storage/box/matches = 10, /obj/item/flame/lighter/zippo/random = 4, /obj/item/clothing/mask/smokable/cigarette/cigar/havana = 2)
+	products = list(/obj/item/storage/fancy/smokable/transstellar = 10, /obj/item/storage/box/matches = 10, /obj/item/flame/lighter/zippo/random = 4, /obj/item/clothing/mask/smokable/cigarette/cigar/havana = 2)
 	},
 /obj/structure/window/reinforced{
 	dir = 1
@@ -10875,7 +10875,7 @@
 	},
 /area/centcom/holding)
 "bmb" = (
-/mob/living/simple_animal/crab,
+/mob/living/simple_animal/passive/crab,
 /turf/unsimulated/beach/sand{
 	icon_state = "desert1"
 	},
@@ -11378,7 +11378,7 @@
 /turf/simulated/floor/plating,
 /area/supply/dock)
 "joZ" = (
-/obj/structure/fountain/mundane{
+/obj/structure/fountain{
 	alpha = 204;
 	pixel_x = 0
 	},

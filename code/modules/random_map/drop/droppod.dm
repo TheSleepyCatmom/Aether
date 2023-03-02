@@ -18,16 +18,14 @@
 	var/drop_type = /mob/living/simple_animal/hostile/retaliate/parrot
 	var/auto_open_doors
 
-	var/placement_explosion_dev =   1
-	var/placement_explosion_heavy = 2
-	var/placement_explosion_light = 6
-	var/placement_explosion_flash = 4
+	var/explosion_radius = 9
+	var/explosion_max_power = EX_ACT_HEAVY
 
 /datum/random_map/droppod/New(seed, tx, ty, tz, tlx, tly, do_not_apply, do_not_announce, supplied_drop, list/supplied_drops, automated)
 
 	if(supplied_drop)
 		drop_type = supplied_drop
-	else if(islist(supplied_drops) && supplied_drops.len)
+	else if(islist(supplied_drops) && length(supplied_drops))
 		supplied_drop_types = supplied_drops
 		drop_type = "custom"
 	if(automated)
@@ -79,10 +77,10 @@
 	return 1
 
 /datum/random_map/droppod/apply_to_map()
-	if(placement_explosion_dev || placement_explosion_heavy || placement_explosion_light || placement_explosion_flash)
+	if (explosion_radius)
 		var/turf/T = locate((origin_x + Ceil(limit_x / 2)-1), (origin_y + Ceil(limit_y / 2)-1), origin_z)
 		if(istype(T))
-			explosion(T, placement_explosion_dev, placement_explosion_heavy, placement_explosion_light, placement_explosion_flash)
+			explosion(T, explosion_radius, explosion_max_power)
 			sleep(15) // Let the explosion finish proccing before we ChangeTurf(), otherwise it might destroy our spawned objects.
 	return ..()
 
@@ -110,7 +108,7 @@
 /datum/random_map/droppod/get_additional_spawns(value, turf/T, spawn_dir)
 
 	// Splatter anything under us that survived the explosion.
-	if(value != SD_EMPTY_TILE && T.contents.len)
+	if(value != SD_EMPTY_TILE && length(T.contents))
 		for(var/atom/movable/AM in T)
 			if(AM.simulated && !isobserver(AM))
 				qdel(AM)
@@ -131,8 +129,8 @@
 	// Use the supply pod if you don't want to drop mobs.
 	// Mobs will not double up; if you want multiple mobs, you
 	// will need multiple drop tiles.
-	if(islist(supplied_drop_types) && supplied_drop_types.len)
-		while(supplied_drop_types.len)
+	if(islist(supplied_drop_types) && length(supplied_drop_types))
+		while(length(supplied_drop_types))
 			drop = pick(supplied_drop_types)
 			supplied_drop_types -= drop
 			if(istype(drop))
@@ -176,7 +174,7 @@
 			if(player.mob && isghost(player.mob))
 				candidates |= player
 
-		if(!candidates.len)
+		if(!length(candidates))
 			to_chat(usr, "There are no candidates for a drop pod launch.")
 			return
 
@@ -199,7 +197,7 @@
 	if(alert("Are you SURE you wish to deploy this drop pod? It will cause a sizable explosion and gib anyone underneath it.",,"No","Yes") == "No")
 		if(spawned_mob)
 			qdel(spawned_mob)
-		if(spawned_mobs.len)
+		if(length(spawned_mobs))
 			for(var/mob/living/M in spawned_mobs)
 				spawned_mobs -= M
 				M.tag = null
@@ -216,9 +214,9 @@
 			spawned_mob.ckey = selected_player.mob.ckey
 		spawned_mobs = list(spawned_mob)
 		log_and_message_admins("dropped a pod containing \the [spawned_mob] ([spawned_mob.key]) at ([usr.x],[usr.y],[usr.z])")
-	else if(spawned_mobs.len)
+	else if(length(spawned_mobs))
 		automatic_pod = 1
-		log_and_message_admins("dropped a pod containing [spawned_mobs.len] [spawned_mobs[1]] at ([usr.x],[usr.y],[usr.z])")
+		log_and_message_admins("dropped a pod containing [length(spawned_mobs)] [spawned_mobs[1]] at ([usr.x],[usr.y],[usr.z])")
 	else
 		return
 

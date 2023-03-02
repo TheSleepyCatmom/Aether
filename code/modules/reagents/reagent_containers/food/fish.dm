@@ -19,7 +19,7 @@
 
 
 /obj/item/reagent_containers/food/snacks/fish/attackby(obj/item/item, mob/living/user)
-	if (!item.sharp)
+	if (istype(item, /obj/item/reagent_containers/syringe) || !item.sharp)
 		return ..()
 	var/turf/turf = get_turf(src)
 	if (turf != loc || !(locate(/obj/structure/table) in turf))
@@ -32,7 +32,7 @@
 		reagents.remove_reagent(toxin_type, toxins[toxin_type])
 	var/transfer = Floor(reagents.total_volume * 0.3)
 	for(var/i = 1 to 3)
-		var/obj/item/reagent_containers/food/snacks/sashimi/sashimi = new (turf, fish_type)
+		var/obj/item/reagent_containers/food/snacks/sashimi/sashimi = new (turf, fish_type, color)
 		reagents.trans_to(sashimi, transfer)
 	user.visible_message(SPAN_ITALIC("\The [user] slices \the [src] into thin strips."))
 	qdel(src)
@@ -70,7 +70,7 @@
 
 /obj/item/reagent_containers/food/snacks/fish/space_pike/Initialize()
 	. = ..()
-	reagents.add_reagent(/datum/reagent/toxin/carpotoxin, 6)
+	reagents.add_reagent(/datum/reagent/toxin/carpotoxin, 11)
 
 
 /obj/item/reagent_containers/food/snacks/fish/space_shark

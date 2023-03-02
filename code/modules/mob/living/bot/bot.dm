@@ -79,37 +79,70 @@
 /mob/living/bot/death()
 	explode()
 
-/mob/living/bot/attackby(obj/item/O, mob/user)
-	if(O.GetIdCard())
-		if(access_scanner.allowed(user) && !open)
-			locked = !locked
-			to_chat(user, SPAN_NOTICE("Controls are now [locked ? "locked." : "unlocked."]"))
-			Interact(usr)
-		else if(open)
-			to_chat(user, SPAN_WARNING("Please close the access panel before locking it."))
-		else
-			to_chat(user, SPAN_WARNING("Access denied."))
-		return
-	else if(isScrewdriver(O))
-		if(!locked)
-			open = !open
-			to_chat(user, SPAN_NOTICE("Maintenance panel is now [open ? "opened" : "closed"]."))
-			Interact(usr)
-		else
-			to_chat(user, SPAN_NOTICE("You need to unlock the controls first."))
-		return
-	else if(isWelder(O))
-		if(health < maxHealth)
-			if(open)
-				health = min(maxHealth, health + 10)
-				user.visible_message(SPAN_NOTICE("\The [user] repairs \the [src]."),SPAN_NOTICE("You repair \the [src]."))
-			else
-				to_chat(user, SPAN_NOTICE("Unable to repair with the maintenance panel closed."))
-		else
-			to_chat(user, SPAN_NOTICE("\The [src] does not need a repair."))
-		return
-	else
-		..()
+
+/mob/living/bot/get_interactions_info()
+	. = ..()
+	.[CODEX_INTERACTION_ID_CARD] = "<p>Toggles the access panel lock. The ID must have access, and the panel must be closed.</p>"
+	.[CODEX_INTERACTION_SCREWDRIVER] = "<p>Opens and closes the access panel. The panel must be unlocked.</p>"
+	.[CODEX_INTERACTION_WELDER] = "<p>Repairs 10 points of damage. The access panel must be open. Uses 5 units of fuel.</p>"
+
+
+/mob/living/bot/use_tool(obj/item/tool, mob/user, list/click_params)
+	// ID Card - Toggle access panel lock
+	var/obj/item/card/id/id = tool.GetIdCard()
+	if (istype(id))
+		if (open)
+			to_chat(user, SPAN_WARNING("\The [src]'s access panel must be closed before you can lock it."))
+			return TRUE
+		var/id_name = GET_ID_NAME(id, tool)
+		if (!access_scanner.check_access(id))
+			to_chat(user, SPAN_WARNING("\The [src]'s access panel lock refuses [id_name]."))
+			return TRUE
+		locked = !locked
+		update_icon()
+		user.visible_message(
+			SPAN_NOTICE("\The [user] [locked ? "locks" : "unlocks"] \the [src]'s access panel lock with \a [tool]."),
+			SPAN_NOTICE("You [locked ? "lock" : "unlock"] \the [src]'s access panel lock with \the [tool].")
+		)
+		Interact(user)
+		return TRUE
+
+	// Screwdriver - Toggle access panel open/closed
+	if (isScrewdriver(tool))
+		if (locked)
+			to_chat(user, SPAN_WARNING("\The [src]'s access panel must be unlocked before you can open it."))
+			return TRUE
+		open = !open
+		update_icon()
+		user.visible_message(
+			SPAN_NOTICE("\The [user] [open ? "opens" : "closes"] \the [src]'s access panel with \a [tool]."),
+			SPAN_NOTICE("You [open ? "open" : "close"] \the [src]'s access panel with \the [tool].")
+		)
+		Interact(user)
+		return TRUE
+
+	// Welder - Repairs damage
+	if (isWelder(tool))
+		if (health >= maxHealth)
+			to_chat(user, SPAN_WARNING("\The [src] doesn't need any repairs."))
+			return TRUE
+		if (!open)
+			to_chat(user, SPAN_WARNING("\The [src]'s access panel must be open to repair it."))
+			return TRUE
+		var/obj/item/weldingtool/welder = tool
+		if (!welder.can_use(5, user, "to repair \the [src]."))
+			return TRUE
+		welder.remove_fuel(5, user)
+		health = min(maxHealth, health + 10)
+		update_icon()
+		user.visible_message(
+			SPAN_NOTICE("\The [user] repairs some of \the [src]'s damage with \a [tool]."),
+			SPAN_NOTICE("You repair some of \the [src]'s damage with \the [tool].")
+		)
+		return TRUE
+
+	return ..()
+
 
 /mob/living/bot/attack_ai(mob/user)
 	Interact(user)
@@ -202,7 +235,7 @@
 	return 0
 
 /mob/living/bot/proc/handleAI()
-	if(ignore_list.len)
+	if(length(ignore_list))
 		for(var/atom/A in ignore_list)
 			if(!A || !A.loc || prob(1))
 				ignore_list -= A
@@ -222,7 +255,7 @@
 		resetTarget()
 		lookForTargets()
 		if(will_patrol && !pulledby && !target)
-			if(patrol_path && patrol_path.len)
+			if(patrol_path && length(patrol_path))
 				for(var/i = 1 to patrol_speed)
 					sleep(20 / (patrol_speed + 1))
 					handlePatrol()
@@ -246,7 +279,7 @@
 	if(!target || !target.loc)
 		return
 	if(get_dist(src, target) > min_target_dist)
-		if(!target_path.len || get_turf(target) != target_path[target_path.len])
+		if(!length(target_path) || get_turf(target) != target_path[length(target_path)])
 			calcTargetPath()
 		if(makeStep(target_path))
 			frustration = 0
@@ -320,7 +353,7 @@
 	return
 
 /mob/living/bot/proc/makeStep(list/path)
-	if(!path.len)
+	if(!length(path))
 		return 0
 	var/turf/T = path[1]
 	if(get_turf(src) == T)

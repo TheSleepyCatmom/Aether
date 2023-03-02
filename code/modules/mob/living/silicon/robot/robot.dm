@@ -214,7 +214,7 @@
 	. = ..()
 
 /mob/living/silicon/robot/proc/set_module_sprites(list/new_sprites)
-	if(new_sprites && new_sprites.len)
+	if(new_sprites && length(new_sprites))
 		module_sprites = new_sprites.Copy()
 		//Custom_sprite check and entry
 
@@ -698,7 +698,7 @@
 
 //Robots take half damage from basic attacks.
 /mob/living/silicon/robot/attack_generic(mob/user, damage, attack_message)
-	return ..(user,Floor(damage/2),attack_message)
+	..(user,Floor(damage/2),attack_message)
 
 /mob/living/silicon/robot/get_req_access()
 	return req_access
@@ -716,6 +716,7 @@
 				eye_overlay.plane = EFFECTS_ABOVE_LIGHTING_PLANE
 				eye_overlay.layer = EYE_GLOW_LAYER
 				eye_overlays[eye_icon_state] = eye_overlay
+				z_flags |= ZMM_MANGLE_PLANES
 			overlays += eye_overlay
 
 	if(opened)
@@ -855,14 +856,12 @@
 			var/turf/tile = loc
 			if(isturf(tile))
 				tile.clean_blood()
+				tile.remove_cleanables()
 				if (istype(tile, /turf/simulated))
 					var/turf/simulated/S = tile
 					S.dirt = 0
 				for(var/A in tile)
-					if(istype(A, /obj/effect))
-						if(istype(A, /obj/effect/rune) || istype(A, /obj/effect/decal/cleanable))
-							qdel(A)
-					else if(istype(A, /obj/item))
+					if(istype(A, /obj/item))
 						var/obj/item/cleaned_item = A
 						cleaned_item.clean_blood()
 					else if(istype(A, /mob/living/carbon/human))
@@ -933,13 +932,13 @@
 
 /mob/living/silicon/robot/proc/choose_icon(triesleft, list/module_sprites)
 	set waitfor = 0
-	if(!module_sprites.len)
+	if(!length(module_sprites))
 		to_chat(src, "Something is badly wrong with the sprite selection. Harass a coder.")
 		return
 
 	icon_selected = 0
 	src.icon_selection_tries = triesleft
-	if(module_sprites.len == 1 || !client)
+	if(length(module_sprites) == 1 || !client)
 		if(!(icontype in module_sprites))
 			icontype = module_sprites[1]
 	else
@@ -947,7 +946,7 @@
 	icon_state = module_sprites[icontype]
 	update_icon()
 
-	if (module_sprites.len > 1 && triesleft >= 1 && client)
+	if (length(module_sprites) > 1 && triesleft >= 1 && client)
 		icon_selection_tries--
 		var/choice = input("Look at your icon - is this what you want?") in list("Yes","No")
 		if(choice=="No")

@@ -10,8 +10,12 @@ var/global/list/light_overlay_cache = list()
 GLOBAL_LIST_EMPTY(overlay_icon_cache)
 GLOBAL_LIST_EMPTY(species_icon_template_cache)
 
-/proc/overlay_image(icon,icon_state,color,flags)
+/proc/overlay_image(icon, icon_state, color, flags, plane, layer)
 	var/image/ret = image(icon,icon_state)
+	if(plane)
+		ret.plane = plane
+	if(layer)
+		ret.layer = layer
 	ret.color = color
 	ret.appearance_flags = DEFAULT_APPEARANCE_FLAGS | flags
 	return ret
@@ -364,10 +368,10 @@ var/global/list/damage_icon_parts = list()
 			icon_key += "[part.dna.GetUIState(DNA_UI_GENDER)]"
 			icon_key += "[part.skin_tone]"
 			icon_key += "[part.base_skin]"
-			if(part.s_col && part.s_col.len >= 3)
+			if(part.s_col && length(part.s_col) >= 3)
 				icon_key += "[rgb(part.s_col[1],part.s_col[2],part.s_col[3])]"
 				icon_key += "[part.s_col_blend]"
-			if(part.body_hair && part.h_col && part.h_col.len >= 3)
+			if(part.body_hair && part.h_col && length(part.h_col) >= 3)
 				icon_key += "[rgb(part.h_col[1],part.h_col[2],part.h_col[3])]"
 			else
 				icon_key += "#000000"

@@ -3264,7 +3264,7 @@
 /turf/simulated/floor/tiled,
 /area/errant_pisces/dorms)
 "hC" = (
-/obj/machinery/vending/assist,
+/obj/machinery/vending/generic,
 /turf/simulated/floor/tiled,
 /area/errant_pisces/dorms)
 "hD" = (
@@ -3346,7 +3346,7 @@
 /turf/simulated/floor/plating,
 /area/errant_pisces/infirmary)
 "hR" = (
-/obj/structure/iv_drip,
+/obj/structure/iv_stand,
 /obj/machinery/light/small{
 	dir = 8
 	},
@@ -3759,7 +3759,7 @@
 /turf/simulated/floor/plating,
 /area/errant_pisces/infirmary)
 "jj" = (
-/obj/structure/iv_drip,
+/obj/structure/iv_stand,
 /turf/simulated/floor/tiled,
 /area/errant_pisces/infirmary)
 "jk" = (
@@ -3909,7 +3909,7 @@
 /area/errant_pisces/infirmary)
 "jE" = (
 /obj/structure/table/standard,
-/obj/item/roller,
+/obj/item/roller_bed,
 /obj/machinery/atmospherics/unary/vent_pump/on{
 	dir = 1
 	},
@@ -4301,7 +4301,7 @@
 /turf/simulated/floor/tiled,
 /area/errant_pisces/science_wing)
 "kD" = (
-/obj/machinery/vending/assist,
+/obj/machinery/vending/generic,
 /turf/simulated/floor/tiled,
 /area/errant_pisces/science_wing)
 "kE" = (
@@ -6832,6 +6832,10 @@
 	},
 /turf/simulated/floor/tiled/white,
 /area/errant_pisces/head_f)
+"si" = (
+/obj/machinery/radio_beacon,
+/turf/simulated/floor/plating,
+/area/errant_pisces/enginering)
 "tb" = (
 /obj/structure/hygiene/sink{
 	dir = 4;
@@ -28358,7 +28362,7 @@ at
 aA
 aP
 aZ
-bn
+si
 bn
 bn
 co

@@ -1293,19 +1293,19 @@
 /area/casino/casino_storage)
 "dQ" = (
 /obj/structure/table/woodentable,
-/obj/item/storage/fancy/cigar{
+/obj/item/storage/fancy/smokable/cigar{
 	pixel_y = 5
 	},
-/obj/item/storage/fancy/cigar{
+/obj/item/storage/fancy/smokable/cigar{
 	pixel_y = 5
 	},
-/obj/item/storage/fancy/cigar{
+/obj/item/storage/fancy/smokable/cigar{
 	pixel_y = 5
 	},
-/obj/item/storage/fancy/cigar{
+/obj/item/storage/fancy/smokable/cigar{
 	pixel_y = 5
 	},
-/obj/item/storage/fancy/cigar{
+/obj/item/storage/fancy/smokable/cigar{
 	pixel_y = 5
 	},
 /obj/random/tool,
@@ -1595,7 +1595,7 @@
 /turf/simulated/floor/plating,
 /area/casino/casino_maintenance)
 "eL" = (
-/obj/machinery/vending/assist,
+/obj/machinery/vending/generic,
 /turf/simulated/floor/plating,
 /area/casino/casino_maintenance)
 "eM" = (
@@ -2276,8 +2276,8 @@
 /area/casino/casino_mainfloor)
 "gv" = (
 /obj/structure/table/woodentable,
-/obj/item/storage/fancy/cigar,
-/obj/item/storage/fancy/cigar{
+/obj/item/storage/fancy/smokable/cigar,
+/obj/item/storage/fancy/smokable/cigar{
 	pixel_y = 5
 	},
 /turf/simulated/floor/carpet,
@@ -2895,9 +2895,9 @@
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
 	dir = 4
 	},
-/obj/item/storage/fancy/egg_box,
-/obj/item/storage/fancy/egg_box,
-/obj/item/storage/fancy/egg_box,
+/obj/item/storage/fancy/egg_box/full,
+/obj/item/storage/fancy/egg_box/full,
+/obj/item/storage/fancy/egg_box/full,
 /obj/item/reagent_containers/food/condiment/flour,
 /obj/item/reagent_containers/food/condiment/sugar,
 /turf/simulated/floor/tiled,
@@ -3716,7 +3716,7 @@
 /area/casino/casino_mainfloor)
 "kp" = (
 /obj/structure/table/marble,
-/obj/item/storage/fancy/cigar{
+/obj/item/storage/fancy/smokable/cigar{
 	pixel_y = 5
 	},
 /turf/simulated/floor/tiled,
@@ -4338,7 +4338,7 @@
 /area/casino/casino_private_vip)
 "lZ" = (
 /obj/structure/table/woodentable,
-/obj/item/storage/fancy/cigar{
+/obj/item/storage/fancy/smokable/cigar{
 	pixel_y = 5
 	},
 /turf/simulated/floor/wood,
@@ -4747,12 +4747,9 @@
 /obj/machinery/status_display{
 	pixel_x = -32
 	},
-/obj/machinery/embedded_controller/radio/simple_docking_controller/escape_pod{
-	frequency = 1380;
-	id_tag = "Casino_escape_pod_3";
+/obj/structure/casino/pod_controller{
 	name = "Casino escape pod Three controller";
-	pixel_x = 24;
-	tag_door = "Casino escape_pod_3_hatch"
+	pixel_x = 24
 	},
 /turf/simulated/floor/plating,
 /area/casino/casino_bow)
@@ -4761,12 +4758,9 @@
 /obj/machinery/status_display{
 	pixel_x = -32
 	},
-/obj/machinery/embedded_controller/radio/simple_docking_controller/escape_pod{
-	frequency = 1380;
-	id_tag = "Casino_escape_pod_2";
+/obj/structure/casino/pod_controller{
 	name = "Casino escape pod Two controller";
-	pixel_x = 24;
-	tag_door = "Casino escape_pod_2_hatch"
+	pixel_x = 24
 	},
 /turf/simulated/floor/plating,
 /area/casino/casino_bow)
@@ -4775,12 +4769,9 @@
 /obj/machinery/status_display{
 	pixel_x = -32
 	},
-/obj/machinery/embedded_controller/radio/simple_docking_controller/escape_pod{
-	frequency = 1380;
-	id_tag = "Casino_escape_pod_1";
+/obj/structure/casino/pod_controller{
 	name = "Casino escape pod One controller";
-	pixel_x = 24;
-	tag_door = "escape_pod_17_hatch"
+	pixel_x = 24
 	},
 /turf/simulated/floor/plating,
 /area/casino/casino_bow)
@@ -4858,6 +4849,10 @@
 	},
 /turf/simulated/floor/tiled,
 /area/casino/casino_crew_cantina)
+"qB" = (
+/obj/machinery/radio_beacon,
+/turf/simulated/floor/tiled,
+/area/casino/casino_bridge)
 "rb" = (
 /obj/item/ammo_casing/rifle/used,
 /obj/item/ammo_casing/rifle/used,
@@ -9560,7 +9555,7 @@ gb
 ax
 ax
 ax
-ap
+qB
 aV
 am
 bj

@@ -979,6 +979,7 @@
 /obj/item/clothing/suit/space/emergency,
 /obj/item/tank/oxygen_emergency_double,
 /obj/item/clothing/head/helmet/space/emergency,
+/obj/item/device/suit_cooling_unit,
 /turf/simulated/floor/tiled/dark,
 /area/map_template/crashed_pod)
 "hi" = (
@@ -988,6 +989,7 @@
 /obj/item/tank/oxygen_emergency_double,
 /obj/item/clothing/head/helmet/space/emergency,
 /obj/item/storage/briefcase/inflatable,
+/obj/item/device/suit_cooling_unit,
 /turf/simulated/floor/tiled/dark,
 /area/map_template/crashed_pod)
 "hj" = (
@@ -1019,6 +1021,7 @@
 /area/map_template/crashed_pod)
 "pO" = (
 /obj/effect/decal/cleanable/dirt,
+/obj/machinery/radio_beacon,
 /turf/simulated/floor/tiled/dark,
 /area/map_template/crashed_pod)
 "vG" = (

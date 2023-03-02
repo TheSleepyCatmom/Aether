@@ -266,6 +266,8 @@ var/global/floorIsLava = 0
 /datum/player_info/var/rank //rank of admin who made the notes
 /datum/player_info/var/content // text content of the information
 /datum/player_info/var/timestamp // Because this is bloody annoying
+/// Round ID of the note
+/datum/player_info/var/game_id
 
 #define PLAYER_NOTES_ENTRIES_PER_PAGE 50
 /datum/admins/proc/PlayerNotes()
@@ -389,6 +391,7 @@ var/global/floorIsLava = 0
 					<b>[comment.author || "(not recorded)"]</b>, \
 					<b>[comment.rank || "(not recorded)"]</b>, \
 					on <b>[comment.timestamp || "(not recorded)"]</b>\
+					[comment.game_id ? "<br>Round ID: <b>[comment.game_id]</b>" : null]\
 				</div>\
 				[remove_button]\
 			</div>\
@@ -994,7 +997,7 @@ GLOBAL_VAR_INIT(skip_allow_lists, FALSE)
 		M = character
 
 	if(M)
-		if(SSticker.mode.antag_templates && SSticker.mode.antag_templates.len)
+		if(SSticker.mode.antag_templates && length(SSticker.mode.antag_templates))
 			for(var/datum/antagonist/antag in SSticker.mode.antag_templates)
 				if(antag.is_antagonist(M))
 					return 2
@@ -1074,7 +1077,7 @@ GLOBAL_VAR_INIT(skip_allow_lists, FALSE)
 		to_chat(usr, "Custom item list is null.")
 		return
 
-	if(!SScustomitems.custom_items_by_ckey.len)
+	if(!length(SScustomitems.custom_items_by_ckey))
 		to_chat(usr, "Custom item list not populated.")
 		return
 
@@ -1110,11 +1113,11 @@ GLOBAL_VAR_INIT(skip_allow_lists, FALSE)
 		if(findtext("[path]", object))
 			matches += path
 
-	if(matches.len==0)
+	if(length(matches)==0)
 		return
 
 	var/chosen
-	if(matches.len==1)
+	if(length(matches)==1)
 		chosen = matches[1]
 	else
 		chosen = input("Select an atom type", "Spawn Atom", matches[1]) as null|anything in matches
@@ -1246,7 +1249,7 @@ GLOBAL_VAR_INIT(skip_allow_lists, FALSE)
 
 	out += "<hr>"
 
-	if(SSticker.mode.antag_tags && SSticker.mode.antag_tags.len)
+	if(SSticker.mode.antag_tags && length(SSticker.mode.antag_tags))
 		out += "<b>Core antag templates:</b></br>"
 		for(var/antag_tag in SSticker.mode.antag_tags)
 			out += "<a href='?src=\ref[SSticker.mode];debug_antag=[antag_tag]'>[antag_tag]</a>.</br>"
@@ -1262,7 +1265,7 @@ GLOBAL_VAR_INIT(skip_allow_lists, FALSE)
 		out += "<b>Autotraitor <a href='?src=\ref[SSticker.mode];toggle=autotraitor'>disabled</a></b>.<br/>"
 
 	out += "<b>All antag ids:</b>"
-	if(SSticker.mode.antag_templates && SSticker.mode.antag_templates.len)
+	if(SSticker.mode.antag_templates && length(SSticker.mode.antag_templates))
 		for(var/datum/antagonist/antag in SSticker.mode.antag_templates)
 			antag.update_current_antag_max(SSticker.mode)
 			out += " <a href='?src=\ref[SSticker.mode];debug_antag=[antag.id]'>[antag.id]</a>"
@@ -1330,7 +1333,7 @@ GLOBAL_VAR_INIT(skip_allow_lists, FALSE)
 		return
 
 	if(!M)
-		M = input("Select mob.", "Select mob.") as null|anything in GLOB.player_list
+		M = input("Select mob.", "Select mob.") as null|mob in GLOB.player_list
 	if(!istype(M))
 		return
 	var/datum/nano_module/skill_ui/NM = /datum/nano_module/skill_ui

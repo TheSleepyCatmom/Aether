@@ -166,7 +166,6 @@ var/global/list/admin_verbs_debug = list(
 	/client/proc/cmd_debug_make_powernets,
 	/client/proc/debug_controller,
 	/client/proc/debug_antagonist_template,
-	/client/proc/debug_global_variables,
 	/client/proc/cmd_debug_mob_lists,
 	/client/proc/cmd_admin_delete,
 	/client/proc/cmd_debug_del_all,
@@ -531,25 +530,27 @@ var/global/list/admin_verbs_mod = list(
 		if (null)
 			return
 		if("Small Bomb")
-			explosion(epicenter, 1, 2, 3, 3)
+			explosion(epicenter, 6)
 		if("Medium Bomb")
-			explosion(epicenter, 2, 3, 4, 4)
+			explosion(epicenter, 9)
 		if("Big Bomb")
-			explosion(epicenter, 3, 5, 7, 5)
+			explosion(epicenter, 15)
 		if("Custom Bomb")
-			var/devastation_range = input("Devastation range (in tiles):") as num|null
-			if (isnull(devastation_range))
+			var/range = input("Explosion radius (in tiles):") as num|null
+			if (isnull(range) || range <= 0)
 				return
-			var/heavy_impact_range = input("Heavy impact range (in tiles):") as num|null
-			if (isnull(heavy_impact_range))
+			var/max_power_input = input("Maximum explosion power:") as null|anything in list("Devastating", "Heavy", "Light")
+			if (isnull(max_power_input))
 				return
-			var/light_impact_range = input("Light impact range (in tiles):") as num|null
-			if (isnull(light_impact_range))
-				return
-			var/flash_range = input("Flash range (in tiles):") as num|null
-			if (isnull(flash_range))
-				return
-			explosion(epicenter, devastation_range, heavy_impact_range, light_impact_range, flash_range)
+			var/max_power
+			switch (max_power_input)
+				if ("Devastating")
+					max_power = EX_ACT_DEVASTATING
+				if ("Heavy")
+					max_power = EX_ACT_HEAVY
+				if ("Light")
+					max_power = EX_ACT_LIGHT
+			explosion(epicenter, range, max_power)
 	log_and_message_admins("created an admin explosion at [epicenter.loc].")
 
 /client/proc/togglebuildmodeself()
@@ -814,7 +815,7 @@ var/global/list/admin_verbs_mod = list(
 		for (var/datum/job/J in SSjobs.primary_job_datums)
 			if(!J.is_position_available())
 				jobs[J.title] = J
-		if (!jobs.len)
+		if (!length(jobs))
 			to_chat(usr, "There are no fully staffed jobs.")
 			return
 		var/job_title = input("Please select job slot to free", "Free job slot")  as null|anything in jobs

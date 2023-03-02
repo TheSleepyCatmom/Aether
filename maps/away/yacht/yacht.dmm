@@ -1202,6 +1202,7 @@
 /obj/machinery/atmospherics/pipe/simple/visible/black{
 	dir = 6
 	},
+/obj/machinery/radio_beacon,
 /turf/simulated/floor/plating,
 /area/yacht/engine)
 "dD" = (

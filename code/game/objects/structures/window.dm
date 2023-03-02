@@ -16,7 +16,6 @@
 	var/damaged_reinf = FALSE
 	var/init_material = MATERIAL_GLASS
 	var/init_reinf_material = null
-	var/damage_per_fire_tick = 2 		// Amount of damage per fire tick. Regular windows are not fireproof so they might as well break quickly.
 	var/construction_state = 2
 	var/id
 	var/polarized = 0
@@ -153,11 +152,11 @@
 /obj/structure/window/CanFluidPass(coming_from)
 	return (!is_fulltile() && coming_from != dir)
 
-/obj/structure/window/post_health_change(health_mod, damage_type)
+/obj/structure/window/post_health_change(health_mod, prior_health, damage_type)
 	..()
-	update_icon()
+	queue_icon_update()
 	if (health_mod < 0)
-		var/initial_damage_percentage = round(((get_current_health() - health_mod) / get_max_health()) * 100)
+		var/initial_damage_percentage = round((prior_health / get_max_health()) * 100)
 		var/damage_percentage = get_damage_percentage()
 		if (damage_percentage >= 75 && initial_damage_percentage < 75)
 			visible_message(SPAN_DANGER("\The [src] looks like it's about to shatter!"))
@@ -214,21 +213,6 @@
 		return 0
 	return 1
 
-/obj/structure/window/hitby(atom/movable/AM, datum/thrownthing/TT)
-	..()
-	visible_message(SPAN_DANGER("[src] was hit by [AM]."))
-	var/tforce = 0
-	if(ismob(AM)) // All mobs have a multiplier and a size according to mob_defines.dm
-		var/mob/I = AM
-		tforce = I.mob_size * (TT.speed/THROWFORCE_SPEED_DIVISOR)
-	else if(isobj(AM))
-		var/obj/item/I = AM
-		tforce = I.throwforce * (TT.speed/THROWFORCE_SPEED_DIVISOR)
-	if(reinf_material) tforce *= 0.25
-	playsound(loc, 'sound/effects/Glasshit.ogg', 100, 1)
-	damage_health(tforce, DAMAGE_BRUTE)
-	deanchor(AM)
-
 /obj/structure/window/attack_hand(mob/user as mob)
 	user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
 	if(MUTATION_HULK in user.mutations)
@@ -259,23 +243,6 @@
 							"You knock on the [src.name].",
 							"You hear a knocking sound.")
 	return
-
-/obj/structure/window/attack_generic(mob/user, damage, attack_verb, environment_smash)
-	if(environment_smash >= 1)
-		damage = max(damage, 10)
-
-	if(istype(user))
-		user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
-		user.do_attack_animation(src)
-	if(!damage)
-		return
-	if(can_damage_health(damage, DAMAGE_BRUTE))
-		visible_message(SPAN_DANGER("[user] [attack_verb] into [src]!"))
-		playsound(loc, 'sound/effects/Glasshit.ogg', 100, 1)
-		damage_health(damage, DAMAGE_BRUTE, skip_can_damage_check = TRUE)
-	else
-		visible_message(SPAN_NOTICE("\The [user] bonks \the [src] harmlessly."))
-	return 1
 
 /obj/structure/window/do_simple_ranged_interaction(mob/user)
 	visible_message(SPAN_NOTICE("Something knocks on \the [src]."))
@@ -327,13 +294,11 @@
 			to_chat(user, SPAN_NOTICE("You're not sure how to dismantle \the [src] properly."))
 		else
 			playsound(src.loc, 'sound/items/Ratchet.ogg', 75, 1)
-			visible_message(SPAN_NOTICE("[user] dismantles \the [src]."))
-			var/obj/item/stack/material/S = material.place_sheet(loc, is_fulltile() ? 4 : 1)
-			if(S && reinf_material)
-				S.reinf_material = reinf_material
-				S.update_strings()
-				S.update_icon()
-			qdel(src)
+			user.visible_message(
+				SPAN_WARNING("[user] dismantles \the [src]."),
+				SPAN_NOTICE("You dismantle \the [src].")
+			)
+			dismantle()
 		return
 
 	if (isCoil(W) && is_fulltile())
@@ -376,17 +341,22 @@
 			to_chat(user, SPAN_NOTICE("The new ID of \the [src] is [id]."))
 		return
 
-	if (istype(W, /obj/item/gun/energy/plasmacutter) && anchored)
+	if (istype(W, /obj/item/gun/energy/plasmacutter))
 		var/obj/item/gun/energy/plasmacutter/cutter = W
 		if(!cutter.slice(user))
 			return
 		playsound(src, 'sound/items/Welder.ogg', 80, 1)
-		visible_message(SPAN_NOTICE("[user] has started slicing through the window's frame!"))
+		user.visible_message(
+			SPAN_WARNING("[user] has started slicing \the [src] apart!"),
+			SPAN_NOTICE("You start slicing \the [src] apart.")
+		)
 		if(do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
-			visible_message(SPAN_WARNING("[user] has sliced through the window's frame!"))
+			user.visible_message(
+				SPAN_WARNING("[user] slices \the [src] into sheets!"),
+				SPAN_NOTICE("You slice \the [src] into sheets.")
+			)
 			playsound(src, 'sound/items/Welder.ogg', 80, 1)
-			construction_state = 0
-			set_anchored(0)
+			dismantle()
 		return
 
 	if (istype(W, /obj/item/stack/material))
@@ -446,25 +416,42 @@
 
 	..()
 
-/obj/structure/window/grab_attack(obj/item/grab/G)
-	if (G.assailant.a_intent != I_HURT)
-		return TRUE
-	if (!G.force_danger())
-		to_chat(G.assailant, SPAN_DANGER("You need a better grip to do that!"))
-		return TRUE
-	var/def_zone = ran_zone(BP_HEAD, 20)
-	if(G.damage_stage() < 2)
-		G.affecting.visible_message(SPAN_DANGER("[G.assailant] bashes [G.affecting] against \the [src]!"))
-		if (prob(50))
-			G.affecting.Weaken(1)
-		G.affecting.apply_damage(10, DAMAGE_BRUTE, def_zone, used_weapon = src)
-		hit(25, G.assailant, G.affecting)
-	else
-		G.affecting.visible_message(SPAN_DANGER("[G.assailant] crushes [G.affecting] against \the [src]!"))
-		G.affecting.Weaken(5)
-		G.affecting.apply_damage(20, DAMAGE_BRUTE, def_zone, used_weapon = src)
-		hit(50, G.assailant, G.affecting)
-	return TRUE
+
+/obj/structure/window/proc/dismantle()
+	var/obj/item/stack/material/S = material.place_sheet(loc, is_fulltile() ? 4 : 1)
+	if(S && reinf_material)
+		S.reinf_material = reinf_material
+		S.update_strings()
+		S.update_icon()
+	qdel(src)
+
+/obj/structure/window/use_grab(obj/item/grab/grab, list/click_params)
+	// Harm intent - Bash against the window
+	if (grab.assailant.a_intent == I_HURT)
+		if (!grab.force_danger())
+			to_chat(grab.assailant, SPAN_WARNING("You need a better grip to smash \the [grab.affecting] against \the [src]."))
+			return TRUE
+		var/def_zone = ran_zone(BP_HEAD, 20)
+		if (grab.damage_stage() < 2)
+			grab.assailant.visible_message(
+				SPAN_DANGER("\The [grab.assailant] bashes \the [grab.affecting] against \the [src]!"),
+				SPAN_DANGER("You bash \the [grab.affecting] against \the [src]!")
+			)
+			if (prob(50))
+				grab.affecting.Weaken(1)
+			grab.affecting.apply_damage(10, DAMAGE_BRUTE, def_zone, used_weapon = src)
+			hit(25, grab.assailant, grab.affecting)
+		else
+			grab.assailant.visible_message(
+				SPAN_DANGER("\The [grab.assailant] crushes \the [grab.affecting] against \the [src]!"),
+				SPAN_DANGER("You crush \the [grab.affecting] against \the [src]!")
+			)
+			grab.affecting.Weaken(5)
+			grab.affecting.apply_damage(20, DAMAGE_BRUTE, def_zone, used_weapon = src)
+			hit(50, grab.assailant, grab.affecting)
+
+	return ..()
+
 
 /obj/structure/window/proc/hit(damage, mob/user, atom/weapon = null, damage_type = DAMAGE_BRUTE)
 	if (can_damage_health(damage, damage_type))
@@ -604,12 +591,10 @@
 	D.alpha = damage_alpha
 	overlays += D
 
-/obj/structure/window/fire_act(datum/gas_mixture/air, exposed_temperature, exposed_volume)
-	var/melting_point = material.melting_point
-	if(reinf_material)
-		melting_point += 0.25*reinf_material.melting_point
-	if (exposed_temperature > melting_point)
-		damage_health(damage_per_fire_tick, DAMAGE_FIRE)
+/obj/structure/window/get_material_melting_point()
+	. = ..()
+	if (reinf_material)
+		. += 0.25 * reinf_material.melting_point
 
 /obj/structure/window/basic
 	icon_state = "window"

@@ -2184,13 +2184,13 @@
 /obj/effect/floor_decal/corner/blue{
 	dir = 6
 	},
-/obj/structure/flora/pottedplant/deskleaf{
-	desc = "A tiny waxy leafed plant specimen. It has 'Green's replacement' scribbled into the pot."
-	},
 /obj/structure/cable/green{
 	d1 = 4;
 	d2 = 8;
 	icon_state = "4-8"
+	},
+/obj/item/flora/pottedplantsmall/leaf{
+	desc = "A tiny waxy leafed plant specimen. It has 'Green's replacement' scribbled onto the pot."
 	},
 /turf/simulated/floor/tiled/dark/monotile,
 /area/bridge)
@@ -5736,10 +5736,6 @@
 /turf/simulated/floor/tiled/dark/monotile,
 /area/bridge/disciplinary_board_room/deliberation)
 "nJ" = (
-/obj/machinery/computer/modular/preset/cardslot/command{
-	dir = 1;
-	icon_state = "console"
-	},
 /obj/effect/floor_decal/corner/blue/three_quarters{
 	dir = 4
 	},
@@ -5761,6 +5757,10 @@
 	id = "bridge_port";
 	pixel_x = 24;
 	pixel_y = -35
+	},
+/obj/machinery/computer/modular/preset/dock{
+	dir = 1;
+	icon_state = "console"
 	},
 /turf/simulated/floor/tiled/dark/monotile,
 /area/bridge)
@@ -6376,19 +6376,19 @@
 /turf/simulated/floor/tiled/dark/monotile,
 /area/crew_quarters/heads/office/cos)
 "pE" = (
-/obj/machinery/computer/modular/preset/cardslot/command{
+/obj/machinery/computer/modular/preset/cardslot/command_sec{
 	dir = 1;
 	icon_state = "console"
 	},
 /turf/simulated/floor/tiled/dark/monotile,
 /area/security/bridgecheck)
 "pF" = (
-/obj/machinery/computer/modular/preset/cardslot/command{
-	dir = 1;
-	icon_state = "console"
-	},
 /obj/effect/floor_decal/corner/red/half{
 	dir = 4
+	},
+/obj/machinery/computer/modular/preset/cardslot/command_sec{
+	dir = 1;
+	icon_state = "console"
 	},
 /turf/simulated/floor/tiled/dark/monotile,
 /area/security/bridgecheck)
@@ -6586,7 +6586,9 @@
 	d2 = 4;
 	icon_state = "1-4"
 	},
-/obj/structure/bed/chair/comfy/blue,
+/obj/structure/bed/chair/comfy/blue{
+	dir = 8
+	},
 /turf/simulated/floor/tiled/dark,
 /area/bridge)
 "qi" = (
@@ -6759,6 +6761,7 @@
 /obj/effect/floor_decal/industrial/warning{
 	dir = 1
 	},
+/obj/machinery/radio_beacon,
 /turf/simulated/floor/plating,
 /area/aquila/power)
 "qE" = (
@@ -10289,10 +10292,6 @@
 /turf/simulated/floor/plating,
 /area/hallway/primary/bridge/fore)
 "AZ" = (
-/obj/machinery/computer/modular/preset/cardslot/command{
-	dir = 8;
-	icon_state = "console"
-	},
 /obj/machinery/requests_console{
 	announcementConsole = 1;
 	department = "Chief Engineer's Desk";
@@ -10302,6 +10301,9 @@
 	},
 /obj/effect/floor_decal/corner/yellow/mono,
 /obj/item/modular_computer/tablet/lease/preset/command,
+/obj/machinery/computer/modular/preset/cardslot/command_eng{
+	dir = 8
+	},
 /turf/simulated/floor/tiled/monotile,
 /area/crew_quarters/heads/office/ce)
 "Bc" = (
@@ -10312,7 +10314,7 @@
 /obj/item/clothing/gloves/latex,
 /obj/item/tank/anesthetic,
 /obj/item/clothing/mask/breath/medical,
-/obj/structure/iv_drip,
+/obj/structure/iv_stand,
 /obj/random/medical,
 /obj/random/medical,
 /obj/random/firstaid,
@@ -10507,13 +10509,11 @@
 	name = "blood storage";
 	pixel_y = -32
 	},
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
-/obj/item/reagent_containers/ivbag/blood/OMinus,
+/obj/item/reagent_containers/ivbag/nanoblood,
+/obj/item/reagent_containers/ivbag/blood/human/oneg,
+/obj/item/reagent_containers/ivbag/blood/human/oneg,
+/obj/item/reagent_containers/ivbag/blood/skrell/oneg,
+/obj/item/reagent_containers/ivbag/blood/unathi/oneg,
 /turf/simulated/floor/tiled/white/monotile,
 /area/aquila/medical)
 "Cd" = (
@@ -10862,6 +10862,8 @@
 /obj/item/storage/toolbox/mechanical,
 /obj/item/device/multitool,
 /obj/effect/floor_decal/industrial/outline/grey,
+/obj/item/device/destTagger,
+/obj/item/stack/package_wrap/twenty_five,
 /turf/simulated/floor/tiled/dark/monotile,
 /area/bridge/storage)
 "Dw" = (
@@ -11516,7 +11518,7 @@
 "GX" = (
 /obj/machinery/vending/wallmed1{
 	pixel_y = 32;
-	products = list(/obj/item/stack/medical/bruise_pack = 6, /obj/item/stack/medical/ointment = 6, /obj/item/reagent_containers/pill/paracetamol = 8, /obj/item/storage/med_pouch/trauma = 4, /obj/item/storage/med_pouch/burn = 2, /obj/item/storage/med_pouch/oxyloss = 2, /obj/item/storage/med_pouch/toxin = 2)
+	products = list(/obj/item/stack/medical/bruise_pack=6,/obj/item/stack/medical/ointment=6,/obj/item/reagent_containers/pill/paracetamol=8,/obj/item/storage/med_pouch/trauma=4,/obj/item/storage/med_pouch/burn=2,/obj/item/storage/med_pouch/oxyloss=2,/obj/item/storage/med_pouch/toxin=2)
 	},
 /obj/machinery/pointdefense_control{
 	initial_id_tag = "torch_primary_pd";
@@ -11528,7 +11530,7 @@
 /obj/machinery/newscaster/security_unit{
 	pixel_y = 32
 	},
-/obj/machinery/computer/modular/preset/cardslot/command,
+/obj/machinery/radio_beacon,
 /turf/simulated/floor/tiled/dark/monotile,
 /area/bridge/storage)
 "GZ" = (
@@ -11779,7 +11781,6 @@
 /turf/simulated/wall/r_wall/hull,
 /area/bridge)
 "HF" = (
-/obj/machinery/computer/modular/preset/dock,
 /obj/effect/floor_decal/corner/blue{
 	dir = 5
 	},
@@ -11788,6 +11789,7 @@
 	d2 = 2;
 	icon_state = "1-2"
 	},
+/obj/machinery/computer/modular/preset/medical,
 /turf/simulated/floor/tiled/dark/monotile,
 /area/bridge)
 "HG" = (
@@ -12151,9 +12153,6 @@
 	start_pressure = 450
 	},
 /obj/effect/floor_decal/industrial/outline/yellow,
-/obj/machinery/rotating_alarm/security_alarm{
-	dir = 4
-	},
 /turf/simulated/floor/tiled/techfloor/grid,
 /area/crew_quarters/safe_room/bridge)
 "IG" = (
@@ -12239,13 +12238,12 @@
 /obj/effect/floor_decal/corner/blue{
 	dir = 6
 	},
-/obj/item/device/destTagger,
-/obj/item/stack/package_wrap/twenty_five,
 /obj/structure/cable/green{
 	d1 = 4;
 	d2 = 8;
 	icon_state = "4-8"
 	},
+/obj/item/flora/pottedplantsmall/fern,
 /turf/simulated/floor/tiled/dark/monotile,
 /area/bridge)
 "Jc" = (
@@ -12883,10 +12881,6 @@
 /turf/simulated/floor/plating,
 /area/maintenance/bridge/aftstarboard)
 "Mn" = (
-/obj/machinery/computer/modular/preset/cardslot/command_sec{
-	dir = 8;
-	icon_state = "console"
-	},
 /obj/effect/floor_decal/corner/red/mono,
 /obj/machinery/requests_console{
 	announcementConsole = 1;
@@ -12896,6 +12890,10 @@
 	pixel_x = 32
 	},
 /obj/item/modular_computer/tablet/lease/preset/command,
+/obj/machinery/computer/modular/preset/cardslot/command_sec{
+	dir = 8;
+	icon_state = "console"
+	},
 /turf/simulated/floor/tiled/dark/monotile,
 /area/crew_quarters/heads/office/cos)
 "Mq" = (
@@ -14324,9 +14322,7 @@
 /turf/simulated/floor/tiled/dark,
 /area/bridge/meeting_room)
 "So" = (
-/obj/machinery/atmospherics/unary/tank/air{
-	dir = 6
-	},
+/obj/machinery/atmospherics/unary/tank/air,
 /obj/effect/floor_decal/industrial/outline/blue,
 /turf/simulated/floor/plating,
 /area/aquila/air)
@@ -14584,6 +14580,9 @@
 /obj/effect/floor_decal/techfloor{
 	dir = 8
 	},
+/obj/machinery/rotating_alarm/security_alarm{
+	dir = 4
+	},
 /turf/simulated/floor/tiled/techfloor,
 /area/crew_quarters/safe_room/bridge)
 "To" = (
@@ -14660,7 +14659,9 @@
 	d2 = 4;
 	icon_state = "2-4"
 	},
-/obj/structure/bed/chair/comfy/blue,
+/obj/structure/bed/chair/comfy/blue{
+	dir = 8
+	},
 /turf/simulated/floor/tiled/dark,
 /area/bridge)
 "TM" = (

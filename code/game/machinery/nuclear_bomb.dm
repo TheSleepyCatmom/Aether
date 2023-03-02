@@ -43,7 +43,7 @@ var/global/bomb_set
 		timeleft = max(timeleft - (wait / 10), 0)
 		playsound(loc, 'sound/items/timer.ogg', 50)
 		if(timeleft <= 0)
-			addtimer(CALLBACK(src, .proc/explode), 0)
+			addtimer(new Callback(src, .proc/explode), 0)
 		SSnano.update_uis(src)
 
 /obj/machinery/nuclearbomb/attackby(obj/item/O as obj, mob/user as mob, params)
@@ -384,7 +384,7 @@ var/global/bomb_set
 /obj/item/disk/nuclear/Destroy()
 	GLOB.moved_event.unregister(src, src, /obj/item/disk/nuclear/proc/check_z_level)
 	nuke_disks -= src
-	if(!nuke_disks.len)
+	if(!length(nuke_disks))
 		var/turf/T = pick_area_turf(/area/maintenance, list(/proc/is_station_turf, /proc/not_turf_contains_dense_objects))
 		if(T)
 			var/obj/D = new /obj/item/disk/nuclear(T)
@@ -512,20 +512,14 @@ var/global/bomb_set
 				announced = 1
 			if(world.time >= time_to_explosion)
 				var/range
-				var/high_intensity
-				var/low_intensity
 				if(timeleft <= (self_destruct_cutoff/2))
-					range = rand(2, 3)
-					high_intensity = rand(5,8)
-					low_intensity = rand(7,10)
+					range = rand(14, 21)
 					time_to_explosion = world.time + 2 SECONDS
 				else
-					range = rand(1, 2)
-					high_intensity = rand(3, 6)
-					low_intensity = rand(5, 8)
+					range = rand(9, 16)
 					time_to_explosion = world.time + 5 SECONDS
 				var/turf/T = pick_area_and_turf(GLOB.is_station_but_not_space_or_shuttle_area)
-				explosion(T, range, high_intensity, low_intensity)
+				explosion(T, range)
 
 /obj/machinery/nuclearbomb/station/secure_device()
 	..()

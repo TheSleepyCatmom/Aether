@@ -107,11 +107,35 @@
 				if(emagged < 2)
 					emagged = !emagged
 
-/mob/living/bot/secbot/attackby(obj/item/O, mob/user)
-	var/curhealth = health
+
+/mob/living/bot/secbot/get_mechanics_info()
 	. = ..()
-	if(health < curhealth)
+	. += {"
+		<p>If attacked and damaged, it will attempt to arrest or subdue the attacker.</p>
+	"}
+
+
+/mob/living/bot/secbot/get_construction_info()
+	return list(
+		"Attach a <b>Remote Signalling Device</b> to a <b>Helmet</b>.",
+		"Use a <b>Welding Tool</b>.",
+		"Add a <b>Proximity Sensor</b>.",
+		"Add a robotic <b>Left Arm</b> or <b>Right Arm</b>.",
+		"Add a <b>Stunbaton</b> to complete the securitron."
+	)
+
+
+/mob/living/bot/secbot/get_antag_interactions_info()
+	. = ..()
+	.[CODEX_INTERACTION_EMAG] += "<p>Causes \the [initial(name)] to attack and arrest anyone around it, except the person who emagged it.</p>"
+
+
+/mob/living/bot/secbot/use_weapon(obj/item/weapon, mob/user, list/click_params)
+	var/previous_health = health
+	. = ..()
+	if (. && health < previous_health)
 		react_to_attack(user)
+
 
 /mob/living/bot/secbot/emag_act(remaining_charges, mob/user)
 	. = ..()
@@ -137,7 +161,7 @@
 	if(declare_arrests)
 		broadcast_security_hud_message("[src] is arresting a level [threat] suspect <b>[suspect_name]</b> in <b>[get_area(src)]</b>.", src)
 	say("Down on the floor, [suspect_name]! You have [SECBOT_WAIT_TIME] seconds to comply.")
-	if (preparing_arrest_sounds.len)
+	if (length(preparing_arrest_sounds))
 		playsound(src.loc, pick(preparing_arrest_sounds), 50)
 	GLOB.moved_event.register(target, src, /mob/living/bot/secbot/proc/target_moved)
 

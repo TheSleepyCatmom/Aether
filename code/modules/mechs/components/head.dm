@@ -6,7 +6,7 @@
 	var/vision_flags = 0
 	var/see_invisible = 0
 	var/obj/item/robot_parts/robot_component/radio/radio
-	var/obj/item/robot_parts/robot_component/camera
+	var/obj/item/robot_parts/robot_component/camera/camera
 	var/obj/item/mech_component/control_module/software
 	has_hardpoints = list(HARDPOINT_HEAD)
 	var/active_sensors = 0
@@ -121,7 +121,7 @@
 		return ..()
 
 /obj/item/mech_component/control_module/proc/install_software(obj/item/circuitboard/exosystem/software, mob/user)
-	if(installed_software.len >= max_installed_software)
+	if(length(installed_software) >= max_installed_software)
 		if(user)
 			to_chat(user, SPAN_WARNING("\The [src] can only hold [max_installed_software] software modules."))
 		return

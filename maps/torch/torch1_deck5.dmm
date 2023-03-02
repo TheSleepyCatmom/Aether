@@ -808,7 +808,7 @@
 	dir = 5
 	},
 /obj/machinery/portable_atmospherics/canister/carbon_dioxide/engine_setup{
-	start_pressure = 7498.00
+	start_pressure = 7498
 	},
 /obj/machinery/atmospherics/portables_connector,
 /obj/effect/floor_decal/industrial/outline/orange,
@@ -1108,8 +1108,9 @@
 /area/guppy_hangar/start)
 "cl" = (
 /obj/machinery/light,
-/obj/machinery/computer/modular/preset/medical{
-	dir = 8
+/obj/machinery/computer/modular/preset/dock{
+	dir = 8;
+	icon_state = "console"
 	},
 /turf/simulated/floor/tiled/monotile,
 /area/exploration_shuttle/crew)
@@ -2157,6 +2158,7 @@
 /obj/machinery/firealarm{
 	pixel_y = 24
 	},
+/obj/machinery/radio_beacon,
 /turf/simulated/floor/tiled/techfloor/grid,
 /area/exploration_shuttle/power)
 "eM" = (
@@ -2656,11 +2658,11 @@
 /obj/effect/floor_decal/corner/mauve/half{
 	dir = 4
 	},
-/obj/machinery/computer/modular/preset/civilian{
+/obj/effect/floor_decal/industrial/outline/yellow,
+/obj/machinery/computer/modular/preset/dock{
 	dir = 8;
 	icon_state = "console"
 	},
-/obj/effect/floor_decal/industrial/outline/yellow,
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/exploration)
 "fX" = (
@@ -3200,7 +3202,7 @@
 /area/quartermaster/expedition/eva)
 "hs" = (
 /obj/machinery/portable_atmospherics/canister/carbon_dioxide/engine_setup{
-	start_pressure = 7498.00
+	start_pressure = 7498
 	},
 /obj/machinery/atmospherics/portables_connector{
 	dir = 8
@@ -5009,10 +5011,10 @@
 /turf/simulated/floor/tiled/dark,
 /area/quartermaster/expedition/storage)
 "lt" = (
-/obj/machinery/computer/modular/preset/civilian,
 /obj/machinery/computer/guestpass{
 	pixel_y = 32
 	},
+/obj/machinery/computer/modular/preset/dock,
 /turf/simulated/floor/tiled/dark/monotile,
 /area/command/pilot)
 "lu" = (
@@ -7064,13 +7066,6 @@
 	dir = 8;
 	icon_state = "warning"
 	},
-/turf/simulated/floor/plating,
-/area/maintenance/fifthdeck/aftstarboard)
-"pH" = (
-/obj/effect/floor_decal/industrial/warning{
-	dir = 4;
-	icon_state = "warning"
-	},
 /obj/structure/cable{
 	d1 = 16;
 	d2 = 0;
@@ -7079,6 +7074,18 @@
 /obj/structure/cable{
 	d2 = 4;
 	icon_state = "0-4"
+	},
+/turf/simulated/floor/plating,
+/area/maintenance/fifthdeck/aftstarboard)
+"pH" = (
+/obj/effect/floor_decal/industrial/warning{
+	dir = 4;
+	icon_state = "warning"
+	},
+/obj/structure/cable{
+	d1 = 4;
+	d2 = 8;
+	icon_state = "4-8"
 	},
 /turf/simulated/floor/plating,
 /area/maintenance/fifthdeck/aftstarboard)
@@ -7128,7 +7135,7 @@
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/expedition)
 "pM" = (
-/obj/structure/iv_drip,
+/obj/structure/iv_stand,
 /obj/structure/hygiene/sink/kitchen{
 	pixel_x = 32
 	},
@@ -7796,7 +7803,7 @@
 	icon_state = "1-2"
 	},
 /obj/machinery/power/smes/buildable/preset/torch/substation{
-	RCon_tag = "Substation - Fifth Deck"
+	RCon_tag = "Substation - 5th Deck"
 	},
 /turf/simulated/floor/plating,
 /area/maintenance/substation/fifthdeck)
@@ -12555,7 +12562,7 @@
 /turf/simulated/floor/tiled/white,
 /area/shuttle/petrov/hallwaya)
 "Gq" = (
-/obj/machinery/shipsensors/weak,
+/obj/machinery/shipsensors,
 /turf/simulated/floor/plating,
 /area/guppy_hangar/start)
 "Gr" = (
@@ -16086,7 +16093,7 @@
 /turf/simulated/floor/reinforced/airless,
 /area/shuttle/petrov/toxins)
 "Ur" = (
-/obj/machinery/vending/assist,
+/obj/machinery/vending/generic,
 /obj/machinery/atmospherics/unary/vent_pump/on{
 	dir = 8
 	},

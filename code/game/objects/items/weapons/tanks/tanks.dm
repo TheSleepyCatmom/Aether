@@ -453,13 +453,24 @@ var/global/list/tank_gauge_cache = list()
 				return
 
 			T.assume_air(air_contents)
+
+			// Determine max power and range for the explosion
+			var/range = mult * strength
+			var/devst = round(range * 0.15)
+			var/heavy = round(range * 0.35)
+			var/max_power
+			if (devst)
+				max_power = EX_ACT_DEVASTATING
+			else if (heavy)
+				max_power = EX_ACT_HEAVY
+			else
+				max_power = EX_ACT_LIGHT
+
 			explosion(
 				get_turf(loc),
-				round(min(BOMBCAP_DVSTN_RADIUS, ((mult)*strength)*0.15)),
-				round(min(BOMBCAP_HEAVY_RADIUS, ((mult)*strength)*0.35)),
-				round(min(BOMBCAP_LIGHT_RADIUS, ((mult)*strength)*0.80)),
-				round(min(BOMBCAP_FLASH_RADIUS, ((mult)*strength)*1.20)),
-				)
+				round(min(BOMBCAP_RADIUS, range * 1.3)),
+				max_power
+			)
 
 			var/num_fragments = round(rand(8,10) * sqrt(strength * mult))
 			fragmentate(T, num_fragments, 7, list(/obj/item/projectile/bullet/pellet/fragment/tank/small = 7,/obj/item/projectile/bullet/pellet/fragment/tank = 2,/obj/item/projectile/bullet/pellet/fragment/strong = 1))
@@ -580,6 +591,10 @@ var/global/list/tank_gauge_cache = list()
 	var/obj/item/device/assembly_holder/assembly = null
 
 /obj/item/device/tankassemblyproxy/receive_signal()	//This is mainly called by the sensor through sense() to the holder, and from the holder to here.
+	if (!tank || !assembly)
+		log_debug(append_admin_tools("A tank assembly received a signal but lacks a valid assembly holder.", usr, get_turf(src)))
+		to_chat(usr, SPAN_DEBUG("A tank assembly associated with you attempted to ignite but failed because it lacks a valid assembly holder. Please ahelp this bug to be investigated in-round."))
+		return
 	tank.ignite()	//boom (or not boom if you made shijwtty mix)
 
 /obj/item/tank/proc/assemble_bomb(W,user)	//Bomb assembly proc. This turns assembly+tank into a bomb

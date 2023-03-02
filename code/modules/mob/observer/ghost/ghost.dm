@@ -116,7 +116,7 @@ Works together with spawning an observer, noted above.
 		for(var/mob/living/target in oview(src, 14))
 			if(target.mind && target.mind.special_role)
 				target_list += target
-		if(target_list.len)
+		if(length(target_list))
 			assess_targets(target_list, src)
 	if(medHUD)
 		process_medHUD(src)
@@ -269,7 +269,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		return
 
 	var/list/area_turfs = get_area_turfs(thearea, shall_check_if_holy() ? list(/proc/is_not_holy_turf) : list())
-	if(!area_turfs.len)
+	if(!length(area_turfs))
 		to_chat(src, SPAN_WARNING("This area has been entirely made into sacred grounds, you cannot enter it while you are in this plane of existence!"))
 		return
 
@@ -380,7 +380,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	for(var/obj/machinery/atmospherics/unary/vent_pump/v in SSmachines.machinery)
 		if(!v.welded && v.z == T.z)
 			found_vents.Add(v)
-	if(found_vents.len)
+	if(length(found_vents))
 		vent_found = pick(found_vents)
 		host = new /mob/living/simple_animal/passive/mouse(vent_found.loc)
 	else
@@ -392,15 +392,18 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		host.ckey = src.ckey
 		host.status_flags |= NO_ANTAG
 		to_chat(host, SPAN_INFO("You are now a mouse. Try to avoid interaction with players, and do not give hints away that you are more than a simple rodent."))
+
 /mob/observer/ghost/verb/view_manfiest()
 	set name = "Show Crew Manifest"
 	set category = "Ghost"
 
 	var/dat
 	dat += "<h4>Crew Manifest</h4>"
-	dat += html_crew_manifest()
+	dat += html_crew_manifest(OOC = TRUE)
 
-	show_browser(src, dat, "window=manifest;size=370x420;can_close=1")
+	var/datum/browser/popup = new(src, "Crew Manifest", "Crew Manifest", 370, 420, src)
+	popup.set_content(dat)
+	popup.open()
 
 //This is called when a ghost is drag clicked to something.
 /mob/observer/ghost/MouseDrop(atom/over)

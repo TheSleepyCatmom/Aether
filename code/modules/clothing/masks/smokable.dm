@@ -19,6 +19,8 @@
 	var/brand
 	var/gas_consumption = 0.04
 
+	z_flags = ZMM_MANGLE_PLANES
+
 /obj/item/clothing/mask/smokable/New()
 	..()
 	atom_flags |= ATOM_FLAG_NO_REACT // so it doesn't react until you light it
@@ -130,7 +132,7 @@
 
 /obj/item/clothing/mask/smokable/attackby(obj/item/W, mob/user)
 	..()
-	if(isflamesource(W) || is_hot(W))
+	if (isFlameOrHeatSource(W))
 		var/text = matchmes
 		if(istype(W, /obj/item/flame/match))
 			text = matchmes
@@ -156,6 +158,11 @@
 		return 1
 	else
 		return ..()
+
+
+/obj/item/clothing/mask/smokable/IsFlameSource()
+	return lit
+
 
 /obj/item/clothing/mask/smokable/cigarette
 	name = "cigarette"
@@ -259,6 +266,7 @@
 
 /obj/item/clothing/mask/smokable/cigarette/killthroat
 	brand = "\improper Acme Co. cigarette"
+	filling = list(/datum/reagent/tobacco = 1, /datum/reagent/fuel = 0.5)
 
 /obj/item/clothing/mask/smokable/cigarette/dromedaryco
 	brand = "\improper Dromedary Co. cigarette"
@@ -545,6 +553,11 @@
 	user.update_inv_wear_mask(0)
 	user.update_inv_l_hand(0)
 	user.update_inv_r_hand(1)
+
+
+/obj/item/clothing/mask/smokable/pipe/IsFlameSource()
+	return FALSE
+
 
 /obj/item/clothing/mask/smokable/pipe/cobpipe
 	name = "corn cob pipe"

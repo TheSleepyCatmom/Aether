@@ -123,6 +123,18 @@ var/global/const/access_commissary = "ACCESS_TORCH_SHOP" //96
 	desc = "Commissary"
 	region = ACCESS_REGION_GENERAL
 
+var/global/const/access_chief_steward = "ACCESS_TORCH_CHIEF_STEWARD"
+/datum/access/chief_steward
+	id = access_chief_steward
+	desc = "Chief Steward"
+	region = ACCESS_REGION_COMMAND
+
+var/global/const/access_o_mess = "ACCESS_TORCH_O_MESS"
+/datum/access/o_mess
+	id = access_o_mess
+	desc = "Officer's Mess"
+	region = ACCESS_REGION_SERVICE
+
 /datum/access/psychiatrist
 	desc = "Mental Health"
 

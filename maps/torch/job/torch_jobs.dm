@@ -19,20 +19,22 @@
 	)
 #undef HUMAN_ONLY_JOBS
 
-	allowed_jobs = list(/datum/job/captain, /datum/job/hop, /datum/job/rd, /datum/job/cmo, /datum/job/chief_engineer, /datum/job/hos,
-						/datum/job/liaison, /datum/job/representative, /datum/job/sea,
-						/datum/job/bridgeofficer, /datum/job/pathfinder, /datum/job/nt_pilot, /datum/job/explorer,
-						/datum/job/senior_engineer, /datum/job/engineer, /datum/job/roboticist, /datum/job/engineer_trainee,
-						/datum/job/officer, /datum/job/warden, /datum/job/detective,
-						/datum/job/senior_doctor, /datum/job/doctor, /datum/job/junior_doctor, /datum/job/chemist, /datum/job/medical_trainee,
-						/datum/job/psychiatrist, /datum/job/chaplain,
-						/datum/job/qm, /datum/job/cargo_tech, /datum/job/mining,
-						/datum/job/janitor, /datum/job/chef,
-						/datum/job/senior_scientist, /datum/job/scientist, /datum/job/scientist_assistant,
-						/datum/job/cyborg,
-						/datum/job/crew, /datum/job/assistant,
-						/datum/job/merchant
-						)
+	allowed_jobs = list(
+		/datum/job/captain, /datum/job/hop, /datum/job/rd, /datum/job/cmo, /datum/job/chief_engineer, /datum/job/hos,
+		/datum/job/liaison, /datum/job/representative, /datum/job/sea,
+		/datum/job/bridgeofficer, /datum/job/pathfinder, /datum/job/nt_pilot, /datum/job/explorer,
+		/datum/job/senior_engineer, /datum/job/engineer, /datum/job/roboticist, /datum/job/engineer_trainee,
+		/datum/job/officer, /datum/job/warden, /datum/job/detective,
+		/datum/job/senior_doctor, /datum/job/doctor, /datum/job/junior_doctor, /datum/job/chemist, /datum/job/medical_trainee,
+		/datum/job/psychiatrist,
+		/datum/job/qm, /datum/job/cargo_tech, /datum/job/mining,
+		/datum/job/senior_scientist, /datum/job/scientist, /datum/job/scientist_assistant,
+		/datum/job/chief_steward, /datum/job/chef, /datum/job/janitor, /datum/job/crew,
+		/datum/job/cyborg,
+		/datum/job/chaplain,
+		/datum/job/assistant,
+		/datum/job/merchant
+	)
 
 	access_modify_region = list(
 		ACCESS_REGION_SECURITY = list(access_change_ids),
@@ -49,7 +51,7 @@
 	for(var/job_type in allowed_jobs)
 		var/datum/job/job = SSjobs.get_by_path(job_type)
 		// Most species are restricted from SCG security and command roles
-		if(job && (job.department_flag & COM) && job.allowed_branches.len && !(/datum/mil_branch/civilian in job.allowed_branches))
+		if(job && (job.department_flag & COM) && length(job.allowed_branches) && !(/datum/mil_branch/civilian in job.allowed_branches))
 			for(var/species_name in list(SPECIES_IPC, SPECIES_SKRELL, SPECIES_UNATHI))
 				var/datum/species/S = all_species[species_name]
 				var/species_blacklist = species_to_job_blacklist[S.type]

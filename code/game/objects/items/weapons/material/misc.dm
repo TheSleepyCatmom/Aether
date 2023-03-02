@@ -28,12 +28,12 @@
 		return
 	audible_message(SPAN_WARNING("\The [src] emits a long, harsh tone!"))
 	playsound(loc, 'sound/weapons/bombwhine.ogg', 100, 0, -3)
-	addtimer(CALLBACK(src, .proc/harpoon_detonate), 4 SECONDS) //for suspense
+	addtimer(new Callback(src, .proc/harpoon_detonate), 4 SECONDS) //for suspense
 
 /obj/item/material/harpoon/bomb/proc/harpoon_detonate()
 	audible_message(SPAN_DANGER("\The [src] detonates!")) //an actual sound will be handled by explosion()
 	var/turf/T = get_turf(src)
-	explosion(T, 0, 0, 2, 0, 1, UP|DOWN, 1)
+	explosion(T, 2, EX_ACT_LIGHT, 1, UP|DOWN, 1)
 	fragmentate(T, 4, 2)
 	handle_afterbomb()
 

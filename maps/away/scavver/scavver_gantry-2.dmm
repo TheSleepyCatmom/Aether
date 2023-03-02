@@ -526,7 +526,7 @@
 /turf/simulated/floor/airless,
 /area/scavver/gantry/up2)
 "ef" = (
-/obj/machinery/shipsensors/weak{
+/obj/machinery/shipsensors{
 	use_power = 0
 	},
 /turf/simulated/floor/airless,
@@ -2146,7 +2146,7 @@
 	dir = 1;
 	name = "hacked cigarette machine";
 	prices = list();
-	products = list(/obj/item/storage/fancy/cigarettes = 10, /obj/item/storage/box/matches = 10, /obj/item/flame/lighter/zippo/random = 4, /obj/item/clothing/mask/smokable/cigarette/cigar/havana = 2)
+	products = list(/obj/item/storage/fancy/smokable/transstellar = 10, /obj/item/storage/box/matches = 10, /obj/item/flame/lighter/zippo/random = 4, /obj/item/clothing/mask/smokable/cigarette/cigar/havana = 2)
 	},
 /turf/simulated/floor/wood/yew,
 /area/scavver/hab)
@@ -2314,7 +2314,7 @@
 /turf/simulated/floor/tiled,
 /area/scavver/hab)
 "sp" = (
-/obj/machinery/shipsensors/weak{
+/obj/machinery/shipsensors{
 	use_power = 0
 	},
 /obj/structure/handrail{

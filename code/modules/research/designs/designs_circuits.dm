@@ -847,6 +847,20 @@
 	build_path = /obj/item/stock_parts/circuitboard/bluespacedrive
 	sort_string = "XAAAG"
 
+/datum/design/circuit/shipsensors
+	name = "Broad-band sensor suite"
+	id = "shipsensors"
+	req_tech = list(TECH_BLUESPACE = 2, TECH_POWER = 4, TECH_ENGINEERING = 4, TECH_DATA = 4)
+	build_path = /obj/item/stock_parts/circuitboard/shipsensors
+	sort_string = "XAAAH"
+
+/datum/design/circuit/radio_beacon
+	name = "Transmission beacon"
+	id = "radio_beacon"
+	req_tech = list(TECH_BLUESPACE = 2, TECH_POWER = 4, TECH_ENGINEERING = 4, TECH_DATA = 4)
+	build_path = /obj/item/stock_parts/circuitboard/radio_beacon
+	sort_string = "XAAAI"
+
 /datum/design/circuit/shipmap
 	name = "ship holomap"
 	id = "shipmap"

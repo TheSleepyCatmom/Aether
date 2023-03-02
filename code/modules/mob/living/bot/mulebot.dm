@@ -52,6 +52,12 @@
 	suffix = num2text(++amount)
 	name = "Mulebot #[suffix]"
 
+
+/mob/living/bot/mulebot/get_antag_interactions_info()
+	. = ..()
+	.[CODEX_INTERACTION_EMAG] = "<p>Toggles the access panel lock.</p>"
+
+
 /mob/living/bot/mulebot/MouseDrop_T(atom/movable/C, mob/user)
 	if(user.stat)
 		return
@@ -100,7 +106,7 @@
 			if("sethome")
 				var/new_dest
 				var/list/beaconlist = GetBeaconList()
-				if(beaconlist.len)
+				if(length(beaconlist))
 					new_dest = input("Select new home tag", "Mulebot [suffix ? "([suffix])" : ""]", null) in null|beaconlist
 				else
 					alert("No destination beacons available.")
@@ -119,10 +125,6 @@
 			if("safety")
 				safety = !safety
 
-/mob/living/bot/mulebot/attackby(obj/item/O, mob/user)
-	..()
-	update_icons()
-
 /mob/living/bot/mulebot/proc/obeyCommand(command)
 	switch(command)
 		if("Home")
@@ -132,7 +134,7 @@
 		if("SetD")
 			var/new_dest
 			var/list/beaconlist = GetBeaconList()
-			if(beaconlist.len)
+			if(length(beaconlist))
 				new_dest = input("Select new destination tag", "Mulebot [suffix ? "([suffix])" : ""]") in null|beaconlist
 			else
 				alert("No destination beacons available.")
@@ -152,11 +154,11 @@
 	playsound(loc, 'sound/effects/sparks1.ogg', 100, 0)
 	return 1
 
-/mob/living/bot/mulebot/update_icons()
+/mob/living/bot/mulebot/on_update_icon()
 	if(open)
 		icon_state = "mulebot-hatch"
 		return
-	if(target_path.len && !paused)
+	if(length(target_path) && !paused)
 		icon_state = "mulebot1"
 		return
 	icon_state = "mulebot0"
@@ -164,7 +166,7 @@
 /mob/living/bot/mulebot/handleRegular()
 	if(!safety && prob(1))
 		flick("mulebot-emagged", src)
-	update_icons()
+	update_icon()
 
 /mob/living/bot/mulebot/handleFrustrated()
 	custom_emote(2, "makes a sighing buzz.")
@@ -186,7 +188,7 @@
 
 /mob/living/bot/mulebot/calcTargetPath()
 	..()
-	if(!target_path.len && target != home) // I presume that target is not null
+	if(!length(target_path) && target != home) // I presume that target is not null
 		resetTarget()
 		target = home
 		targetName = "Home"

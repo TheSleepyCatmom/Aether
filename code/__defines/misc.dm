@@ -115,10 +115,7 @@
 #define WALL_CAN_OPEN 1
 #define WALL_OPENING 2
 
-#define BOMBCAP_DVSTN_RADIUS (config.max_explosion_range / 4)
-#define BOMBCAP_HEAVY_RADIUS (config.max_explosion_range / 2)
-#define BOMBCAP_LIGHT_RADIUS (config.max_explosion_range)
-#define BOMBCAP_FLASH_RADIUS (config.max_explosion_range * 1.5)
+#define BOMBCAP_RADIUS (config.max_explosion_range * 1.75)
 									// NTNet module-configuration values. Do not change these. If you need to add another use larger number (5..6..7 etc)
 #define NTNET_SOFTWAREDOWNLOAD 1 	// Downloads of software from NTNet
 #define NTNET_PEERTOPEER 2			// P2P transfers of files between devices
@@ -280,7 +277,7 @@
 //Misc text define. Does 4 spaces. Used as a makeshift tabulator.
 #define FOURSPACES "&nbsp;&nbsp;&nbsp;&nbsp;"
 
-#define INCREMENT_WORLD_Z_SIZE world.maxz++; if (SSzcopy.zlev_maximums.len) { SSzcopy.calculate_zstack_limits() }
+#define INCREMENT_WORLD_Z_SIZE world.maxz++; if (length(SSzcopy.zlev_maximums)) { SSzcopy.calculate_zstack_limits() }
 
 //-- Masks for /atom/var/init_flags --
 //- machinery
@@ -306,6 +303,8 @@
 #define EX_ACT_HEAVY 2 // Within heavy range - Heavy damage, very dangerous
 #define EX_ACT_LIGHT 3 // Within light range - Minor damage.
 
+#define EX_ACT_TO_STRING(X) (X == EX_ACT_DEVASTATING ? "Devastating" : X == EX_ACT_HEAVY ? "Heavy" : "Light")
+
 
 // Atom layering/visibility levels on turfs. See `/atom/var/level`.
 #define ATOM_LEVEL_UNDER_TILE 1 // Hidden under floor tiles, visible on plating
@@ -316,3 +315,7 @@
 #define ATOM_FLOURESCENCE_NONE 0 // Not flourescent
 #define ATOM_FLOURESCENCE_INACTIVE 1 // Flourescent but not actively lit
 #define ATOM_FLOURESCENCE_ACTVE 2 // Flourescent and actively lit. Helps prevent repeated processing on a flourescent atom by multiple UV lights
+
+
+// Helper macro for generating stringified name text for IDs located inside objects, i.e. PDAs or wallets. Used for feedback and interaction messages.
+#define GET_ID_NAME(ID, HOLDER) (ID == HOLDER ? "\the [ID]" : "\the [ID] in \the [HOLDER]")

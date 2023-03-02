@@ -33,7 +33,7 @@
 		return
 
 	to_chat(user, SPAN_NOTICE("It contains:"))
-	if(reagents && reagents.reagent_list.len)
+	if(reagents && length(reagents.reagent_list))
 		for(var/datum/reagent/R in reagents.reagent_list)
 			to_chat(user, SPAN_NOTICE("[R.volume] units of [R.name]"))
 	else
@@ -208,7 +208,7 @@
 			test.Shift(EAST,6)
 			overlays += test
 
-	else if(isflamesource(W))
+	else if (W.IsFlameSource())
 		if(user.a_intent != I_HURT)
 			to_chat(user, SPAN_WARNING("You almost got \the [W] too close to [src]! That could have ended very badly for you."))
 			return
@@ -254,7 +254,7 @@
 		leak_fuel(amount_per_transfer_from_this/10.0)
 
 /obj/structure/reagent_dispensers/fueltank/proc/leak_fuel(amount)
-	if (reagents.total_volume == 0)
+	if (QDELING(src) || reagents.total_volume == 0)
 		return
 
 	amount = min(amount, reagents.total_volume)

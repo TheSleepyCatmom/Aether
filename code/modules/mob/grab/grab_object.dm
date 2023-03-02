@@ -79,13 +79,13 @@
 /obj/item/grab/resolve_attackby(atom/A, mob/user, click_params)
 	if (QDELETED(src) || !assailant)
 		return TRUE
-	assailant.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
-	if(!A.grab_attack(src))
-		return ..()
-	action_used()
-	if (current_grab.downgrade_on_action)
-		downgrade()
-	return TRUE
+	if (A.use_grab(src, user, click_params))
+		assailant.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
+		action_used()
+		if (current_grab.downgrade_on_action)
+			downgrade()
+		return TRUE
+	return ..()
 
 /obj/item/grab/dropped()
 	..()
@@ -158,7 +158,7 @@
 	if(assailant.get_active_hand())
 		to_chat(assailant, SPAN_NOTICE("You can't grab someone if your hand is full."))
 		return 0
-	if(assailant.grabbed_by.len)
+	if(length(assailant.grabbed_by))
 		to_chat(assailant, SPAN_NOTICE("You can't grab someone if you're being grabbed."))
 		return 0
 	var/obj/item/organ/organ = get_targeted_organ()
@@ -218,6 +218,8 @@
 	return (world.time >= last_upgrade + current_grab.upgrade_cooldown)
 
 /obj/item/grab/proc/leave_forensic_traces()
+	if (!affecting)
+		return
 	var/obj/item/clothing/C = affecting.get_covering_equipped_item_by_zone(target_zone)
 	if(istype(C))
 		C.leave_evidence(assailant)

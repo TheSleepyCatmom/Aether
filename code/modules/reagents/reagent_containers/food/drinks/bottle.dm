@@ -47,7 +47,7 @@
 		return
 	var/static/list/chance_table = list(95, 95, 90, 85, 75, 60, 40, 15)
 	var/idx = max(distance + 1, 1)
-	if (idx > chance_table.len)
+	if (idx > length(chance_table))
 		return
 	return prob(chance_table[idx])
 
@@ -74,7 +74,7 @@
 	if (!rag && istype(W, /obj/item/reagent_containers/glass/rag))
 		insert_rag(W, user)
 		return
-	if (rag && isflamesource(W))
+	if (rag && W.IsFlameSource())
 		rag.attackby(W, user)
 		return
 	..()

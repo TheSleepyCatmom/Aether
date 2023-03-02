@@ -77,8 +77,9 @@
 	playsound(loc, 'sound/effects/splat.ogg', 50, 1)
 	qdel(src)
 
-/obj/effect/blob/post_health_change(health_mod, damage_type)
-	update_icon()
+/obj/effect/blob/post_health_change(health_mod, prior_health, damage_type)
+	..()
+	queue_icon_update()
 
 /obj/effect/blob/proc/regen()
 	restore_health(regen_rate)
@@ -98,23 +99,13 @@
 		return
 
 	for (var/obj/machinery/door/D in T)
-		if (D.density)
-			if (MACHINE_IS_BROKEN(D))
-				D.open(TRUE)
-				return
-			playsound(loc, 'sound/effects/attackblob.ogg', 50, 1)
-			D.take_damage(damage)
+		if (D.density && MACHINE_IS_BROKEN(D))
+			D.open(TRUE)
 			return
 
 	var/obj/structure/foamedmetal/F = locate() in T
 	if (F)
 		qdel(F)
-		return
-
-	var/obj/machinery/camera/CA = locate() in T
-	if (CA && !MACHINE_IS_BROKEN(CA))
-		playsound(loc, 'sound/effects/attackblob.ogg', 50, 1)
-		CA.take_damage(30)
 		return
 
 	var/sound_played
@@ -421,6 +412,11 @@ regen() will cover update_icon() for this proc
 			user.drop_from_inventory(src)
 			new /obj/effect/decal/cleanable/ash(src.loc)
 			qdel(src)
+
+
+/obj/item/blob_tendril/IsHeatSource()
+	return damtype == DAMAGE_BURN ? 1000 : 0
+
 
 /obj/item/blob_tendril/core
 	name = "asteroclast nucleus sample"

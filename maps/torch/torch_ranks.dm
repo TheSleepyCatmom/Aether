@@ -24,7 +24,8 @@
 		/datum/mil_branch/solgov,
 		/datum/mil_branch/alien,
 		/datum/mil_branch/skrell_fleet,
-		/datum/mil_branch/iccgn
+		/datum/mil_branch/iccgn,
+		/datum/mil_branch/army
 	)
 
 	species_to_branch_blacklist = list(
@@ -271,6 +272,24 @@
 	if(sort_order <= 10)
 		return "E[sort_order]"
 	return "O[sort_order - 10]"
+
+// Within the scope of the Torch, this is the only necessary differentiation.
+/datum/mil_rank/rank_category()
+	. = ..()
+	if(!sort_order)
+		return null
+	if(sort_order <= 10)
+		return GET_SINGLETON(/singleton/rank_category/enlisted)
+	else
+		return GET_SINGLETON(/singleton/rank_category/commissioned)
+
+/singleton/rank_category/enlisted
+	name = "Enlisted"
+
+/singleton/rank_category/commissioned
+	name = "Commissioned"
+	add_accesses = list(access_o_mess)
+
 /*
  *  Fleet
  *  =====

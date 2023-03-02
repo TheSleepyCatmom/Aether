@@ -34,7 +34,7 @@
 	var/height = 0 // Determines if fluids can overflow onto next turf
 	var/footstep_type
 
-	var/tmp/changing_turf
+	var/changing_turf
 
 	/// List of 'dangerous' objs that the turf holds that can cause something bad to happen when stepped on, used for AI mobs.
 	var/list/dangerous_objects
@@ -77,7 +77,7 @@
 
 	changing_turf = FALSE
 
-	remove_cleanables()
+	remove_cleanables(FALSE)
 	fluid_update()
 	REMOVE_ACTIVE_FLUID_SOURCE(src)
 
@@ -210,7 +210,7 @@ var/global/const/enterloopsanity = 100
 						thing.HasProximity(A)
 	return
 
-/turf/proc/adjacent_fire_act(turf/simulated/floor/source, exposed_temperature, exposed_volume)
+/turf/proc/adjacent_fire_act(turf/simulated/floor/adj_turf, datum/gas_mixture/adj_air, adj_temp, adj_volume)
 	return
 
 /turf/proc/is_plating()
@@ -291,16 +291,16 @@ var/global/const/enterloopsanity = 100
 		to_chat(user, SPAN_WARNING("\The [source] is too dry to wash that."))
 	source.reagents.trans_to_turf(src, 1, 10)	//10 is the multiplier for the reaction effect. probably needed to wet the floor properly.
 
-/turf/proc/remove_cleanables()
+/turf/proc/remove_cleanables(skip_blood = TRUE)
 	for(var/obj/effect/O in src)
-		if(istype(O,/obj/effect/rune) || istype(O,/obj/effect/decal/cleanable))
+		if(istype(O,/obj/effect/rune) || (istype(O,/obj/effect/decal/cleanable) && (!skip_blood || !istype(O, /obj/effect/decal/cleanable/blood))))
 			qdel(O)
 
 /turf/proc/update_blood_overlays()
 	return
 
 /turf/proc/remove_decals()
-	if(decals && decals.len)
+	if(decals && length(decals))
 		decals.Cut()
 		decals = null
 
@@ -310,12 +310,14 @@ var/global/const/enterloopsanity = 100
 		if(isliving(AM))
 			var/mob/living/M = AM
 			M.turf_collision(src, TT.speed)
-			if(M.pinned.len)
+			if(length(M.pinned))
 				return
 
 		var/intial_dir = TT.init_dir
 		spawn(2)
 			step(AM, turn(intial_dir, 180))
+
+	..()
 
 /turf/proc/can_engrave()
 	return FALSE
@@ -371,7 +373,7 @@ var/global/const/enterloopsanity = 100
 /turf/proc/get_obstruction()
 	if (density)
 		LAZYADD(., src)
-	if (contents.len > 100 || contents.len <= !!lighting_overlay)
+	if (length(contents) > 100 || length(contents) <= !!lighting_overlay)
 		return    // fuck it, too/not-enough much shit here
 	for (var/thing in src)
 		var/atom/movable/AM = thing

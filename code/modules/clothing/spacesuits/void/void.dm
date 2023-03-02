@@ -22,7 +22,7 @@
 	//Species-specific stuff.
 	species_restricted = list(SPECIES_HUMAN, SPECIES_IPC)
 	sprite_sheets = list(
-		SPECIES_UNATHI = 'icons/mob/species/unathi/onmob_head_helmet_unathi.dmi',
+		SPECIES_UNATHI = 'icons/mob/species/unathi/onmob_head_unathi.dmi',
 		SPECIES_SKRELL = 'icons/mob/species/skrell/onmob_head_skrell.dmi',
 		)
 	sprite_sheets_obj = list(
@@ -85,6 +85,7 @@ else if(##equipment_var) {\
 	CRASH("[log_info_line(src)] has an invalid [#equipment_var] type: [log_info_line(##equipment_var)]");\
 }
 
+
 /obj/item/clothing/suit/space/void/Initialize()
 	. = ..()
 	slowdown_per_slot[slot_wear_suit] = 1
@@ -92,13 +93,16 @@ else if(##equipment_var) {\
 	VOIDSUIT_INIT_EQUIPMENT(helmet, /obj/item/clothing/head/helmet)
 	VOIDSUIT_INIT_EQUIPMENT(tank,   /obj/item/tank)
 
-#undef VOIDSUIT_INIT_EQUIPMENT
 
 /obj/item/clothing/suit/space/void/Destroy()
 	. = ..()
 	QDEL_NULL(boots)
 	QDEL_NULL(helmet)
 	QDEL_NULL(tank)
+
+
+#undef VOIDSUIT_INIT_EQUIPMENT
+
 
 /obj/item/clothing/suit/space/void/examine(user,distance)
 	. = ..()

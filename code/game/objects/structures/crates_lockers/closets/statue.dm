@@ -40,7 +40,7 @@
 			icon_state = "corgi"
 			desc = "If it takes forever, I will wait for you..."
 
-	if(health_max == 0) //meaning if the statue didn't find a valid target
+	if(!get_max_health()) //meaning if the statue didn't find a valid target
 		qdel(src)
 		return
 
@@ -83,10 +83,6 @@
 /obj/structure/closet/statue/on_death()
 	for (var/mob/M in src)
 		shatter(M)
-
-/obj/structure/closet/statue/attack_generic(mob/user, damage, attacktext, environment_smash)
-	if(damage && environment_smash)
-		kill_health()
 
 /obj/structure/closet/statue/MouseDrop_T()
 	return

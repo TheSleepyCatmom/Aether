@@ -12,7 +12,7 @@
 	brightness_on = 0.5
 	sprite_sheets = list(
 		SPECIES_SKRELL = 'icons/mob/species/skrell/onmob_head_skrell.dmi',
-		SPECIES_UNATHI = 'icons/mob/species/unathi/onmob_head_helmet_unathi.dmi',
+		SPECIES_UNATHI = 'icons/mob/species/unathi/onmob_head_unathi.dmi',
 		)
 	species_restricted = null
 
@@ -108,7 +108,7 @@
 		return 0
 
 	var/obj/item/rig/suit = H.back
-	if(!suit || !istype(suit) || !suit.installed_modules.len)
+	if(!suit || !istype(suit) || !length(suit.installed_modules))
 		return 0
 
 	for(var/obj/item/rig_module/module in suit.installed_modules)

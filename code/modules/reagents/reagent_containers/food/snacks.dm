@@ -13,6 +13,7 @@
 	var/list/nutriment_desc = list("food" = 1)
 	var/list/eat_sound = 'sound/items/eatfood.ogg'
 	var/obj/item/trash
+	var/sushi_overlay
 
 
 /obj/item/reagent_containers/food/snacks/Destroy()
@@ -367,6 +368,7 @@
 	filling_color = "#ffdf78"
 	center_of_mass = "x=16;y=14"
 	bitesize = 1
+	sushi_overlay = "egg"
 /obj/item/reagent_containers/food/snacks/friedegg/Initialize()
 	.=..()
 	reagents.add_reagent(/datum/reagent/nutriment/protein, 3)
@@ -403,6 +405,7 @@
 	desc = "We all love tofu."
 	filling_color = "#fffee0"
 	center_of_mass = "x=17;y=10"
+	sushi_overlay = "tofu"
 //	nutriment_amt = 3
 	nutriment_desc = list("tofu" = 3, "goeyness" = 3)
 	bitesize = 3
@@ -1703,6 +1706,12 @@
 	nutriment_amt = 6
 	bitesize = 2
 
+/obj/item/reagent_containers/food/snacks/boiledrice/use_tool(obj/item/reagent_containers/food/snacks/W as obj, mob/user as mob)
+	if(W.sushi_overlay)
+		new /obj/item/reagent_containers/food/snacks/sushi(get_turf(src), src, W)
+		return TRUE
+	return ..()
+
 /obj/item/reagent_containers/food/snacks/boiledrice/chazuke
 	name = "chazuke"
 	desc = "An ancient way of using up day-old rice, this dish is composed of plain green tea poured over plain white rice. Hopefully you have something else to put in."
@@ -2675,10 +2684,10 @@
 	// Set appropriate description
 	if( open && pizza )
 		desc = "A box suited for pizzas. It appears to have a [pizza.name] inside."
-	else if( boxes.len > 0 )
-		desc = "A pile of boxes suited for pizzas. There appears to be [boxes.len + 1] boxes in the pile."
+	else if( length(boxes) > 0 )
+		desc = "A pile of boxes suited for pizzas. There appears to be [length(boxes) + 1] boxes in the pile."
 
-		var/obj/item/pizzabox/topbox = boxes[boxes.len]
+		var/obj/item/pizzabox/topbox = boxes[length(boxes)]
 		var/toptag = topbox.boxtag
 		if( toptag != "" )
 			desc = "[desc] The box on top has a tag, it reads: '[toptag]'."
@@ -2704,8 +2713,8 @@
 	else
 		// Stupid code because byondcode sucks
 		var/doimgtag = 0
-		if( boxes.len > 0 )
-			var/obj/item/pizzabox/topbox = boxes[boxes.len]
+		if( length(boxes) > 0 )
+			var/obj/item/pizzabox/topbox = boxes[length(boxes)]
 			if( topbox.boxtag != "" )
 				doimgtag = 1
 		else
@@ -2714,10 +2723,10 @@
 
 		if( doimgtag )
 			var/image/tagimg = image("food.dmi", icon_state = "pizzabox_tag")
-			tagimg.pixel_y = boxes.len * 3
+			tagimg.pixel_y = length(boxes) * 3
 			overlays += tagimg
 
-	icon_state = "pizzabox[boxes.len+1]"
+	icon_state = "pizzabox[length(boxes)+1]"
 
 /obj/item/pizzabox/attack_hand( mob/user as mob )
 
@@ -2729,12 +2738,12 @@
 		update_icon()
 		return
 
-	if( boxes.len > 0 )
+	if( length(boxes) > 0 )
 		if( user.get_inactive_hand() != src )
 			..()
 			return
 
-		var/obj/item/pizzabox/box = boxes[boxes.len]
+		var/obj/item/pizzabox/box = boxes[length(boxes)]
 		boxes -= box
 
 		user.put_in_hands( box )
@@ -2746,7 +2755,7 @@
 
 /obj/item/pizzabox/attack_self( mob/user as mob )
 
-	if( boxes.len > 0 )
+	if( length(boxes) > 0 )
 		return
 
 	open = !open
@@ -2767,7 +2776,7 @@
 			for(var/obj/item/pizzabox/i in box.boxes)
 				boxestoadd += i
 
-			if( (boxes.len+1) + boxestoadd.len <= 5 )
+			if( (length(boxes)+1) + length(boxestoadd) <= 5 )
 				if(!user.unEquip(box, src))
 					return
 				box.boxes = list()// clear the box boxes so we don't have boxes inside boxes. - Xzibit
@@ -2806,8 +2815,8 @@
 		var/t = sanitize(input("Enter what you want to add to the tag:", "Write", null, null) as text, 30)
 
 		var/obj/item/pizzabox/boxtotagto = src
-		if( boxes.len > 0 )
-			boxtotagto = boxes[boxes.len]
+		if( length(boxes) > 0 )
+			boxtotagto = boxes[length(boxes)]
 
 		boxtotagto.boxtag = copytext("[boxtotagto.boxtag][t]", 1, 30)
 
@@ -3048,6 +3057,7 @@
 	slices_num = 2
 	bitesize = 1
 	center_of_mass = "x=17;y=20"
+	sushi_overlay = "meat"
 
 /obj/item/reagent_containers/food/snacks/rawcutlet/Initialize()
 	.=..()
@@ -3061,6 +3071,7 @@
 	filling_color = "#d75608"
 	bitesize = 2
 	center_of_mass = "x=17;y=20"
+	sushi_overlay = "meat"
 
 /obj/item/reagent_containers/food/snacks/cutlet/Initialize()
 	.=..()
@@ -3074,9 +3085,6 @@
 	bitesize = 1
 	center_of_mass = "x=16;y=15"
 
-/obj/item/reagent_containers/food/snacks/rawbacon/Initialize()
-	.=..()
-	reagents.add_reagent(/datum/reagent/nutriment/protein, 1)
 
 /obj/item/reagent_containers/food/snacks/bacon
 	name = "bacon"
@@ -3086,9 +3094,6 @@
 	bitesize = 2
 	center_of_mass = "x=16;y=15"
 
-/obj/item/reagent_containers/food/snacks/bacon/Initialize()
-	.=..()
-	reagents.add_reagent(/datum/reagent/nutriment/protein, 1)
 
 /obj/item/reagent_containers/food/snacks/rawmeatball
 	name = "raw meatball"
@@ -3740,6 +3745,97 @@
 	.=..()
 	reagents.add_reagent(/datum/reagent/sodiumchloride, 1)
 	reagents.add_reagent(/datum/reagent/blackpepper, 1)
+
+
+/obj/item/reagent_containers/food/snacks/steamed_mussels
+	name = "steamed mussels"
+	desc = "A bowl of mussels steamed in a white wine broth. How opulent."
+	icon_state = "steamed-mussels"
+	trash = /obj/item/trash/snack_bowl
+	nutriment_desc = list("delicate broth" = 3, "mussels" = 3)
+	nutriment_amt = 6
+	bitesize = 4
+/obj/item/reagent_containers/food/snacks/steamed_mussels/Initialize()
+	.=..()
+	reagents.add_reagent(/datum/reagent/sodiumchloride, 1)
+	reagents.add_reagent(/datum/reagent/blackpepper, 1)
+
+
+/obj/item/reagent_containers/food/snacks/oysters_rockefeller
+	name = "oysters rockefeller"
+	desc = "A plate of oysters baked with a decadent sauce of rich herbs, bread crumbs, and a garnish of bacon bits."
+	icon_state = "oysters-rockefeller"
+	trash = /obj/item/trash/plate
+	nutriment_desc = list("baked oyster" = 2, "parsley" = 2)
+	nutriment_amt = 4
+	bitesize = 3
+
+
+/obj/item/reagent_containers/food/snacks/crab_cakes
+	name = "crab cakes"
+	desc = "Fried crab cakes, topped with a dollop of tartar sauce."
+	icon_state = "crab-cakes"
+	trash = /obj/item/trash/usedplatter
+	nutriment_desc = list("fried crab" = 5)
+	nutriment_amt = 5
+	bitesize = 3
+
+/obj/item/reagent_containers/food/snacks/crab_rangoon
+	name = "crab rangoon"
+	desc = "A creamy deep-fried wonton filled with crab meat and cream cheese."
+	icon_state = "crab-rangoon"
+	nutriment_desc = list("creamy crab meat" = 3)
+	nutriment_amt = 3
+	bitesize = 5
+
+
+/obj/item/reagent_containers/food/snacks/crab_dinner
+	name = "crab dinner"
+	desc = "A large crab, boiled and served with a lemon wedge. Mind the pincers."
+	icon_state = "crab-dinner"
+	trash = /obj/item/trash/usedplatter
+	nutriment_desc = list("tender crab meat" = 4)
+	nutriment_amt = 4
+	bitesize = 4
+/obj/item/reagent_containers/food/snacks/crab_dinner/Initialize()
+	.=..()
+	reagents.add_reagent(/datum/reagent/drink/juice/lemon, 3)
+
+
+/obj/item/reagent_containers/food/snacks/shrimp_cocktail
+	name = "shrimp cocktail"
+	desc = "Shrimp served in a glass with cocktail sauce."
+	icon_state = "shrimp-cocktail"
+	trash = /obj/item/reagent_containers/food/drinks/glass2/cocktail
+	nutriment_desc = list("shrimp" = 2, "horseradish" = 2)
+	nutriment_amt = 4
+	bitesize = 4
+/obj/item/reagent_containers/food/snacks/shrimp_cocktail/Initialize()
+	.=..()
+	reagents.add_reagent(/datum/reagent/nutriment/ketchup, 5)
+
+
+/obj/item/reagent_containers/food/snacks/shrimp_tempura
+	name = "shrimp tempura"
+	desc = "A large shrimp deep-fried in a coat of light, fluffy batter."
+	icon_state = "shrimp-tempura"
+	nutriment_desc = list("fried shrimp" = 2)
+	nutriment_amt = 2
+	bitesize = 3
+	sushi_overlay = "tempura"
+
+
+/obj/item/reagent_containers/food/snacks/seafood_paella
+	name = "seafood paella"
+	desc = "A dish of rice and mixed seafood, sauted in a shallow pan with various herbs and spices. "
+	icon_state = "seafood-paella"
+	trash = /obj/item/trash/snack_bowl
+	nutriment_desc = list("seafood" = 3, "saffron" = 3)
+	nutriment_amt = 6
+	bitesize = 6
+/obj/item/reagent_containers/food/snacks/seafood_paella/Initialize()
+	.=..()
+	reagents.add_reagent(/datum/reagent/ethanol/wine/premium, 5)
 
 
 //unathi food

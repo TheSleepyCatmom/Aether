@@ -41,3 +41,33 @@
 	name = OUTFIT_JOB_NAME("ERT Leader - Torch")
 	uniform = /obj/item/clothing/under/solgov/utility/fleet/combat/command
 	head = /obj/item/clothing/head/beret/solgov/fleet/command
+
+/singleton/hierarchy/outfit/job/torch/ert/suit
+	name = OUTFIT_JOB_NAME("ERT Heavy - Torch")
+	back = /obj/item/rig/ert/fleet
+	flags = OUTFIT_RESET_EQUIPMENT | OUTFIT_ADJUSTMENT_SKIP_BACKPACK
+	head = null
+	gloves = null
+
+/singleton/hierarchy/outfit/job/torch/ert/hostile
+	name = OUTFIT_JOB_NAME("Fleet - Hostile")
+	uniform = /obj/item/clothing/under/solgov/utility/fleet/combat
+	suit = /obj/item/clothing/suit/armor/pcarrier/light/sol
+	head = /obj/item/clothing/head/helmet
+	mask = /obj/item/clothing/mask/gas/half
+	glasses = /obj/item/clothing/glasses/tacgoggles
+	flags = OUTFIT_RESET_EQUIPMENT | OUTFIT_ADJUSTMENT_ALL_SKIPS
+	l_ear = null
+
+/singleton/hierarchy/outfit/job/torch/ert/hostile/leader
+	name = OUTFIT_JOB_NAME("Fleet Leader - Hostile")
+	uniform = /obj/item/clothing/under/solgov/utility/fleet/combat
+	suit = /obj/item/clothing/suit/armor/bulletproof/armsman
+	head = /obj/item/clothing/head/helmet/armsman
+
+/singleton/hierarchy/outfit/job/torch/ert/hostile/suit
+	name = OUTFIT_JOB_NAME("Fleet Heavy - Hostile")
+	back = /obj/item/rig/ert/fleet
+	gloves = null
+	suit = null
+	head = null

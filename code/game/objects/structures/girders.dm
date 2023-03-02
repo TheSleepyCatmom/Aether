@@ -20,18 +20,6 @@
 	health_max = 50
 	cover = 25
 
-/obj/structure/girder/attack_generic(mob/user, damage, attack_message = "smashes apart", wallbreaker)
-	if(!damage)
-		return 0
-	attack_animation(user)
-	playsound(loc, 'sound/weapons/tablehit1.ogg', 40, 1)
-	visible_message(SPAN_DANGER("[user] [attack_message] [src]!"))
-	if(wallbreaker)
-		kill_health()
-	else
-		damage_health(damage, DAMAGE_BRUTE)
-	return 1
-
 /obj/structure/girder/bullet_act(obj/item/projectile/Proj)
 	//Girders only provide partial cover. There's a chance that the projectiles will just pass through. (unless you are trying to shoot the girder)
 	if(Proj.original != src && !prob(cover))
@@ -130,7 +118,7 @@
 			to_chat(user, SPAN_NOTICE("You dislodged the girder!"))
 			icon_state = "displaced"
 			anchored = FALSE
-			health_max = 50
+			set_max_health(50)
 			cover = 25
 		return
 
@@ -207,7 +195,7 @@
 
 /obj/structure/girder/proc/reinforce_girder()
 	cover = 75
-	health_max = 500
+	set_max_health(500)
 	state = 2
 	icon_state = "reinforced"
 	reinforcing = 0

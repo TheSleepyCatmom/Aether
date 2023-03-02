@@ -36,7 +36,7 @@
 
 /atom/movable/Destroy()
 	if(!(atom_flags & ATOM_FLAG_INITIALIZED))
-		crash_with("Was deleted before initalization")
+		crash_with("\A [src] was deleted before initalization")
 	walk(src, 0)
 	for(var/A in src)
 		qdel(A)
@@ -60,7 +60,7 @@
 
 	if (A && yes)
 		A.last_bumped = world.time
-		INVOKE_ASYNC(A, /atom/proc/Bumped, src) // Avoids bad actors sleeping or unexpected side effects, as the legacy behavior was to spawn here
+		invoke_async(A, /atom/proc/Bumped, src) // Avoids bad actors sleeping or unexpected side effects, as the legacy behavior was to spawn here
 	..()
 
 /atom/movable/proc/forceMove(atom/destination)
@@ -197,6 +197,23 @@
 	master = null
 	. = ..()
 
+/atom/movable/overlay/use_grab(obj/item/grab/grab, list/click_params)
+	if (master)
+		return master.use_grab(grab, click_params)
+	return FALSE
+
+/atom/movable/overlay/use_weapon(obj/item/weapon, mob/user, list/click_params)
+	SHOULD_CALL_PARENT(FALSE)
+	if (master)
+		return master.use_weapon(weapon, user, click_params)
+	return FALSE
+
+/atom/movable/overlay/use_tool(obj/item/tool, mob/user, list/click_params)
+	SHOULD_CALL_PARENT(FALSE)
+	if (master)
+		return master.use_tool(tool, user, click_params)
+	return FALSE
+
 /atom/movable/overlay/attackby(obj/item/I, mob/user)
 	if (master)
 		return master.attackby(I, user)
@@ -245,3 +262,7 @@
 
 /atom/movable/proc/get_bullet_impact_effect_type()
 	return BULLET_IMPACT_NONE
+
+
+/atom/movable/proc/CheckDexterity(mob/living/user)
+	return TRUE
