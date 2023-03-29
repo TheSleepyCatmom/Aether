@@ -114,15 +114,15 @@
 		Destroy()
 
 
-/obj/aura/web/bullet_act(obj/item/projectile/P, def_zone)
+/obj/aura/web/aura_check_bullet(obj/item/projectile/proj, def_zone)
 	. = ..()
-	if (istype(P, /obj/item/projectile/webball))
+	if (istype(proj, /obj/item/projectile/webball))
 		add_stack()
 
-/obj/aura/web/hitby(atom/movable/AM, datum/thrownthing/TT)
+/obj/aura/web/aura_check_thrown(atom/movable/thrown_atom, datum/thrownthing/thrown_datum)
 	. = ..()
-	if (isliving(AM))
-		remove_webbing(AM)
+	if (isliving(thrown_atom))
+		remove_webbing(thrown_atom)
 
 /obj/aura/web/proc/remove_webbing(mob/living/M)
 	if (!M)
@@ -184,9 +184,10 @@
 		var/tally = W.stacks * 2
 		return . + tally
 
-/mob/living/attackby(obj/item/I, mob/user)
-	for (var/obj/aura/web/W in auras)
-		W.remove_webbing(user)
-		return
+/mob/living/use_tool(obj/item/tool, mob/user, list/click_params)
+	if (length(auras))
+		for (var/obj/aura/web/web in auras)
+			web.remove_webbing(user)
+			return TRUE
 
 	return ..()
