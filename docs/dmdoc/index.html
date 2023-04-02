@@ -30,7 +30,7 @@ General Public License version 3.
 
 <h3 id="modules">Modules
 <aside>(210 modules,
-    208/4352 macros, 4.8%)</aside></h3>
+    208/4366 macros, 4.8%)</aside></h3>
 <ul class="index-tree modules">
     <li><a href="(builtins).html" title="(builtins)">(builtins)</a></li>
     <li class="has-children"><span title="code">code</span><ul class="index-tree">
@@ -353,7 +353,7 @@ General Public License version 3.
 
 
 <h3 id="types">Types
-<aside>(241 detailed/510 documented/20228 total, 2.5%)</aside></h3>
+<aside>(245 detailed/514 documented/20245 total, 2.5%)</aside></h3>
 <ul class="index-tree">
     <li><a href="global.html" title="(global)">(global)</a></li>
     <li class="has-children"><a href="area.html" title="&#x2F;area">area</a><ul class="index-tree">
@@ -487,7 +487,10 @@ Then do start() to start it and stop() to stop it, obviously
 and don't call start() in a loop that will be repeated otherwise it'll get spammed!<ul class="index-tree">
     <li><span class="no-substance" title="&#x2F;datum&#x2F;effect&#x2F;effect&#x2F;system&#x2F;trail&#x2F;steam">steam</span> - Attach a steam trail to an object (eg. a reacting beaker) that will follow it</li>
     </ul></li>
-    <li><span class="no-substance">event&#x2F;</span><a href="datum/event/mob_spawning.html" title="&#x2F;datum&#x2F;event&#x2F;mob_spawning">mob_spawning</a></li>
+    <li class="has-children"><span title="&#x2F;datum&#x2F;event">event</span><ul class="index-tree">
+    <li><a href="datum/event/exo_awakening.html" title="&#x2F;datum&#x2F;event&#x2F;exo_awakening">exo_awakening</a></li>
+    <li><a href="datum/event/mob_spawning.html" title="&#x2F;datum&#x2F;event&#x2F;mob_spawning">mob_spawning</a></li>
+    </ul></li>
     <li class="has-children"><span title="&#x2F;datum&#x2F;extension">extension</span><ul class="index-tree">
     <li><span class="no-substance">interactive&#x2F;</span><a href="datum/extension/interactive/ntos.html" title="&#x2F;datum&#x2F;extension&#x2F;interactive&#x2F;ntos">ntos</a></li>
     <li class="has-children"><span title="&#x2F;datum&#x2F;extension&#x2F;scent">scent</span> - Scent extensions
@@ -532,6 +535,7 @@ Variable model is one full map line (e.g /turf/unsimulated/wall{icon_state = &qu
     <li><span class="no-substance" title="&#x2F;datum&#x2F;mil_branch">mil_branch</span> - A single military branch, such as Fleet or Marines</li>
     <li><a href="datum/mil_branches.html" title="&#x2F;datum&#x2F;mil_branches">mil_branches</a> - Global object for handling branches</li>
     <li><a href="datum/mil_rank.html" title="&#x2F;datum&#x2F;mil_rank">mil_rank</a> - A military rank</li>
+    <li><a href="datum/mind.html" title="&#x2F;datum&#x2F;mind">mind</a></li>
     <li class="has-children"><a href="datum/mob_list.html" title="&#x2F;datum&#x2F;mob_list">mob_list</a><ul class="index-tree">
     <li><span class="no-substance">major&#x2F;</span><span class="no-substance" title="&#x2F;datum&#x2F;mob_list&#x2F;major&#x2F;meat">meat</span> - Amount of time between the event starting and mobs beginning spawns</li>
     </ul></li>
@@ -550,6 +554,7 @@ Variable model is one full map line (e.g /turf/unsimulated/wall{icon_state = &qu
     <li><a href="datum/player_info.html" title="&#x2F;datum&#x2F;player_info">player_info</a></li>
     <li><a href="datum/powernet.html" title="&#x2F;datum&#x2F;powernet">powernet</a></li>
     <li><span class="no-substance">progressbar&#x2F;</span><a href="datum/progressbar/public.html" title="&#x2F;datum&#x2F;progressbar&#x2F;public">public</a></li>
+    <li><a href="datum/pronouns.html" title="&#x2F;datum&#x2F;pronouns">pronouns</a></li>
     <li class="has-children"><a href="datum/reagent.html" title="&#x2F;datum&#x2F;reagent">reagent</a><ul class="index-tree">
     <li><span class="no-substance">drugs&#x2F;</span><span class="no-substance" title="&#x2F;datum&#x2F;reagent&#x2F;drugs&#x2F;hextro">hextro</span> - Spam prevention.
 Enables procs to activate, remains true until THAT PROC sets it to false again.</li>
@@ -732,7 +737,9 @@ This is an obj because raw atoms can't be placed in DM or third-party mapping to
     <li><a href="obj/effect/fusion_em_field.html" title="&#x2F;obj&#x2F;effect&#x2F;fusion_em_field">fusion_em_field</a></li>
     <li><span class="no-substance">gateway&#x2F;artifact&#x2F;</span><a href="obj/effect/gateway/artifact/big.html" title="&#x2F;obj&#x2F;effect&#x2F;gateway&#x2F;artifact&#x2F;big">big</a></li>
     <li class="has-children"><span title="&#x2F;obj&#x2F;effect&#x2F;landmark">landmark</span><ul class="index-tree">
-    <li><span class="no-substance">corpse&#x2F;</span><span class="no-substance" title="&#x2F;obj&#x2F;effect&#x2F;landmark&#x2F;corpse&#x2F;lar_maria">lar_maria</span> - crew and prisoners</li>
+    <li class="has-children"><a href="obj/effect/landmark/corpse.html" title="&#x2F;obj&#x2F;effect&#x2F;landmark&#x2F;corpse">corpse</a><ul class="index-tree">
+    <li><span class="no-substance" title="&#x2F;obj&#x2F;effect&#x2F;landmark&#x2F;corpse&#x2F;lar_maria">lar_maria</span> - crew and prisoners</li>
+    </ul></li>
     <li><a href="obj/effect/landmark/map_data.html" title="&#x2F;obj&#x2F;effect&#x2F;landmark&#x2F;map_data">map_data</a></li>
     </ul></li>
     <li><span class="no-substance">overlay&#x2F;</span><a href="obj/effect/overlay/self_deleting.html" title="&#x2F;obj&#x2F;effect&#x2F;overlay&#x2F;self_deleting">self_deleting</a> - Effect overlays that should automatically delete themselves after a set time.</li>
@@ -1110,7 +1117,7 @@ On a directed graph, these would be the arrows connecting the nodes representing
 </main>
 <footer>
     baystation12.dme
-    <a href="https://github.com/TheSleepyCatmom/Aether/tree/a76e3197ef74b99d9a22513b97fe46365b38a8f3">a76e319</a>
+    <a href="https://github.com/TheSleepyCatmom/Aether/tree/a09cc13d171203f4575b02618b66097e2e75ebd8">a09cc13</a>
         (dev) &mdash; <a href="https://github.com/SpaceManiac/SpacemanDMM/blob/master/src/dmdoc/README.md">dmdoc 1.4.1</a></footer>
 </body>
 </html>
