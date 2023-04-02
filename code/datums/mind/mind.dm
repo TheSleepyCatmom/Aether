@@ -49,7 +49,10 @@
 	var/has_been_rev = 0//Tracks if this mind has been a rev or not
 
 	var/faction 			//associated faction
-	var/datum/changeling/changeling		//changeling holder
+	var/datum/changeling/changeling		//changeling holde
+
+	///String. Last spoken message.
+	var/last_words
 
 	var/rev_cooldown = 0
 
@@ -60,6 +63,8 @@
 	var/datum/money_account/initial_account
 
 	var/list/initial_email_login = list("login" = "", "password" = "")
+
+	var/list/known_mobs
 
 /datum/mind/New(key)
 	src.key = key
@@ -520,7 +525,7 @@
 	special_role =    null
 	role_alt_title =  null
 	assigned_job =    null
-	//faction =       null //Uncommenting this causes a compile error due to 'undefined type', fucked if I know.
+	faction =		  MOB_FACTION_NEUTRAL
 	changeling =      null
 	initial_account = null
 	objectives =      list()
@@ -528,6 +533,10 @@
 	has_been_rev =    0
 	rev_cooldown =    0
 	brigged_since =   -1
+
+/datum/mind/proc/add_known_mob(mob/M)
+	if(ismob(M))
+		known_mobs += M
 
 //Antagonist role check
 /mob/living/proc/check_special_role(role)
