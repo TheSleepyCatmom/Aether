@@ -3932,7 +3932,6 @@
 "jg" = (
 /obj/item/stack/material/rods,
 /obj/item/material/shard,
-/obj/random/single/meatstation/low/wormscientist,
 /turf/simulated/floor/tiled/dark,
 /area/meatstation/swhallway)
 "jh" = (
@@ -4076,7 +4075,6 @@
 /obj/random/maintenance/clean,
 /obj/item/plastique,
 /obj/effect/decal/cleanable/blood,
-/mob/living/simple_animal/hostile/meatstation/wormscientist,
 /turf/simulated/floor/tiled/dark,
 /area/meatstation/swhallway)
 "ju" = (
@@ -4282,11 +4280,6 @@
 /obj/effect/wallframe_spawn/reinforced,
 /turf/simulated/floor/plating,
 /area/meatstation/dorm)
-"kc" = (
-/obj/structure/table/glass,
-/obj/machinery/reagent_temperature/cooler,
-/turf/simulated/floor/tiled/white,
-/area/meatstation/lab)
 "kd" = (
 /obj/structure/cable/cyan{
 	d1 = 1;
@@ -10429,8 +10422,7 @@
 	},
 /obj/machinery/door/airlock/vault/bolted{
 	id_tag = "meatstation_westlabext";
-	name = "Secure Airlock";
-	welded = 0
+	name = "Secure Airlock"
 	},
 /turf/simulated/floor/tiled/white,
 /area/meatstation/centerhallway)
@@ -10814,8 +10806,7 @@
 "Ao" = (
 /obj/machinery/door/airlock/vault/bolted{
 	id_tag = "meatstation_westlabint";
-	name = "Secure Airlock";
-	welded = 0
+	name = "Secure Airlock"
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
 	dir = 4
@@ -31481,7 +31472,7 @@ vL
 ac
 wv
 kp
-kc
+tU
 hi
 lm
 uB

@@ -875,6 +875,7 @@
 				/obj/item/clothing/suit/storage/toggle/labcoat = 4,
 				/obj/item/clothing/suit/space/emergency = 1,
 				/obj/item/clothing/suit/armor/vest = 4,
+				/obj/item/clothing/suit/storage/security_chest_rig = 4,
 				/obj/item/clothing/suit/storage/vest/tactical = 1,
 				/obj/item/clothing/suit/storage/vest = 3,
 				/obj/item/clothing/suit/storage/toggle/bomber = 3,
@@ -934,10 +935,10 @@ GLOBAL_LIST_INIT(random_backpacks, list(
 	/obj/item/storage/backpack/security/exo,
 	/obj/item/storage/backpack/command,
 	/obj/item/storage/backpack/industrial,
-	/obj/item/storage/backpack/toxins,
+	/obj/item/storage/backpack/corpsci,
 	/obj/item/storage/backpack/hydroponics,
 	/obj/item/storage/backpack/genetics,
-	/obj/item/storage/backpack/virology,
+	/obj/item/storage/backpack/sci,
 	/obj/item/storage/backpack/chemistry
 ))
 
